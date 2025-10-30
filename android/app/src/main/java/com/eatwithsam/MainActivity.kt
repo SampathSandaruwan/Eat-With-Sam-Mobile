@@ -1,4 +1,4 @@
-package com.eatwithsam
+package com.sampath.eatwithsam
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

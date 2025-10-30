@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.eatwithsam"
+    namespace "com.sampath.eatwithsam"
     defaultConfig {
-        applicationId "com.eatwithsam"
+        applicationId "com.sampath.eatwithsam"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

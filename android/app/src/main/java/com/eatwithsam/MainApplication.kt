@@ -1,4 +1,4 @@
-package com.eatwithsam
+package com.sampath.eatwithsam
 
 import android.app.Application
 import com.facebook.react.PackageList
