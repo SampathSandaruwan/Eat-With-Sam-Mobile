@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Text } from '@components';
 import { MenuItem } from '@types';
@@ -8,11 +8,21 @@ import { colors, shadows } from '../../../theme/colors';
 
 type Props = {
   item: MenuItem;
+  onPress?: (item: MenuItem) => void;
 };
 
-export default function MenuItemCard({ item }: Props) {
+export default function MenuItemCard({ item, onPress }: Props) {
+  const formattedPrice = `£${item.price.toFixed(2)}`;
+
   return (
-    <View style={[styles.card, shadows.card]}>
+    <Pressable
+      onPress={() => onPress?.(item)}
+      style={({ pressed }) => [
+        styles.card,
+        shadows.card,
+        pressed && styles.pressed,
+      ]}
+    >
       <View style={styles.imageWrapper}>
         {item.discountPercent ? (
           <View style={styles.badge}>
@@ -28,17 +38,17 @@ export default function MenuItemCard({ item }: Props) {
       </View>
 
       <View style={styles.content}>
-        <Text weight="bold">{item.title}</Text>
+        <Text weight="bold">{item.name}</Text>
         {!!item.description && <Text color="secondary">{item.description}</Text>}
 
         <View style={styles.metaRow}>
-          <Text color="secondary">{item.price}</Text>
+          <Text color="secondary">{formattedPrice}</Text>
           {typeof item.kcal === 'number' && (
             <Text color="secondary">{item.kcal} kcal</Text>
           )}
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -79,5 +89,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 8,
+  },
+  pressed: {
+    opacity: 0.7,
   },
 });
