@@ -77,6 +77,10 @@ When you want to forcefully reload, for example to reset the state of your app, 
 
 You've successfully run and modified your React Native App. :partying_face:
 
+## Documentation
+
+For comprehensive project documentation, implementation plans, and guidelines, please refer to the [Documentation](./Documentation/README.md) folder.
+
 ### Now what?
 
 - If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
