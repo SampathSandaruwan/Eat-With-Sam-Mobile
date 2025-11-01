@@ -15,24 +15,49 @@ This document outlines the step-by-step implementation plan for the EatWithSam m
 
 The following components and features are already implemented:
 
-- ✅ **Menu Screen Structure**: Basic menu screen with sample data (`src/screens/Menu/index.tsx`)
+### Infrastructure & Setup
+- ✅ **API Client**: Axios client with interceptors (`src/lib/api-client.ts`)
+- ✅ **TanStack Query**: QueryClient configured with retry and exponential backoff (`src/lib/query-client.ts`)
+- ✅ **Environment Config**: react-native-dotenv setup for API configuration
+- ✅ **Service Layer**: Menu API service functions (`src/services/menu.ts`)
+- ✅ **Custom Hooks**: 
+  - `useMenuCategories` - Menu categories hook
+  - `useMenuItems` - Menu items hook  
+  - `useMenuItem` - Single menu item hook
+
+### UI Components
+- ✅ **Menu Screen**: Fully integrated with API (`src/screens/Menu/index.tsx`)
 - ✅ **Menu Components**: 
-  - MenuItemCard component (`src/screens/Menu/components/MenuItemCard.tsx`)
-  - CategoryTabs component (`src/screens/Menu/components/CategoryTabs.tsx`)
+  - MenuItemCard component with onPress handler (`src/screens/Menu/components/MenuItemCard.tsx`)
+  - CategoryTabs component updated for API data (`src/screens/Menu/components/CategoryTabs.tsx`)
   - TopNavBar component (`src/screens/Menu/components/TopNavBar.tsx`)
+- ✅ **Menu Item Modal**: Full-screen modal with item details, image, price, rating, tags, availability
 - ✅ **UI Components**: 
   - Text component (`src/components/Text.tsx`)
   - Icon component (`src/components/Icon.tsx`) using Phosphor icons
 - ✅ **Theme System**: 
   - Basic color palette (`src/theme/colors.ts`)
   - Layout constants (`src/theme/layout.ts`)
-- ✅ **Types**: Menu types defined (`src/types/menu.types.ts` - MenuCategory, MenuItem)
+
+### Types & Data
+- ✅ **Type Definitions**: 
+  - Menu types (`src/types/menu.types.ts` - MenuCategory, MenuItem)
+  - Restaurant types (`src/types/restaurant.types.ts`)
+  - Environment variable types (`src/types/env.d.ts`)
+
+### Features
+- ✅ **Loading States**: ActivityIndicator for main item and selected item
+- ✅ **Restaurant Info**: Fetched from API via useMenuItem hook
+- ✅ **Category Navigation**: Category tabs with sticky animation on scroll
 - ✅ **Assets**: Logo image (`src/assets/images/Logo.png`)
-- ✅ **Restaurant Info Section**: Implemented in menu screen (banner, name, tags, rating, delivery info, back button)
-- ✅ **Basic Navigation**: Category tabs with sticky animation on scroll
 - ✅ **App Branding**: App icons, bundle IDs, and splash screen configured
 
-**Next Steps**: Integrate with backend APIs, add state management, implement authentication, and add missing features.
+**Next Steps**: 
+- Complete remaining dependencies (Zustand, Navigation, AsyncStorage, NetInfo)
+- Add error state handling with retry buttons
+- Implement network awareness
+- Add shopping cart functionality
+- Complete remaining menu enhancements
 
 ---
 
@@ -44,30 +69,33 @@ The following components and features are already implemented:
 
 #### Step 1.1.1: Install Core Dependencies
 - [ ] Install Zustand for state management: `npm install zustand`
-- [ ] Install TanStack Query (React Query): `npm install @tanstack/react-query`
-- [ ] Install Axios: `npm install axios`
+- [x] Install TanStack Query (React Query): `npm install @tanstack/react-query` ✅
+- [x] Install Axios: `npm install axios` ✅
+- [x] Install react-native-dotenv: `npm install react-native-dotenv` ✅
 - [ ] Install Expo Router OR React Navigation (based on preference):
   - Option A: `npx expo install expo-router` (Expo Router)
   - Option B: `npm install @react-navigation/native @react-navigation/native-stack` (React Navigation)
 - [ ] Install React Native AsyncStorage: `npm install @react-native-async-storage/async-storage`
 - [ ] Install Network info library: `npm install @react-native-community/netinfo`
 
-**Commit**: `feat(setup): :package: add core dependencies (zustand, tanstack-query, axios, navigation)`
+**Commit**: `feat(setup): :package: add core dependencies (zustand, tanstack-query, axios, navigation)` *(Partially completed - TanStack Query, Axios, dotenv installed)*
 
 #### Step 1.1.2: Configure TanStack Query Provider
-- [ ] Create `src/lib/query-client.ts` - Setup QueryClient with retry and caching config
-- [ ] Wrap App with QueryClientProvider in `App.tsx`
-- [ ] Configure default retry logic with exponential backoff
+- [x] Create `src/lib/query-client.ts` - Setup QueryClient with retry and caching config ✅
+- [x] Wrap App with QueryClientProvider in `App.tsx` ✅
+- [x] Configure default retry logic with exponential backoff ✅
 
-**Commit**: `feat(setup): :sparkles: configure TanStack Query with retry and caching`
+**Commit**: `feat(setup): :sparkles: configure TanStack Query with retry and caching` *(Completed)*
 
 #### Step 1.1.3: Setup API Client Infrastructure
-- [ ] Create `src/lib/axios-client.ts` - Axios instance with base URL and interceptors
-- [ ] Create `src/lib/api-config.ts` - Environment-based API configuration
-- [ ] Setup request/response interceptors for error handling
-- [ ] Implement timeout configuration
+- [x] Create `src/lib/api-client.ts` - Axios instance with base URL and interceptors ✅
+- [x] Create `src/lib/index.ts` - Export barrel file ✅
+- [x] Environment-based API configuration (using react-native-dotenv) ✅
+- [x] Setup response interceptors for error handling ✅
+- [x] Implement timeout configuration (5000ms) ✅
+- [x] Create `src/types/env.d.ts` - Type definitions for environment variables ✅
 
-**Commit**: `feat(api): :sparkles: setup axios client with interceptors and error handling`
+**Commit**: `feat(api): :sparkles: setup axios client with interceptors and error handling` *(Completed)*
 
 #### Step 1.1.4: Setup Navigation Structure
 - [ ] If using Expo Router: Setup app directory structure (`app/` or `src/app/`)
@@ -126,50 +154,61 @@ The following components and features are already implemented:
 **Commit**: `feat(menu): :sparkles: add network status detection and offline indicators`
 
 #### Step 1.3.2: Menu Data Integration (Backend API)
-- [ ] Create `src/api/menu.ts` - Menu API endpoints using TanStack Query
-- [x] Define `src/types/menu.types.ts` - Basic menu types already exist (MenuCategory, MenuItem)
-- [ ] Create `src/hooks/useMenu.ts` - Custom hook for menu data
-- [ ] Update Menu screen to fetch from API instead of sample data (currently using `SAMPLE_CATEGORIES` and `SAMPLE_SECTIONS`)
-- [ ] Add loading state UI (skeleton loaders)
-- [ ] Add error state UI with retry button
+- [x] Create `src/services/menu.ts` - Menu API service functions ✅
+- [x] Create `src/services/index.ts` - Service exports ✅
+- [x] Define `src/types/menu.types.ts` - Basic menu types already exist (MenuCategory, MenuItem) ✅
+- [x] Create `src/types/restaurant.types.ts` - Restaurant type definitions ✅
+- [x] Create `src/hooks/use-menu-categories.ts` - Custom hook for menu categories ✅
+- [x] Create `src/hooks/use-menu-items.ts` - Custom hooks for menu items (useMenuItems, useMenuItem) ✅
+- [x] Create `src/hooks/index.ts` - Hook exports ✅
+- [x] Update Menu screen to fetch from API instead of sample data ✅
+- [x] Add loading state UI (ActivityIndicator for main item and selected item) ✅
+- [ ] Add error state UI with retry button (loading states present, error states need implementation)
 
-**Commit**: `feat(menu): :sparkles: integrate menu data fetching with backend API`
+**Commit**: `feat(menu): :sparkles: integrate menu data fetching with backend API` *(Partially completed - API integration and loading states done, error states pending)*
 
 #### Step 1.3.3: Menu Item Modal/Popup
-- [ ] Create `src/components/MenuItemModal.tsx` - Full-screen or bottom sheet modal
-- [ ] Design modal with:
-  - Item image carousel/gallery
-  - Full description and details
-  - Customization options (if applicable)
-  - Add to cart button
-  - Price and nutritional info
-- [ ] Integrate modal with MenuItemCard click handler
-- [ ] Add smooth animations for modal open/close
+- [x] Create menu item modal (implemented in Menu screen) - React Native Modal component ✅
+- [x] Design modal with:
+  - [x] Item image display ✅
+  - [x] Full description and details ✅
+  - [x] Price and nutritional info (kcal, price, rating) ✅
+  - [x] Tags display ✅
+  - [x] Availability status ✅
+  - [ ] Customization options (if applicable) - Not implemented
+  - [ ] Add to cart button - Not implemented (needs cart store)
+- [x] Integrate modal with MenuItemCard click handler (`onPress` prop) ✅
+- [x] Add smooth animations for modal open/close (slide animation) ✅
+- [x] Modal loading state with ActivityIndicator ✅
 
-**Commit**: `feat(menu): :sparkles: implement menu item detail modal with interactions`
+**Commit**: `feat(menu): :sparkles: implement menu item detail modal with interactions` *(Partially completed - Modal UI done, cart integration pending)*
 
 #### Step 1.3.4: Enhanced Menu Scrolling & Category Navigation
-- [x] Basic sticky category tabs animation implemented (with opacity interpolation on scroll)
+- [x] Basic sticky category tabs animation implemented (with opacity interpolation on scroll) ✅
+- [x] CategoryTabs component updated to work with API data (number IDs, category.name) ✅
+- [x] MenuItemCard component updated with Pressable and onPress handler ✅
+- [x] FlatList implementation with proper keyExtractor and renderItem ✅
 - [ ] Improve sticky category tabs animation (refine scroll thresholds - currently hardcoded at 295-300)
 - [ ] Implement scroll-to-category functionality (tabs don't auto-scroll to section yet)
 - [ ] Add smooth category section detection during scroll (currently only filters by activeCategoryId)
 - [ ] Ensure category tabs sync with scroll position (needs reverse sync)
-- [x] FlatList implementation with proper keyExtractor and renderItem
 - [ ] Optimize FlatList performance (removeItemLayout, getItemLayout if needed)
 
-**Commit**: `feat(menu): :sparkles: enhance category navigation and scroll synchronization` *(Partially completed - basic structure exists)*
+**Commit**: `feat(menu): :sparkles: enhance category navigation and scroll synchronization` *(Partially completed - basic structure and component updates done)*
 
 #### Step 1.3.5: Restaurant Information Section
 - [x] Restaurant header implemented with:
-  - [x] Restaurant image/banner (`styles.banner` in Menu screen)
-  - [x] Restaurant name ("Tossed - St Martin's Lane")
-  - [x] Cuisine tags ("Halal · Salads · Healthy")
-  - [x] Rating, delivery time, minimum order (shown in pills)
-  - [x] Back button with smooth interaction (round back button in ListHeaderComponent)
-- [ ] Add data fetching for restaurant info if separate endpoint (currently hardcoded)
-- [x] Restaurant info section styled and responsive
+  - [x] Restaurant image/banner (using `mainMenuItem?.imageUri`) ✅
+  - [x] Restaurant name (using `mainMenuItem?.name` from API) ✅
+  - [x] Price display (using `mainMenuItem?.price` from API) ✅
+  - [x] Rating, delivery time, minimum order (shown in pills - currently hardcoded values) ✅
+  - [x] Back button with smooth interaction (round back button in ListHeaderComponent) ✅
+- [x] Restaurant info fetched from API via `useMenuItem` hook ✅
+- [x] Loading state for restaurant info (ActivityIndicator) ✅
+- [x] Restaurant info section styled and responsive ✅
+- [ ] Update hardcoded rating/delivery time/minimum order to use API data
 
-**Commit**: `feat(menu): :sparkles: enhance restaurant information section` *(Already completed - needs API integration)*
+**Commit**: `feat(menu): :sparkles: enhance restaurant information section` *(Partially completed - API integration done, some hardcoded values remain)*
 
 ---
 
