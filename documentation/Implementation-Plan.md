@@ -19,22 +19,31 @@ The following components and features are already implemented:
 - ✅ **API Client**: Axios client with interceptors (`src/lib/api-client.ts`)
 - ✅ **TanStack Query**: QueryClient configured with retry and exponential backoff (`src/lib/query-client.ts`)
 - ✅ **Environment Config**: react-native-dotenv setup for API configuration
-- ✅ **Service Layer**: Menu API service functions (`src/services/menu.ts`)
+- ✅ **Service Layer**: 
+  - Menu API service functions (`src/services/menu.ts`)
+  - Restaurant API service functions (`src/services/restaurants.ts`)
+- ✅ **State Management**: Zustand store with persistence (`src/store/cart-store.ts`)
 - ✅ **Custom Hooks**: 
   - `useMenuCategories` - Menu categories hook
   - `useMenuItems` - Menu items hook  
   - `useMenuItem` - Single menu item hook
+  - `useRestaurant` - Single restaurant hook
+  - `useRestaurants` - Restaurants list hook
 
 ### UI Components
 - ✅ **Menu Screen**: Fully integrated with API (`src/screens/Menu/index.tsx`)
+- ✅ **Cart Screen**: Complete cart UI with item list, quantity controls, and summary (`src/screens/Cart/index.tsx`)
 - ✅ **Menu Components**: 
   - MenuItemCard component with onPress handler (`src/screens/Menu/components/MenuItemCard.tsx`)
   - CategoryTabs component updated for API data (`src/screens/Menu/components/CategoryTabs.tsx`)
   - TopNavBar component (`src/screens/Menu/components/TopNavBar.tsx`)
-- ✅ **Menu Item Modal**: Full-screen modal with item details, image, price, rating, tags, availability
+  - RestaurantInfo component (`src/screens/Menu/components/RestaurantInfo.tsx`)
+  - SelectedMenuItem component (`src/screens/Menu/components/SelectedMenuItem.tsx`)
+- ✅ **Menu Item Modal**: Full-screen modal with item details, image, price, rating, tags, availability, and add to cart functionality
 - ✅ **UI Components**: 
   - Text component (`src/components/Text.tsx`)
-  - Icon component (`src/components/Icon.tsx`) using Phosphor icons
+  - Icon component (`src/components/Icon.tsx`) using Phosphor icons with Icon suffix
+  - FloatingActionButton component (`src/components/FloatingActionButton.tsx`)
 - ✅ **Theme System**: 
   - Basic color palette (`src/theme/colors.ts`)
   - Layout constants (`src/theme/layout.ts`)
@@ -43,42 +52,54 @@ The following components and features are already implemented:
 - ✅ **Type Definitions**: 
   - Menu types (`src/types/menu.types.ts` - MenuCategory, MenuItem)
   - Restaurant types (`src/types/restaurant.types.ts`)
+  - Cart types (`src/types/cart.types.ts` - CartItem, CartSummary)
   - Environment variable types (`src/types/env.d.ts`)
 
 ### Features
 - ✅ **Loading States**: ActivityIndicator for main item and selected item
-- ✅ **Restaurant Info**: Fetched from API via useMenuItem hook
+- ✅ **Restaurant Info**: Fetched from API via useRestaurant hook, displayed in RestaurantInfo component
 - ✅ **Category Navigation**: Category tabs with sticky animation on scroll
-- ✅ **Assets**: Logo image (`src/assets/images/Logo.png`)
+- ✅ **Shopping Cart**: 
+  - Cart state management with Zustand and AsyncStorage persistence
+  - Cart screen with item list, quantity controls, and summary calculations
+  - FloatingActionButton with dynamic item count badge
+  - Add to cart functionality integrated in SelectedMenuItem modal
+  - Cart integration in Menu screen
+- ✅ **Utilities**: Delivery time calculation utility (`src/utils/calculate-delivery-time.ts`)
+- ✅ **Assets**: 
+  - Logo image (`src/assets/images/Logo.png`)
+  - FoodItemsPlaceholder SVG component (`src/assets/images/FoodItemsPlaceholder.tsx`)
 - ✅ **App Branding**: App icons, bundle IDs, and splash screen configured
+- ✅ **Network Security**: Android network security configuration for API access
 
 **Next Steps**: 
-- Complete remaining dependencies (Zustand, Navigation, AsyncStorage, NetInfo)
 - Add error state handling with retry buttons
-- Implement network awareness
-- Add shopping cart functionality
-- Complete remaining menu enhancements
+- Implement network awareness and offline indicators
+- Complete order placement API integration
+- Add order history and status tracking
+- Implement navigation structure (if needed)
+- Add dark mode theme support
 
 ---
 
 ## Module 1: Menu & Order
 
-> **Status Note**: Basic menu UI components and screen structure are already implemented with sample data. The following phases will enhance and integrate with backend APIs.
+> **Status Note**: Phase 1.4 (Shopping Cart & Order Management) - Steps 1.4.1 and 1.4.2 are completed. Cart functionality with Zustand state management and UI components are fully implemented. Remaining work: Order Placement API (Phase 1.4.3), Order History (Phase 1.4.4), Error Handling (Phase 1.5), and Testing (Phase 1.6). Ready to proceed with Module 2: Authentication.
 
 ### Phase 1.1: Foundation Setup (Tech Stack)
 
 #### Step 1.1.1: Install Core Dependencies
-- [ ] Install Zustand for state management: `npm install zustand`
+- [x] Install Zustand for state management: `npm install zustand` ✅
 - [x] Install TanStack Query (React Query): `npm install @tanstack/react-query` ✅
 - [x] Install Axios: `npm install axios` ✅
 - [x] Install react-native-dotenv: `npm install react-native-dotenv` ✅
 - [ ] Install Expo Router OR React Navigation (based on preference):
   - Option A: `npx expo install expo-router` (Expo Router)
   - Option B: `npm install @react-navigation/native @react-navigation/native-stack` (React Navigation)
-- [ ] Install React Native AsyncStorage: `npm install @react-native-async-storage/async-storage`
+- [x] Install React Native AsyncStorage: `npm install @react-native-async-storage/async-storage` ✅
 - [ ] Install Network info library: `npm install @react-native-community/netinfo`
 
-**Commit**: `feat(setup): :package: add core dependencies (zustand, tanstack-query, axios, navigation)` *(Partially completed - TanStack Query, Axios, dotenv installed)*
+**Commit**: `feat(setup): :package: add core dependencies (zustand, tanstack-query, axios, navigation)` *(Partially completed - Zustand, TanStack Query, Axios, dotenv, AsyncStorage installed)*
 
 #### Step 1.1.2: Configure TanStack Query Provider
 - [x] Create `src/lib/query-client.ts` - Setup QueryClient with retry and caching config ✅
@@ -176,12 +197,12 @@ The following components and features are already implemented:
   - [x] Tags display ✅
   - [x] Availability status ✅
   - [ ] Customization options (if applicable) - Not implemented
-  - [ ] Add to cart button - Not implemented (needs cart store)
+  - [x] Add to cart button with quantity selector - Implemented with cart store integration ✅
 - [x] Integrate modal with MenuItemCard click handler (`onPress` prop) ✅
 - [x] Add smooth animations for modal open/close (slide animation) ✅
 - [x] Modal loading state with ActivityIndicator ✅
 
-**Commit**: `feat(menu): :sparkles: implement menu item detail modal with interactions` *(Partially completed - Modal UI done, cart integration pending)*
+**Commit**: `feat(menu): :sparkles: implement menu item detail modal with interactions` *(Completed - Modal UI and cart integration done)*
 
 #### Step 1.3.4: Enhanced Menu Scrolling & Category Navigation
 - [x] Basic sticky category tabs animation implemented (with opacity interpolation on scroll) ✅
@@ -203,38 +224,44 @@ The following components and features are already implemented:
   - [x] Price display (using `mainMenuItem?.price` from API) ✅
   - [x] Rating, delivery time, minimum order (shown in pills - currently hardcoded values) ✅
   - [x] Back button with smooth interaction (round back button in ListHeaderComponent) ✅
-- [x] Restaurant info fetched from API via `useMenuItem` hook ✅
+- [x] Restaurant info fetched from API via `useRestaurant` hook ✅
 - [x] Loading state for restaurant info (ActivityIndicator) ✅
 - [x] Restaurant info section styled and responsive ✅
-- [ ] Update hardcoded rating/delivery time/minimum order to use API data
+- [x] Restaurant info uses API data (name, description, cuisineType, deliveryTime, minimumOrder, deliveryFee, averageRating, ratingCount) ✅
+- [ ] Add distance calculation (requires user location) - Future enhancement
 
-**Commit**: `feat(menu): :sparkles: enhance restaurant information section` *(Partially completed - API integration done, some hardcoded values remain)*
+**Commit**: `feat(menu): :sparkles: enhance restaurant information section` *(Completed - API integration done, RestaurantInfo component fully functional)*
 
 ---
 
 ### Phase 1.4: Shopping Cart & Order Management
 
 #### Step 1.4.1: Cart State Management (Zustand)
-- [ ] Create `src/store/cart-store.ts` - Zustand store for cart state
-- [ ] Define cart item type: `src/types/cart.types.ts`
-- [ ] Implement cart actions:
-  - Add item
-  - Remove item
-  - Update quantity
-  - Clear cart
-  - Calculate totals
-- [ ] Add cart persistence to AsyncStorage
+- [x] Create `src/store/cart-store.ts` - Zustand store for cart state ✅
+- [x] Define cart item type: `src/types/cart.types.ts` ✅
+- [x] Implement cart actions:
+  - Add item ✅
+  - Remove item ✅
+  - Update quantity ✅
+  - Clear cart ✅
+  - Calculate totals (subtotal, tax, delivery fee, total) ✅
+  - Get item quantity ✅
+  - Get total items count ✅
+- [x] Add cart persistence to AsyncStorage ✅
 
-**Commit**: `feat(cart): :sparkles: implement cart state management with Zustand`
+**Commit**: `feat(cart): :sparkles: implement cart state management with Zustand` *(Completed)*
 
 #### Step 1.4.2: Cart UI Components
-- [ ] Create `src/components/CartButton.tsx` - Floating cart button with badge
-- [ ] Create `src/screens/Cart/index.tsx` - Cart screen
-- [ ] Design cart item list with quantity controls
-- [ ] Add cart summary (subtotal, fees, total)
-- [ ] Create checkout button (placeholder for now)
+- [x] Create `src/components/FloatingActionButton.tsx` - Floating cart button with badge ✅
+- [x] Create `src/screens/Cart/index.tsx` - Cart screen ✅
+- [x] Design cart item list with quantity controls ✅
+- [x] Add cart summary (subtotal, fees, tax, total) ✅
+- [x] Create checkout button (placeholder for now) ✅
+- [x] Add empty cart state UI ✅
+- [x] Integrate cart button in Menu screen ✅
+- [x] Add cart modal integration in Menu screen ✅
 
-**Commit**: `feat(cart): :sparkles: implement cart UI components and screen`
+**Commit**: `feat(cart): :sparkles: implement cart UI components and screen` *(Completed)*
 
 #### Step 1.4.3: Order Placement API Integration
 - [ ] Create `src/api/orders.ts` - Order API endpoints
