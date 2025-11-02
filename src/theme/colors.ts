@@ -3,12 +3,14 @@ export const colors = {
   brandYellow: '#FFC107', // primary brand color (yellow)
   brandYellowDark: '#E0A800',
   brandYellowLight: '#FFDE7A',
+  inactive: '#D9D9D9',
 
   // Neutrals
   background: '#FFFFFF',
   surface: '#FFFAE6',
   textPrimary: '#1A1A1A',
   textSecondary: '#4D4D4D',
+  textInactive: '#808080',
   border: '#E6E6E6',
 
   // Accents
