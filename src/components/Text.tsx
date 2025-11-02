@@ -7,11 +7,19 @@ type Props = {
     size?: 'small' | 'body' | 'heading1' | 'heading2',
     weight?: 'regular' | 'medium' | 'bold' | 'bolder',
     children: React.ReactNode;
-    color?: 'primary' | 'secondary' | 'brandColor';
+    color?: 'primary' | 'secondary' | 'brandColor' | 'inactive' | 'primaryInverted';
     style?: StyleProp<TextStyle>;
+    numberOfLines?: number;
 };
 
-export default function Text({ size, weight, children, color: colorProp, style }: Props) {
+export default function Text({
+  size,
+  weight,
+  children,
+  color: colorProp,
+  style,
+  numberOfLines,
+}: Props) {
   const fontSize = useMemo(() => {
     switch (size) {
       case 'small': return 12;
@@ -35,6 +43,8 @@ export default function Text({ size, weight, children, color: colorProp, style }
       case 'primary': return colors.textPrimary;
       case 'secondary': return colors.textSecondary;
       case 'brandColor': return colors.brandYellow;
+      case 'inactive': return colors.textInactive;
+      case 'primaryInverted': return colors.background;
       default: return colors.textPrimary;
     }
   }, [colorProp]);
@@ -47,6 +57,7 @@ export default function Text({ size, weight, children, color: colorProp, style }
         { color },
         style,
       ]}
+      numberOfLines={numberOfLines}
     >
       {children}
     </RNText>

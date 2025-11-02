@@ -8,8 +8,8 @@ import { colors } from '../../../theme/colors';
 
 type Props = {
   categories: MenuCategory[];
-  activeCategoryId: string;
-  onChange: (categoryId: string) => void;
+  activeCategoryId?: number | null;
+  onChange: (categoryId: number) => void;
 };
 
 export default function CategoryTabs({ categories, activeCategoryId, onChange }: Props) {
@@ -27,8 +27,7 @@ export default function CategoryTabs({ categories, activeCategoryId, onChange }:
               onPress={() => onChange(category.id)}
               style={[styles.chip, active && styles.chipActive]}
             >
-              {!!category.emoji && <Text size="small">{category.emoji} </Text>}
-              <Text color={active ? 'primary' : 'secondary'}>{category.label}</Text>
+              <Text color={active ? 'primary' : 'secondary'}>{category.name}</Text>
             </TouchableOpacity>
           );
         })}
