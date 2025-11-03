@@ -1,6 +1,8 @@
 import { Platform } from 'react-native';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { API_URL } from 'dotenv';
+
+import { getAccessToken } from './token-storage';
 
 // On Android emulator, localhost points to the emulator itself, not the host machine
 // Replace localhost with 10.0.2.2 which is the special IP for Android emulator to access host
@@ -25,6 +27,21 @@ if (__DEV__) {
     platform: Platform.OS,
   });
 }
+
+// Request interceptor to add access token to headers
+const requestInterceptor = async (config: InternalAxiosRequestConfig) => {
+  try {
+    const accessToken = await getAccessToken();
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to get access token for request:', error);
+    // Continue without token - request will proceed without auth header
+  }
+  return config;
+};
 
 const successResponseHandler = (response: AxiosResponse) => {
   return Promise.resolve({
@@ -58,6 +75,10 @@ const errorResponseHandler = (error: AxiosError) => {
   return Promise.reject(error);
 };
 
+// Add request interceptor to include access token
+API.interceptors.request.use(requestInterceptor);
+
+// Add response interceptors
 API.interceptors.response.use(successResponseHandler, errorResponseHandler);
 
 export default API;

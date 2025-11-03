@@ -7,7 +7,7 @@ type Props = {
     size?: 'small' | 'body' | 'heading1' | 'heading2',
     weight?: 'regular' | 'medium' | 'bold' | 'bolder',
     children: React.ReactNode;
-    color?: 'primary' | 'secondary' | 'brandColor' | 'inactive' | 'primaryInverted';
+    color?: 'primary' | 'secondary' | 'brandColor' | 'inactive' | 'primaryInverted' | 'danger';
     style?: StyleProp<TextStyle>;
     numberOfLines?: number;
 };
@@ -45,6 +45,7 @@ export default function Text({
       case 'brandColor': return colors.brandYellow;
       case 'inactive': return colors.textInactive;
       case 'primaryInverted': return colors.background;
+      case 'danger': return colors.danger;
       default: return colors.textPrimary;
     }
   }, [colorProp]);

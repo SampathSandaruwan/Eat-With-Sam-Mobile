@@ -9,14 +9,14 @@ import {
   View,
 } from 'react-native';
 
-import { FloatingActionButton, Icon } from '@components';
+import { FloatingActionButton, Icon, TopNavBar } from '@components';
 import { useMenuCategories, useMenuItem, useMenuItems, useRestaurant } from '@hooks';
+import { useCartStore } from '@store';
 import { colors, TOP_NAV_HEIGHT } from '@theme';
 import { MenuItem } from '@types';
 
-import { useCartStore } from '../../store';
 import CartScreen from '../Cart';
-import { CategoryTabs, MenuItemCard, RestaurantInfo, SelectedMenuItem, TopNavBar } from './components';
+import { CategoryTabs, MenuItemCard, RestaurantInfo, SelectedMenuItem } from './components';
 
 const TOP_NAV_HEIGHT_WITH_PADDING = TOP_NAV_HEIGHT;
 

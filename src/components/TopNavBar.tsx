@@ -1,19 +1,30 @@
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { Text } from '@components';
-import { colors,TOP_NAV_HEIGHT  } from '@theme';
+import { logoImage } from '@assets/images';
+import { useDrawer } from '@contexts';
+import { colors, TOP_NAV_HEIGHT } from '@theme';
 
-import { logoImage } from '../../../assets/images';
-import Icon from '../../../components/Icon';
+import Icon from './Icon';
+import Text from './Text';
 
-type Props = {
-  onPressSearch?: () => void;
-  onPressHome?: () => void;
-  onPressAccount?: () => void;
-};
+export default function TopNavBar() {
+  const { openDrawer } = useDrawer();
 
-export default function TopNavBar({ onPressSearch, onPressHome, onPressAccount }: Props) {
+  const handlePressSearch = () => {
+    // eslint-disable-next-line no-console
+    console.log('TODO: Handle press search');
+  };
+
+  const handlePressHome = () => {
+    // eslint-disable-next-line no-console
+    console.log('TODO: Handle press home');
+  };
+
+  const handlePressAccount = () => {
+    openDrawer();
+  };
+
   return (
     <View style={styles.safe}>
       <View style={styles.container}>
@@ -23,13 +34,13 @@ export default function TopNavBar({ onPressSearch, onPressHome, onPressAccount }
         </View>
 
         <View style={styles.actions}>
-          <TouchableOpacity accessibilityRole="button" onPress={onPressSearch} style={styles.actionBtn}>
+          <TouchableOpacity accessibilityRole="button" onPress={handlePressSearch} style={styles.actionBtn}>
             <Icon name="MagnifyingGlass" size={22} color={colors.brandYellow} />
           </TouchableOpacity>
-          <TouchableOpacity accessibilityRole="button" onPress={onPressHome} style={styles.actionBtn}>
+          <TouchableOpacity accessibilityRole="button" onPress={handlePressHome} style={styles.actionBtn}>
             <Icon name="HouseIcon" size={22} color={colors.brandYellow} />
           </TouchableOpacity>
-          <TouchableOpacity accessibilityRole="button" onPress={onPressAccount} style={styles.actionBtn}>
+          <TouchableOpacity accessibilityRole="button" onPress={handlePressAccount} style={styles.actionBtn}>
             <Icon name="UserIcon" size={22} color={colors.brandYellow} />
           </TouchableOpacity>
         </View>
