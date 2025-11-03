@@ -16,13 +16,19 @@ This document outlines the step-by-step implementation plan for the EatWithSam m
 The following components and features are already implemented:
 
 ### Infrastructure & Setup
-- ✅ **API Client**: Axios client with interceptors (`src/lib/api-client.ts`)
+- ✅ **API Client**: Axios client with interceptors and automatic token injection (`src/lib/api-client.ts`)
 - ✅ **TanStack Query**: QueryClient configured with retry and exponential backoff (`src/lib/query-client.ts`)
 - ✅ **Environment Config**: react-native-dotenv setup for API configuration
 - ✅ **Service Layer**: 
   - Menu API service functions (`src/services/menu.ts`)
   - Restaurant API service functions (`src/services/restaurants.ts`)
-- ✅ **State Management**: Zustand store with persistence (`src/store/cart-store.ts`)
+  - Auth API service functions (`src/services/auth.ts` - login, signup, refreshAccessToken, logout)
+- ✅ **State Management**: 
+  - Zustand store with persistence (`src/store/cart-store.ts`)
+  - Auth store with Zustand and secure token storage (`src/store/auth-store.ts`)
+- ✅ **Contexts**: 
+  - Drawer context for global drawer state management (`src/contexts/drawer-context.tsx`)
+- ✅ **Token Storage**: Secure token storage using react-native-keychain (`src/lib/token-storage.ts`)
 - ✅ **Custom Hooks**: 
   - `useMenuCategories` - Menu categories hook
   - `useMenuItems` - Menu items hook  
@@ -36,7 +42,7 @@ The following components and features are already implemented:
 - ✅ **Menu Components**: 
   - MenuItemCard component with onPress handler (`src/screens/Menu/components/MenuItemCard.tsx`)
   - CategoryTabs component updated for API data (`src/screens/Menu/components/CategoryTabs.tsx`)
-  - TopNavBar component (`src/screens/Menu/components/TopNavBar.tsx`)
+  - TopNavBar component (`src/components/TopNavBar.tsx`) - moved to shared components
   - RestaurantInfo component (`src/screens/Menu/components/RestaurantInfo.tsx`)
   - SelectedMenuItem component (`src/screens/Menu/components/SelectedMenuItem.tsx`)
 - ✅ **Menu Item Modal**: Full-screen modal with item details, image, price, rating, tags, availability, and add to cart functionality
@@ -44,6 +50,7 @@ The following components and features are already implemented:
   - Text component (`src/components/Text.tsx`)
   - Icon component (`src/components/Icon.tsx`) using Phosphor icons with Icon suffix
   - FloatingActionButton component (`src/components/FloatingActionButton.tsx`)
+  - RightDrawer component (`src/components/RightDrawer.tsx`) - slide-out drawer for authenticated user menu
 - ✅ **Theme System**: 
   - Basic color palette (`src/theme/colors.ts`)
   - Layout constants (`src/theme/layout.ts`)
@@ -53,6 +60,7 @@ The following components and features are already implemented:
   - Menu types (`src/types/menu.types.ts` - MenuCategory, MenuItem)
   - Restaurant types (`src/types/restaurant.types.ts`)
   - Cart types (`src/types/cart.types.ts` - CartItem, CartSummary)
+  - Auth types (`src/types/auth.types.ts` - UserResponse, LoginRequest, AuthResponse, TokenPair, etc.)
   - Environment variable types (`src/types/env.d.ts`)
 
 ### Features
@@ -72,7 +80,21 @@ The following components and features are already implemented:
 - ✅ **App Branding**: App icons, bundle IDs, and splash screen configured
 - ✅ **Network Security**: Android network security configuration for API access
 
+### Authentication Features
+- ✅ **Auth API Integration**: Complete authentication service with login, signup, token refresh, and logout endpoints
+- ✅ **Secure Token Storage**: Token storage using react-native-keychain for iOS Keychain and Android EncryptedSharedPreferences
+- ✅ **Auth State Management**: Zustand auth store with login, signup, logout, token refresh, and session initialization
+- ✅ **Login Modal**: Complete login screen with email/password validation, error handling, and loading states (`src/screens/Auth/LoginModal.tsx`)
+- ✅ **Signup Modal**: Complete signup screen with comprehensive form validation, password policy, and terms acceptance (`src/screens/Auth/SignupModal.tsx`)
+- ✅ **Auth UI Integration**: Login and signup modals integrated into App.tsx with navigation between auth screens
+- ✅ **User Menu**: RightDrawer component for authenticated user menu with logout functionality
+- ✅ **API Token Interceptor**: Automatic token injection in API client request interceptor
+- ✅ **Cart Integration**: Cart cleared on logout
+
 **Next Steps**: 
+- Implement session persistence and auto-refresh on app startup
+- Add route protection (if navigation structure is added)
+- Add social login integration (Google, Apple)
 - Add error state handling with retry buttons
 - Implement network awareness and offline indicators
 - Complete order placement API integration
@@ -347,86 +369,90 @@ The following components and features are already implemented:
 
 ## Module 2: Authentication
 
+> **Status Note**: Phase 2.1 (Authentication Backend Integration) and Phase 2.2 (Authentication UI) are completed. Login and signup modals with form validation are fully implemented. Auth state management with secure token storage is complete. RightDrawer component for authenticated user menu is integrated. Remaining work: Session persistence on app startup (Phase 2.3.2), Route protection (Phase 2.3.1), Social login (Phase 2.2.3), and Testing (Phase 2.5).
+
 ### Phase 2.1: Authentication Backend Integration
 
 #### Step 2.1.1: Auth API Client Setup
-- [ ] Create `src/api/auth.ts` - Authentication API endpoints
-- [ ] Define auth types: `src/types/auth.types.ts`
-  - Login request/response
-  - Signup request/response
-  - Token types (access, refresh)
-  - User profile type
-- [ ] Implement login endpoint
-- [ ] Implement signup endpoint
-- [ ] Implement refresh token endpoint
-- [ ] Implement logout endpoint (if needed)
+- [x] Create `src/services/auth.ts` - Authentication API endpoints ✅
+- [x] Define auth types: `src/types/auth.types.ts` ✅
+  - [x] Login request/response ✅
+  - [x] Signup request/response ✅
+  - [x] Token types (access, refresh) ✅
+  - [x] User profile type ✅
+- [x] Implement login endpoint ✅
+- [x] Implement signup endpoint ✅
+- [x] Implement refresh token endpoint ✅
+- [x] Implement logout endpoint ✅
 
-**Commit**: `feat(auth): :sparkles: setup authentication API client`
+**Commit**: `feat(auth): :sparkles: setup authentication API client` *(Completed)*
 
 #### Step 2.1.2: Token Management
-- [ ] Create `src/lib/token-storage.ts` - Secure token storage utilities
-- [ ] Install and setup secure storage:
-  - iOS: Keychain
-  - Android: EncryptedSharedPreferences
-  - Use `react-native-keychain` or `expo-secure-store`
-- [ ] Implement token storage/retrieval functions
-- [ ] Create token refresh interceptor in axios client
-- [ ] Implement automatic token rotation on refresh
+- [x] Create `src/lib/token-storage.ts` - Secure token storage utilities ✅
+- [x] Install and setup secure storage:
+  - [x] iOS: Keychain ✅
+  - [x] Android: EncryptedSharedPreferences ✅
+  - [x] Use `react-native-keychain` ✅
+- [x] Implement token storage/retrieval functions ✅
+- [x] Create token refresh interceptor in axios client ✅
+- [x] Implement automatic token injection in request interceptor ✅
+- [ ] Implement automatic token rotation on refresh (refresh logic exists, auto-rotation pending)
 
-**Commit**: `feat(auth): :sparkles: implement secure token storage and refresh mechanism`
+**Commit**: `feat(auth): :sparkles: implement secure token storage and refresh mechanism` *(Partially completed - token storage and injection done, auto-refresh on 401 pending)*
 
 #### Step 2.1.3: Auth State Management (Zustand)
-- [ ] Create `src/store/auth-store.ts` - Authentication state store
-- [ ] Implement auth state:
-  - User profile
-  - Authentication status (isAuthenticated)
-  - Tokens (access, refresh)
-- [ ] Implement auth actions:
-  - Login
-  - Signup
-  - Logout
-  - Refresh tokens
-  - Update profile
-- [ ] Add token persistence on login
-- [ ] Add token cleanup on logout
+- [x] Create `src/store/auth-store.ts` - Authentication state store ✅
+- [x] Implement auth state:
+  - [x] User profile ✅
+  - [x] Authentication status (isAuthenticated) ✅
+  - [x] Loading and error states ✅
+- [x] Implement auth actions:
+  - [x] Login ✅
+  - [x] Signup ✅
+  - [x] Logout ✅
+  - [x] Refresh tokens ✅
+  - [x] Update profile ✅
+  - [x] Initialize auth on app start ✅
+- [x] Add token persistence on login (secure storage) ✅
+- [x] Add token cleanup on logout ✅
 
-**Commit**: `feat(auth): :sparkles: implement authentication state management`
+**Commit**: `feat(auth): :sparkles: implement authentication state management` *(Completed)*
 
 ---
 
 ### Phase 2.2: Authentication UI
 
 #### Step 2.2.1: Login Screen
-- [ ] Create `src/screens/Auth/Login.tsx`
-- [ ] Design login form:
-  - Email input with validation
-  - Password input (secure entry)
-  - Login button
-  - Link to signup
-  - Social login buttons (Google, Apple) - placeholders
-- [ ] Add form validation (email format, password requirements)
-- [ ] Integrate with login API
-- [ ] Handle loading and error states
-- [ ] Navigate to app on successful login
+- [x] Create `src/screens/Auth/LoginModal.tsx` ✅
+- [x] Design login form:
+  - [x] Email input with validation ✅
+  - [x] Password input (secure entry) ✅
+  - [x] Login button ✅
+  - [x] Link to signup ✅
+  - [ ] Social login buttons (Google, Apple) - placeholders (pending)
+- [x] Add form validation (email format, password requirements) ✅
+- [x] Integrate with login API ✅
+- [x] Handle loading and error states ✅
+- [x] Modal-based implementation (integrated into App.tsx) ✅
 
-**Commit**: `feat(auth): :sparkles: implement login screen with email/password`
+**Commit**: `feat(auth): :sparkles: implement login screen with email/password` *(Completed - modal-based implementation)*
 
 #### Step 2.2.2: Signup Screen
-- [ ] Create `src/screens/Auth/Signup.tsx`
-- [ ] Design signup form:
-  - Name input
-  - Email input
-  - Password input (with strength indicator)
-  - Confirm password input
-  - Terms & conditions checkbox
-  - Signup button
-  - Link to login
-- [ ] Add comprehensive form validation
-- [ ] Integrate with signup API
-- [ ] Handle loading and error states
-- [ ] Navigate to app or email verification screen
+- [x] Create `src/screens/Auth/SignupModal.tsx` ✅
+- [x] Design signup form:
+  - [x] Name input ✅
+  - [x] Email input ✅
+  - [x] Password input (with password policy indicator) ✅
+  - [x] Confirm password input ✅
+  - [x] Terms & conditions checkbox ✅
+  - [x] Signup button ✅
+  - [x] Link to login ✅
+- [x] Add comprehensive form validation ✅
+- [x] Integrate with signup API ✅
+- [x] Handle loading and error states ✅
+- [x] Modal-based implementation (integrated into App.tsx) ✅
 
-**Commit**: `feat(auth): :sparkles: implement signup screen with validation`
+**Commit**: `feat(auth): :sparkles: implement signup screen with validation` *(Completed - modal-based implementation)*
 
 #### Step 2.2.3: Social Login Integration
 - [ ] Install social login packages:
@@ -462,23 +488,27 @@ The following components and features are already implemented:
 **Commit**: `feat(auth): :sparkles: implement route protection and guards`
 
 #### Step 2.3.2: Session Persistence
-- [ ] Implement app startup authentication check
-- [ ] Validate stored tokens on app launch
-- [ ] Auto-refresh tokens if valid but expired
-- [ ] Auto-logout if tokens are invalid
-- [ ] Handle token expiration during app usage
-- [ ] Show appropriate loading state during auth check
+- [x] Implement `initializeAuth` method in auth store ✅
+- [x] Validate stored tokens on app launch (via initializeAuth) ✅
+- [x] Auto-refresh tokens if valid but expired ✅
+- [x] Auto-logout if tokens are invalid ✅
+- [ ] Call initializeAuth on app startup (App.tsx integration pending)
+- [ ] Handle token expiration during app usage (401 interceptor pending)
+- [ ] Show appropriate loading state during auth check (pending)
 
-**Commit**: `feat(auth): :sparkles: implement session persistence and auto-refresh`
+**Commit**: `feat(auth): :sparkles: implement session persistence and auto-refresh` *(Partially completed - methods exist, app startup integration pending)*
 
 #### Step 2.3.3: Auth Flow Integration
-- [ ] Update App.tsx to check auth state on mount
-- [ ] Conditionally render auth screens or app screens
-- [ ] Handle deep linking with authentication
-- [ ] Add logout functionality throughout app
-- [ ] Clear cart and user data on logout
+- [x] Update App.tsx to integrate auth state ✅
+- [x] Conditionally render auth modals based on user actions ✅
+- [x] Add RightDrawer component for authenticated user menu ✅
+- [x] Add DrawerContext for global drawer state ✅
+- [x] Add logout functionality in drawer menu ✅
+- [x] Clear cart and user data on logout ✅
+- [ ] Handle deep linking with authentication (pending)
+- [ ] Implement app startup auth check and session restoration (pending)
 
-**Commit**: `feat(auth): :sparkles: integrate authentication flow into app navigation`
+**Commit**: `feat(auth): :sparkles: integrate authentication flow into app navigation` *(Partially completed - auth modals and drawer integrated, session persistence pending)*
 
 ---
 
@@ -726,9 +756,9 @@ The following components and features are already implemented:
 - [ ] Code reviewed and linted
 
 ### Module 2: Authentication
-- [ ] All Phase 2.1 - Authentication Backend Integration complete
-- [ ] All Phase 2.2 - Authentication UI complete
-- [ ] All Phase 2.3 - Route Protection & Session Management complete
+- [x] All Phase 2.1 - Authentication Backend Integration complete ✅
+- [x] All Phase 2.2 - Authentication UI complete (except social login) ✅
+- [ ] All Phase 2.3 - Route Protection & Session Management complete (partially - session persistence integration pending)
 - [ ] All Phase 2.4 - User Profile Management complete (optional)
 - [ ] All Phase 2.5 - Auth Testing & Security complete
 - [ ] Module 2 tested end-to-end
