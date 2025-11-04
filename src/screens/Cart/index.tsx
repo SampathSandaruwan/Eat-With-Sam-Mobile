@@ -3,6 +3,7 @@ import {
   FlatList,
   Image,
   ListRenderItem,
+  Modal,
   Pressable,
   StyleSheet,
   TouchableOpacity,
@@ -18,7 +19,12 @@ import { CartItem } from '@types';
 const DELIVERY_FEE = 2.99;
 const TAX_RATE = 0.2;
 
-export default function CartScreen() {
+type Props = {
+  visible: boolean;
+  onClose: () => void;
+}
+
+export default function CartModal({ visible, onClose }: Props) {
   const items = useCartStore((state) => state.items);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
@@ -88,81 +94,93 @@ export default function CartScreen() {
     );
   };
 
-  if (items.length === 0) {
-    return (
-      <SafeAreaView edges={['top']} style={styles.container}>
-        <View style={styles.header}>
-          <Text size="heading1" weight="bolder">
-            Cart
-          </Text>
-        </View>
-        <View style={styles.emptyContainer}>
-          <Icon name="ShoppingCartIcon" size={64} color={colors.textSecondary} />
-          <Text size="heading2" weight="bold" style={styles.emptyText}>
-            Your cart is empty
-          </Text>
-          <Text color="secondary">Add items from the menu to get started</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
-    <SafeAreaView edges={['top']} style={styles.container}>
-      <View style={styles.header}>
-        <Text size="heading1" weight="bolder">
-          Cart
-        </Text>
-        {items.length > 0 && (
-          <TouchableOpacity onPress={clearCart} style={styles.clearButton}>
-            <Text color="secondary">Clear</Text>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      <View style={styles.cartModalContainer}>
+        <View style={styles.cartModalHeader}>
+          <TouchableOpacity
+            onPress={onClose}
+            style={styles.cartModalCloseButton}
+          >
+            <Icon name="ArrowLeftIcon" size={24} color={colors.textPrimary} weight="bold" />
           </TouchableOpacity>
-        )}
-      </View>
-
-      <View style={styles.listContentContainer}>
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.menuItem.id.toString()}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-        />
-      </View>
-
-      <View style={styles.summary}>
-        <View style={styles.summaryRow}>
-          <Text color="secondary">Subtotal</Text>
-          <Text weight="bold">£{summary.subtotal.toFixed(2)}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text color="secondary">Delivery Fee</Text>
-          <Text weight="bold">£{summary.deliveryFee.toFixed(2)}</Text>
-        </View>
-        <View style={styles.summaryRow}>
-          <Text color="secondary">Tax</Text>
-          <Text weight="bold">£{summary.tax.toFixed(2)}</Text>
-        </View>
-        <View style={[styles.summaryRow, styles.totalRow]}>
-          <Text size="heading2" weight="bolder">
-            Total
-          </Text>
-          <Text size="heading2" weight="bolder">
-            £{summary.total.toFixed(2)}
-          </Text>
         </View>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.checkoutButton,
-            pressed && styles.checkoutButtonPressed,
-          ]}
-        >
-          <Text size="heading2" weight="bold" style={styles.checkoutButtonText}>
-            Proceed to Checkout
-          </Text>
-        </Pressable>
+        <SafeAreaView edges={['top']} style={styles.container}>
+          <View style={styles.header}>
+            <Text size="heading1" weight="bolder">
+              Cart
+            </Text>
+            {items.length > 0 && (
+              <TouchableOpacity onPress={clearCart} style={styles.clearButton}>
+                <Text color="secondary">Clear</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {items.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Icon name="ShoppingCartIcon" size={64} color={colors.textSecondary} />
+              <Text size="heading2" weight="bold" style={styles.emptyText}>
+                Your cart is empty
+              </Text>
+              <Text color="secondary">Add items from the menu to get started</Text>
+            </View>
+          ) : (
+            <>
+
+              <View style={styles.listContentContainer}>
+                <FlatList
+                  data={items}
+                  keyExtractor={(item) => item.menuItem.id.toString()}
+                  renderItem={renderItem}
+                  contentContainerStyle={styles.listContent}
+                />
+              </View>
+
+              <View style={styles.summary}>
+                <View style={styles.summaryRow}>
+                  <Text color="secondary">Subtotal</Text>
+                  <Text weight="bold">£{summary.subtotal.toFixed(2)}</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                  <Text color="secondary">Delivery Fee</Text>
+                  <Text weight="bold">£{summary.deliveryFee.toFixed(2)}</Text>
+                </View>
+                <View style={styles.summaryRow}>
+                  <Text color="secondary">Tax</Text>
+                  <Text weight="bold">£{summary.tax.toFixed(2)}</Text>
+                </View>
+                <View style={[styles.summaryRow, styles.totalRow]}>
+                  <Text size="heading2" weight="bolder">
+                    Total
+                  </Text>
+                  <Text size="heading2" weight="bolder">
+                    £{summary.total.toFixed(2)}
+                  </Text>
+                </View>
+
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.checkoutButton,
+                    pressed && styles.checkoutButtonPressed,
+                  ]}
+                >
+                  <Text size="heading2" weight="bold" style={styles.checkoutButtonText}>
+                    Proceed to Checkout
+                  </Text>
+                </Pressable>
+              </View>
+            </>
+          )}
+        </SafeAreaView>
       </View>
-    </SafeAreaView>
+    </Modal>
   );
 }
 
@@ -173,6 +191,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 16,
     padding: 12,
+  },
+  cartModalCloseButton: {
+    padding: 8,
+  },
+  cartModalContainer: {
+    backgroundColor: colors.background,
+    flex: 1,
+  },
+  cartModalHeader: {
+    flexDirection: 'row',
+    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   checkoutButton: {
     backgroundColor: colors.brandYellow,

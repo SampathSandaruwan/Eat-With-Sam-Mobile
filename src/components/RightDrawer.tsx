@@ -16,7 +16,7 @@ import { colors } from '@theme';
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.85;
 const SWIPE_VELOCITY_THRESHOLD = 500; // Minimum velocity to auto-close
 
-type DrawerItem = {
+export type DrawerItem = {
   label: string;
   icon?: PhosphorIconName;
   onPress: () => void;
