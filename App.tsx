@@ -5,14 +5,15 @@
  * @format
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { RightDrawer } from '@components';
+import { DrawerItem, RightDrawer } from '@components';
 import { useAuthStore, useCartStore } from '@store';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { colors } from '@theme';
 
 import { DrawerProvider, useDrawer } from './src/contexts/drawer-context';
 import { queryClient } from './src/lib';
@@ -41,8 +42,18 @@ function AppContent() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const { isOpen: showRightDrawer, closeDrawer } = useDrawer();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout, initializeAuth } = useAuthStore();
   const clearCart = useCartStore((state) => state.clearCart);
+  const authUserInitialized = useRef(false);
+
+  // Initialize auth session on app startup (only once, no early returns)
+  useEffect(() => {
+    if (!authUserInitialized.current) {
+      authUserInitialized.current = true;
+      initializeAuth();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - only run once on mount
 
   const openLogin = () => {
     setShowLogin(true);
@@ -64,7 +75,7 @@ function AppContent() {
   };
 
   // Drawer items based on auth state
-  const drawerItems = isAuthenticated ? [
+  const drawerItems: DrawerItem[] = isAuthenticated ? [
     {
       label: user?.name || 'Profile',
       icon: 'UserIcon',
@@ -149,9 +160,11 @@ function AppContent() {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: colors.background,
     flex: 1,
   },
   gestureRoot: {
+    backgroundColor: colors.background,
     flex: 1,
   },
 });

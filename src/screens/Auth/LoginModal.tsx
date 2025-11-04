@@ -71,7 +71,10 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
         await login({ email: values.email.trim(), password: values.password });
 
         resetLoginForm();
-        onClose();
+
+        setTimeout(() => {
+          onClose();
+        }, 500);
       } catch {
         // Error handled by store
       }
@@ -124,6 +127,7 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
                   autoCapitalize="none"
                   autoComplete="email"
                   autoCorrect={false}
+                  editable={!isLoading}
                 />
                 {loginFormErrors.email && loginFormTouched.email && (
                   <Text size="small" color="danger" style={styles.errorText}>
@@ -153,6 +157,7 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
                     autoCapitalize="none"
                     autoComplete="password"
                     autoCorrect={false}
+                    editable={!isLoading}
                   />
                   <Pressable
                     onPress={() => setShowPassword(!showPassword)}
