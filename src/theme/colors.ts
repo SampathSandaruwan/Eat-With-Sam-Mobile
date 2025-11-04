@@ -7,6 +7,7 @@ export const colors = {
 
   // Neutrals
   background: '#FFFFFF',
+  backgroundOverlay: 'rgba(0, 0, 0, 0.5)',
   surface: '#FFFAE6',
   textPrimary: '#1A1A1A',
   textSecondary: '#4D4D4D',
