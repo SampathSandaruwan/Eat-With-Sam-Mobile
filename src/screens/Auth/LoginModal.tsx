@@ -101,7 +101,7 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
 
             {/* Content */}
             <View style={styles.content}>
-              <Text size="heading1" weight="bolder" color="primary" style={styles.title}>
+              <Text size="heading1" weight="bold" color="primary" style={styles.title}>
                 Log in
               </Text>
               <Text size="body" color="secondary" style={styles.subtitle}>
@@ -198,7 +198,7 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
                 {isLoading ? (
                   <ActivityIndicator color={colors.background} />
                 ) : (
-                  <Text size="body" weight="bold" color="primaryInverted">
+                  <Text size="body" weight="medium" color="primaryInverted">
                     Log in
                   </Text>
                 )}
@@ -210,7 +210,7 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
                   Don&apos;t have an account?{' '}
                 </Text>
                 <Pressable onPress={onNavigateToSignup}>
-                  <Text size="body" weight="bold" color="brandColor">
+                  <Text size="body" weight="medium" color="brandColor">
                     Sign up
                   </Text>
                 </Pressable>

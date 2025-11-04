@@ -26,7 +26,7 @@ export default function FloatingActionButton({ onPress }: Props) {
       <Icon name="ShoppingCartIcon" size={24} color={colors.brandYellow} weight="bold" />
       {totalItems > 0 && (
         <View style={styles.badge}>
-          <Text size="small" weight="bold" color="primaryInverted">
+          <Text size="small" weight="medium" color="primaryInverted">
             {totalItems > 99 ? '99+' : totalItems}
           </Text>
         </View>

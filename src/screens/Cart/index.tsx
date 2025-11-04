@@ -56,7 +56,7 @@ export default function CartModal({ visible, onClose }: Props) {
         <View style={styles.itemContent}>
           <View style={styles.itemHeader}>
             <View style={styles.itemInfo}>
-              <Text weight="bold" size="heading2">
+              <Text weight="medium" size="heading2">
                 {item.menuItem.name}
               </Text>
               <Text color="secondary">£{itemPrice.toFixed(2)}</Text>
@@ -73,7 +73,7 @@ export default function CartModal({ visible, onClose }: Props) {
             >
               <Icon name="MinusIcon" size={18} color={colors.textPrimary} weight="bold" />
             </TouchableOpacity>
-            <Text weight="bold" style={styles.quantityText}>
+            <Text weight="medium" style={styles.quantityText}>
               {item.quantity}
             </Text>
             <TouchableOpacity
@@ -85,7 +85,7 @@ export default function CartModal({ visible, onClose }: Props) {
           </View>
 
           <View style={styles.itemTotal}>
-            <Text weight="bold" size="heading2">
+            <Text weight="medium" size="heading2">
               £{itemTotal.toFixed(2)}
             </Text>
           </View>
@@ -113,7 +113,7 @@ export default function CartModal({ visible, onClose }: Props) {
 
         <SafeAreaView edges={['top']} style={styles.container}>
           <View style={styles.header}>
-            <Text size="heading1" weight="bolder">
+            <Text size="heading1" weight="bold">
               Cart
             </Text>
             {items.length > 0 && (
@@ -157,10 +157,10 @@ export default function CartModal({ visible, onClose }: Props) {
                   <Text weight="bold">£{summary.tax.toFixed(2)}</Text>
                 </View>
                 <View style={[styles.summaryRow, styles.totalRow]}>
-                  <Text size="heading2" weight="bolder">
+                  <Text size="heading2" weight="bold">
                     Total
                   </Text>
-                  <Text size="heading2" weight="bolder">
+                  <Text size="heading2" weight="bold">
                     £{summary.total.toFixed(2)}
                   </Text>
                 </View>

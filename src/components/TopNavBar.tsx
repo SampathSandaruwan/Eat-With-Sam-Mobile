@@ -1,12 +1,13 @@
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { logoImage } from '@assets/images';
 import { useDrawer } from '@contexts';
 import { colors, TOP_NAV_HEIGHT } from '@theme';
 
 import Icon from './Icon';
 import Text from './Text';
+
+import { logoImage } from '../assets/images';
 
 export default function TopNavBar() {
   const { openDrawer } = useDrawer();
@@ -30,7 +31,7 @@ export default function TopNavBar() {
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image source={logoImage} style={styles.logoImage} />
-          <Text size="heading1" weight="bolder" color="brandColor">EatWithSam</Text>
+          <Text size="heading1" weight="bold" color="brandColor">EatWithSam</Text>
         </View>
 
         <View style={styles.actions}>

@@ -13,7 +13,6 @@ import { useCartStore } from '@store';
 import { colors, TOP_NAV_HEIGHT } from '@theme';
 import { Restaurant } from '@types';
 
-import type { RootStackParams } from '../../navigation/types';
 import {
   CategoryIcons,
   DeliveryInfoBar,
@@ -21,6 +20,8 @@ import {
   RestaurantSection,
   SearchBar,
 } from './sections';
+
+import type { RootStackParams } from '../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParams>;
 

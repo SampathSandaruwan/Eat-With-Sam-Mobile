@@ -1,10 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
+import { Icon, Text } from '@components';
 import { colors } from '@theme';
-
-import Icon from './Icon';
-import Text from './Text';
 
 type Props = {
   placeholder?: string;

@@ -1,10 +1,8 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
+import { Icon, PhosphorIconName, Text } from '@components';
 import { colors } from '@theme';
-
-import Icon, { PhosphorIconName } from './Icon';
-import Text from './Text';
 
 type FilterOption = {
   id: string;

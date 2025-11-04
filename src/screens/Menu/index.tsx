@@ -15,8 +15,9 @@ import { useCartStore } from '@store';
 import { colors, TOP_NAV_HEIGHT } from '@theme';
 import { MenuItem } from '@types';
 
-import type { RootStackParams } from '../../navigation/types';
 import { CategoryTabs, MenuItemCard, RestaurantInfo, SelectedMenuItem } from './sections';
+
+import type { RootStackParams } from '../../navigation/types';
 
 const TOP_NAV_HEIGHT_WITH_PADDING = TOP_NAV_HEIGHT;
 

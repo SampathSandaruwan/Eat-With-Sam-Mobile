@@ -65,7 +65,7 @@ export default function SelectedMenuItem({
             </View>
 
             <View style={styles.modalDetails}>
-              <Text size="heading1" weight="bolder" style={styles.modalTitle}>
+              <Text size="heading1" weight="bold" style={styles.modalTitle}>
                 {selectedMenuItem.name}
               </Text>
               {selectedMenuItem.description && (
@@ -75,7 +75,7 @@ export default function SelectedMenuItem({
               )}
 
               <View style={styles.modalPriceRow}>
-                <Text size="heading2" weight="bolder">
+                <Text size="heading2" weight="bold">
                   £{selectedMenuItem.price.toFixed(2)}
                 </Text>
                 {selectedMenuItem.kcal && (
@@ -87,7 +87,7 @@ export default function SelectedMenuItem({
                 <View style={styles.modalTags}>
                   {selectedMenuItem.tags.map((tag: string, index: number) => (
                     <View key={index} style={styles.tag}>
-                      <Text weight="bold">{tag}</Text>
+                      <Text weight="medium">{tag}</Text>
                     </View>
                   ))}
                 </View>
@@ -95,7 +95,7 @@ export default function SelectedMenuItem({
 
               {selectedMenuItem.averageRating && (
                 <View style={styles.modalRating}>
-                  <Text weight="bold">Rating: {selectedMenuItem.averageRating.toFixed(1)}</Text>
+                  <Text weight="medium">Rating: {selectedMenuItem.averageRating.toFixed(1)}</Text>
                   {selectedMenuItem.ratingCount > 0 && (
                     <Text color="secondary">
                       ({selectedMenuItem.ratingCount} {selectedMenuItem.ratingCount === 1 ? 'review' : 'reviews'})
@@ -126,7 +126,7 @@ export default function SelectedMenuItem({
                     weight="bold"
                   />
                 </TouchableOpacity>
-                <Text size="heading2" weight="bolder" style={styles.quantityText}>
+                <Text size="heading2" weight="bold" style={styles.quantityText}>
                   {quantity}
                 </Text>
                 <TouchableOpacity
@@ -161,7 +161,7 @@ export default function SelectedMenuItem({
                 />
                 <Text
                   size="heading2"
-                  weight="bold"
+                  weight="medium"
                   color={addedToCart ? 'primaryInverted' : 'primary'}
                 >
                   {addedToCart ? 'Added to Cart' : `Add for £${totalPrice}`}
@@ -172,7 +172,7 @@ export default function SelectedMenuItem({
             <View style={styles.buttonContainer}>
               <View style={[styles.addToCartButton, styles.addToCartButtonDisabled]}>
                 <Icon name="PlusIcon" size={20} color={colors.textInactive} weight="bold" />
-                <Text size="heading2" weight="bold" color="inactive">
+                <Text size="heading2" weight="medium" color="inactive">
                   Add to Cart
                 </Text>
               </View>

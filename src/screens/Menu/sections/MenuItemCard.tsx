@@ -38,7 +38,7 @@ export default function MenuItemCard({ item, onPress }: Props) {
       </View>
 
       <View style={styles.content}>
-        <Text weight="bold">{item.name}</Text>
+        <Text weight="medium">{item.name}</Text>
         {!!item.description && <Text color="secondary">{item.description}</Text>}
 
         <View style={styles.metaRow}>

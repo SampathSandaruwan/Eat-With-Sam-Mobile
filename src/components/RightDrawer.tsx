@@ -120,7 +120,7 @@ export default function RightDrawer({ visible, onClose, items, title = 'Menu' }:
           <View style={styles.drawerContent}>
             {/* Header */}
             <View style={styles.header}>
-              <Text size="heading1" weight="bolder" color="primary">
+              <Text size="heading1" weight="bold" color="primary">
                 {title}
               </Text>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>

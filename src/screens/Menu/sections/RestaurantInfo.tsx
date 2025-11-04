@@ -69,14 +69,14 @@ export default function RestaurantInfo({
           <Pressable onPress={onPressStartGroupOrder}>
             <View style={styles.addToCart}>
               <Icon name="UsersThreeIcon" size={18} color={colors.brandYellow} weight="bold" />
-              <Text numberOfLines={1} style={styles.buttonText}>Start group order</Text>
+              <Text numberOfLines={1} weight='medium'>Start group order</Text>
             </View>
           </Pressable>
         </View>
       </View>
 
       <View style={styles.header}>
-        <Text size="heading2" weight="bolder" style={styles.restaurantName}>
+        <Text size="veryLarge" weight="bold" style={styles.restaurantName}>
           {restaurant?.name}
         </Text>
 
@@ -91,7 +91,7 @@ export default function RestaurantInfo({
         <Pressable onPress={onPressInfo} style={styles.infoRow}>
           <Icon name="InfoIcon" size={24} color={colors.textSecondary} weight="regular" />
           <View style={styles.infoContent}>
-            <Text weight="medium">Info</Text>
+            <Text weight="regular">Info</Text>
             <Text color="secondary" size="small" style={styles.infoSubtext}>
               Map, allergens and hygiene rating
             </Text>
@@ -102,7 +102,7 @@ export default function RestaurantInfo({
         <Pressable onPress={onPressRating} style={styles.infoRow}>
           <Icon name="StarIcon" size={24} color={colors.success} weight="fill" />
           <View style={styles.infoContent}>
-            <Text weight="medium">
+            <Text weight="regular">
               {restaurant.averageRating.toFixed(1)} Excellent ({restaurant.ratingCount}+)
             </Text>
           </View>
@@ -112,11 +112,11 @@ export default function RestaurantInfo({
         <Pressable onPress={onPressDeliveryTime} style={styles.infoRow}>
           <Icon name="BicycleIcon" size={24} color={colors.brandYellow} weight="regular" />
           <View style={styles.infoContent}>
-            <Text weight="medium">
+            <Text weight="regular">
               Deliver in {deliveryTimeRange.minTime} - {deliveryTimeRange.maxTime} min
             </Text>
           </View>
-          <Text weight='medium' color='brandColor'>Change</Text>
+          <Text weight='regular' color='brandColor'>Change</Text>
         </Pressable>
       </View>
     </>
@@ -148,12 +148,7 @@ const styles = StyleSheet.create({
   bannerContainer: {
     position: 'relative',
   },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
   detailText: {
-    fontSize: 14,
     marginTop: 6,
   },
   header: {
@@ -175,7 +170,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   restaurantName: {
-    fontSize: 20,
     lineHeight: 28,
   },
   roundBack: {
