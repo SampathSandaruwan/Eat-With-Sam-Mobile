@@ -5,54 +5,46 @@ import {
   ListRenderItem,
   Modal,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import { NavigationProp, type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
-import { FloatingActionButton, Icon, TopNavBar } from '@components';
+import { Text, TopNavBar } from '@components';
 import { useMenuCategories, useMenuItem, useMenuItems, useRestaurant } from '@hooks';
 import { useCartStore } from '@store';
 import { colors, TOP_NAV_HEIGHT } from '@theme';
 import { MenuItem } from '@types';
 
-import CartScreen from '../Cart';
-import { CategoryTabs, MenuItemCard, RestaurantInfo, SelectedMenuItem } from './components';
+import type { RootStackParams } from '../../navigation/types';
+import { CategoryTabs, MenuItemCard, RestaurantInfo, SelectedMenuItem } from './sections';
 
 const TOP_NAV_HEIGHT_WITH_PADDING = TOP_NAV_HEIGHT;
 
-type Props = {
-  restaurantId: number;
-}
+type MenuScreenRouteProp = RouteProp<RootStackParams, 'Menu'>;
 
-export default function MenuScreen({ restaurantId }: Props) {
+export default function MenuScreen() {
+  const route = useRoute<MenuScreenRouteProp>();
+  const navigation = useNavigation<NavigationProp<RootStackParams>>();
+
+  const { restaurantId } = route.params;
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>();
   const [selectedMenuItemId, setSelectedMenuItemId] = useState<number | null>(null);
-  const [showCart, setShowCart] = useState(false);
   const [restaurantInfoHeight, setRestaurantInfoHeight] = useState(0);
   const scrollYRef = useRef(new Animated.Value(0));
   const scrollY = scrollYRef.current;
 
   const { data: restaurant, isLoading: isLoadingRestaurant } = useRestaurant(restaurantId);
-  const { data: menuCategories } = useMenuCategories(restaurantId);
-  const { data: menuItems } = useMenuItems(activeCategoryId ?? null);
+  const { data: menuCategories, isLoading: isLoadingCategories } = useMenuCategories(restaurantId);
+  const { data: menuItems, isLoading: isLoadingMenuItems } = useMenuItems(activeCategoryId ?? null);
   const { data: selectedMenuItem, isLoading: isLoadingSelectedItem } = useMenuItem(selectedMenuItemId);
 
   const addItem = useCartStore((state) => state.addItem);
-  const cartItems = useCartStore((state) => state.items);
 
   useEffect(() => {
     if (menuCategories) {
       setActiveCategoryId(menuCategories[0]?.id ?? null);
     }
   }, [menuCategories]);
-
-  useEffect(() => {
-    if (cartItems.length === 0) {
-      setTimeout(() => {
-        setShowCart(false);
-      }, 800);
-    }
-  }, [cartItems]);
 
   const handleItemPress = (item: MenuItem) => {
     setSelectedMenuItemId(item.id);
@@ -74,7 +66,7 @@ export default function MenuScreen({ restaurantId }: Props) {
   );
 
   return (
-    <View style={styles.safe}>
+    <View style={styles.container}>
       {/* The Top most navigation bar */}
       <TopNavBar />
 
@@ -130,7 +122,10 @@ export default function MenuScreen({ restaurantId }: Props) {
               >
                 <RestaurantInfo
                   restaurant={restaurant}
-                  onPressStartGroupOrder={() => setShowCart(true)}
+                  onPressStartGroupOrder={() => {
+                    // TODO: Implement group order functionality
+                  }}
+                  onPressBack={() => navigation.goBack()}
                 />
               </View>
 
@@ -144,15 +139,19 @@ export default function MenuScreen({ restaurantId }: Props) {
             </View>
           )
         }
+        ListEmptyComponent={
+          isLoadingMenuItems || isLoadingCategories ? (
+            <View style={styles.emptyContainer}>
+              <ActivityIndicator size="large" color={colors.brandYellow} />
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text color="secondary">No menu items available in this category</Text>
+            </View>
+          )
+        }
         contentContainerStyle={[styles.listContent, { paddingTop: TOP_NAV_HEIGHT }]}
       />
-
-      {/* Floating Cart Button */}
-      {cartItems.length > 0 && (
-        <View style={styles.cartButtonContainer}>
-          <FloatingActionButton onPress={() => setShowCart(true)} />
-        </View>
-      )}
 
       {/* Selected Menu Item Detail Modal */}
       <Modal
@@ -170,49 +169,21 @@ export default function MenuScreen({ restaurantId }: Props) {
           />
         )}
       </Modal>
-
-      {/* View-Cart Modal */}
-      <Modal
-        visible={showCart}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowCart(false)}
-      >
-        <View style={styles.cartModalContainer}>
-          <View style={styles.cartModalHeader}>
-            <TouchableOpacity
-              onPress={() => setShowCart(false)}
-              style={styles.cartModalCloseButton}
-            >
-              <Icon name="ArrowLeftIcon" size={24} color={colors.textPrimary} weight="bold" />
-            </TouchableOpacity>
-          </View>
-          <CartScreen />
-        </View>
-      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  cartButtonContainer: {
-    bottom: 24,
-    position: 'absolute',
-    right: 16,
-    zIndex: 10,
-  },
-  cartModalCloseButton: {
-    padding: 8,
-  },
-  cartModalContainer: {
+  container: {
     backgroundColor: colors.background,
     flex: 1,
   },
-  cartModalHeader: {
-    flexDirection: 'row',
-    paddingBottom: 8,
-    paddingHorizontal: 16,
-    paddingTop: 16,
+  emptyContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    minHeight: 200,
+    paddingVertical: 48,
   },
   grid: {
     gap: 12,
@@ -231,10 +202,6 @@ const styles = StyleSheet.create({
   },
   restaurantInfoContainer: {
     marginBottom: 8,
-  },
-  safe: {
-    backgroundColor: colors.background,
-    flex: 1,
   },
   stickyTabsContainer: {
     borderBottomWidth: 1,

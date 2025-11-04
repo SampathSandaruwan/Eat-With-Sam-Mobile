@@ -24,6 +24,7 @@ module.exports = {
           '@contexts': path.resolve(__dirname, 'src/contexts'),
           '@hooks': path.resolve(__dirname, 'src/hooks'),
           '@lib': path.resolve(__dirname, 'src/lib'),
+          '@navigation': path.resolve(__dirname, 'src/navigation'),
           '@services': path.resolve(__dirname, 'src/services'),
           '@screens': path.resolve(__dirname, 'src/screens'),
           '@store': path.resolve(__dirname, 'src/store'),

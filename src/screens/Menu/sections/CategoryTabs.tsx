@@ -39,7 +39,7 @@ export default function CategoryTabs({ categories, activeCategoryId, onChange }:
 const styles = StyleSheet.create({
   chip: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    // backgroundColor: colors.surface,
     borderColor: colors.border,
     borderRadius: 999,
     borderWidth: 1,
