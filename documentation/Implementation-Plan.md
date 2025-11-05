@@ -38,13 +38,27 @@ The following components and features are already implemented:
 
 ### UI Components
 - ✅ **Menu Screen**: Fully integrated with API (`src/screens/Menu/index.tsx`)
+  - Menu categories with bidirectional scroll synchronization
+  - Auto-scrolling category tabs with ref-based control
+  - Optimized FlatList rendering with getItemLayout and measured heights
+  - Top-rated items section
+  - Discounted items section with promotional text
+  - Category-wise menu items display with centralized layout constants
 - ✅ **Cart Screen**: Complete cart UI with item list, quantity controls, and summary (`src/screens/Cart/index.tsx`)
+  - Dynamic fee calculation using restaurant properties (deliveryFee, taxRate)
+  - Service fee calculated as 5% of subtotal
+  - Rider tip section with improved UI
+  - "People also added" section with top-rated items
+  - Enhanced layout and styling
+- ✅ **Menu Item Card Components**: 
+  - `CategoryWiseMenuItemCard` - Horizontal card for category listings (`src/screens/Menu/sections/CategoryWiseMenuItemCard.tsx`)
+  - `DiscountedMenuItemCard` - Vertical card for discounted items (`src/screens/Menu/sections/DiscountedMenuItemCard.tsx`)
+  - `TopRatedMenuItemCard` - Vertical card for top-rated items (`src/screens/Menu/sections/TopRatedMenuItemCard.tsx` and `src/screens/Cart/Sections/TopRatedMenuItemCard.tsx`)
 - ✅ **Menu Components**: 
-  - MenuItemCard component with onPress handler (`src/screens/Menu/components/MenuItemCard.tsx`)
-  - CategoryTabs component updated for API data (`src/screens/Menu/components/CategoryTabs.tsx`)
+  - CategoryTabs component with auto-scroll functionality and ref support (`src/screens/Menu/sections/CategoryTabs.tsx`)
   - TopNavBar component (`src/components/TopNavBar.tsx`) - moved to shared components
-  - RestaurantInfo component (`src/screens/Menu/components/RestaurantInfo.tsx`)
-  - SelectedMenuItem component (`src/screens/Menu/components/SelectedMenuItem.tsx`)
+  - RestaurantInfo component (`src/screens/Menu/sections/RestaurantInfo.tsx`)
+  - SelectedMenuItem component (`src/screens/Menu/sections/SelectedMenuItem.tsx`)
 - ✅ **Menu Item Modal**: Full-screen modal with item details, image, price, rating, tags, availability, and add to cart functionality
 - ✅ **UI Components**: 
   - Text component (`src/components/Text.tsx`)
@@ -53,13 +67,14 @@ The following components and features are already implemented:
   - RightDrawer component (`src/components/RightDrawer.tsx`) - slide-out drawer for authenticated user menu
 - ✅ **Theme System**: 
   - Basic color palette (`src/theme/colors.ts`)
-  - Layout constants (`src/theme/layout.ts`)
+  - Layout constants (`src/theme/layout.ts`) - including TOP_NAV_HEIGHT, TOP_CATEGORY_HEADER_HEIGHT, CATEGORY_WISE_MENU_ITEM_CART_HEIGHT, CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL
+  - Shadow utilities for card components
 
 ### Types & Data
 - ✅ **Type Definitions**: 
   - Menu types (`src/types/menu.types.ts` - MenuCategory, MenuItem)
   - Restaurant types (`src/types/restaurant.types.ts`)
-  - Cart types (`src/types/cart.types.ts` - CartItem, CartSummary)
+  - Cart types (`src/types/cart.types.ts` - CartItem, CartSummary with serviceFee)
   - Auth types (`src/types/auth.types.ts` - UserResponse, LoginRequest, AuthResponse, TokenPair, etc.)
   - Environment variable types (`src/types/env.d.ts`)
 
@@ -70,10 +85,20 @@ The following components and features are already implemented:
 - ✅ **Shopping Cart**: 
   - Cart state management with Zustand and AsyncStorage persistence
   - Cart screen with item list, quantity controls, and summary calculations
+  - Dynamic fee calculation using restaurant properties (deliveryFee, taxRate)
+  - Service fee calculated as 5% of subtotal (configurable percentage)
   - FloatingActionButton with dynamic item count badge
   - Add to cart functionality integrated in SelectedMenuItem modal
   - Cart integration in Menu screen
-- ✅ **Utilities**: Delivery time calculation utility (`src/utils/calculate-delivery-time.ts`)
+  - "People also added" section with top-rated menu items
+  - Enhanced cart UI with improved tip section and layout
+- ✅ **Utilities**: 
+  - Delivery time calculation utility (`src/utils/calculate-delivery-time.ts`)
+  - Currency formatting utility (`src/utils/format-currency.ts`) - formats numbers as UK currency (£)
+- ✅ **Constants**: 
+  - Promotional text constants (`src/constants/promotions.ts`)
+  - Dietary tag validation constants (`src/constants/dietary.ts`)
+  - Constants exported via barrel file (`src/constants/index.ts`)
 - ✅ **Assets**: 
   - Logo image (`src/assets/images/Logo.png`)
   - FoodItemsPlaceholder SVG component (`src/assets/images/FoodItemsPlaceholder.tsx`)
@@ -106,7 +131,7 @@ The following components and features are already implemented:
 
 ## Module 1: Menu & Order
 
-> **Status Note**: Phase 1.4 (Shopping Cart & Order Management) - Steps 1.4.1 and 1.4.2 are completed. Cart functionality with Zustand state management and UI components are fully implemented. Remaining work: Order Placement API (Phase 1.4.3), Order History (Phase 1.4.4), Error Handling (Phase 1.5), and Testing (Phase 1.6). Ready to proceed with Module 2: Authentication.
+> **Status Note**: Phase 1.4 (Shopping Cart & Order Management) - Steps 1.4.1 and 1.4.2 are completed with enhancements. Cart functionality with Zustand state management and UI components are fully implemented. Cart now uses dynamic fee calculation from restaurant properties, service fee calculation (5% of subtotal), and improved UI. Code quality improvements include extracted utilities (formatCurrency), constants (promotions, dietary tags), and standardized imports. Multiple menu item card components implemented (CategoryWiseMenuItemCard, DiscountedMenuItemCard, TopRatedMenuItemCard). Category navigation with bidirectional scroll synchronization implemented. Remaining work: Order Placement API (Phase 1.4.3), Order History (Phase 1.4.4), Error Handling (Phase 1.5), and Testing (Phase 1.6). Ready to proceed with Module 2: Authentication.
 
 ### Phase 1.1: Foundation Setup (Tech Stack)
 
@@ -206,9 +231,16 @@ The following components and features are already implemented:
 - [x] Create `src/hooks/index.ts` - Hook exports ✅
 - [x] Update Menu screen to fetch from API instead of sample data ✅
 - [x] Add loading state UI (ActivityIndicator for main item and selected item) ✅
+- [x] Implement multiple menu item card components:
+  - CategoryWiseMenuItemCard for category listings ✅
+  - DiscountedMenuItemCard for discounted items ✅
+  - TopRatedMenuItemCard for top-rated items ✅
+- [x] Add top-rated items section with horizontal scrolling ✅
+- [x] Add discounted items section with promotional text ✅
+- [x] Extract constants for promotional text ✅
 - [ ] Add error state UI with retry button (loading states present, error states need implementation)
 
-**Commit**: `feat(menu): :sparkles: integrate menu data fetching with backend API` *(Partially completed - API integration and loading states done, error states pending)*
+**Commit**: `feat(menu): :sparkles: integrate menu data fetching with backend API` *(Partially completed - API integration, loading states, and multiple card components done, error states pending)*
 
 #### Step 1.3.3: Menu Item Modal/Popup
 - [x] Create menu item modal (implemented in Menu screen) - React Native Modal component ✅
@@ -231,13 +263,15 @@ The following components and features are already implemented:
 - [x] CategoryTabs component updated to work with API data (number IDs, category.name) ✅
 - [x] MenuItemCard component updated with Pressable and onPress handler ✅
 - [x] FlatList implementation with proper keyExtractor and renderItem ✅
-- [ ] Improve sticky category tabs animation (refine scroll thresholds - currently hardcoded at 295-300)
-- [ ] Implement scroll-to-category functionality (tabs don't auto-scroll to section yet)
-- [ ] Add smooth category section detection during scroll (currently only filters by activeCategoryId)
-- [ ] Ensure category tabs sync with scroll position (needs reverse sync)
-- [ ] Optimize FlatList performance (removeItemLayout, getItemLayout if needed)
+- [x] Implement scroll-to-category functionality (category tabs click scrolls to section) ✅
+- [x] Add category section detection during scroll (syncs active category based on scroll position) ✅
+- [x] Ensure category tabs sync with scroll position (bidirectional sync implemented) ✅
+- [x] Auto-scroll category tabs when active category changes (via ref-based control) ✅
+- [x] Optimize FlatList performance with getItemLayout using measured heights ✅
+- [x] Extract layout constants to theme for consistent spacing and calculations ✅
+- [ ] Improve sticky category tabs animation (refine scroll thresholds - currently hardcoded)
 
-**Commit**: `feat(menu): :sparkles: enhance category navigation and scroll synchronization` *(Partially completed - basic structure and component updates done)*
+**Commit**: `feat(menu): :sparkles: enhance category navigation and scroll synchronization` *(Completed - scroll-to-category, bidirectional sync, auto-scroll tabs, and FlatList optimization implemented)*
 
 #### Step 1.3.5: Restaurant Information Section
 - [x] Restaurant header implemented with:
@@ -282,8 +316,14 @@ The following components and features are already implemented:
 - [x] Add empty cart state UI ✅
 - [x] Integrate cart button in Menu screen ✅
 - [x] Add cart modal integration in Menu screen ✅
+- [x] Implement dynamic fee calculation using restaurant properties ✅
+- [x] Add service fee calculation (5% of subtotal) ✅
+- [x] Enhance cart UI with improved tip section and layout ✅
+- [x] Add "People also added" section with top-rated items ✅
+- [x] Extract price formatting to utility function ✅
+- [x] Extract constants for promotional text and dietary tags ✅
 
-**Commit**: `feat(cart): :sparkles: implement cart UI components and screen` *(Completed)*
+**Commit**: `feat(cart): :sparkles: implement cart UI components and screen` *(Completed with enhancements)*
 
 #### Step 1.4.3: Order Placement API Integration
 - [ ] Create `src/api/orders.ts` - Order API endpoints
@@ -683,6 +723,16 @@ The following components and features are already implemented:
 
 ### Code Quality & Standards
 
+#### Code Organization & Reusability
+- [x] Extract price formatting to utility function (`src/utils/format-currency.ts`) ✅
+- [x] Extract constants for promotional text and dietary tags ✅
+- [x] Standardize import paths (use `@theme`, `@utils`, `@constants` aliases) ✅
+- [x] Add `@constants` path alias to TypeScript configuration ✅
+- [x] Fix inconsistent default values in helper functions ✅
+- [x] Add missing Text component size props for consistency ✅
+
+**Commit**: `refactor(cart): :recycle: improve cart calculations and extract utilities` *(Completed)*
+
 #### Linting & Formatting
 - [ ] Ensure ESLint configuration is strict
 - [ ] Setup Prettier (if not already)
@@ -693,12 +743,12 @@ The following components and features are already implemented:
 **Commit**: `chore(lint): :art: configure and fix all linting issues`
 
 #### Type Safety
-- [ ] Ensure strict TypeScript configuration
-- [ ] Review and fix any `any` types
-- [ ] Add proper type definitions for all API responses
+- [x] Ensure strict TypeScript configuration ✅
+- [x] Review and fix any `any` types ✅
+- [x] Add proper type definitions for all API responses ✅
 - [ ] Add JSDoc comments for complex functions
 
-**Commit**: `chore(types): :sparkles: ensure strict type safety throughout codebase`
+**Commit**: `chore(types): :sparkles: ensure strict type safety throughout codebase` *(Partially completed - type safety improved, JSDoc pending)*
 
 ---
 
