@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { Icon, PhosphorIconName, Text } from '@components';
-import { colors } from '@theme';
+import { colors, shadows } from '@theme';
 
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.85;
 const SWIPE_VELOCITY_THRESHOLD = 500; // Minimum velocity to auto-close
@@ -116,7 +116,7 @@ export default function RightDrawer({ visible, onClose, items, title = 'Menu' }:
 
       {/* Drawer Content */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.drawer, drawerStyle, { paddingTop: insets.top }]}>
+        <Animated.View style={[styles.drawer, drawerStyle, { paddingTop: insets.top }, shadows.cardWithoutRightShadow]}>
           <View style={styles.drawerContent}>
             {/* Header */}
             <View style={styles.header}>
@@ -204,10 +204,6 @@ const styles = StyleSheet.create({
     elevation: 10,
     position: 'absolute',
     right: 0,
-    shadowColor: colors.backgroundOverlay,
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
     top: 0,
     width: DRAWER_WIDTH,
   },

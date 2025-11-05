@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   FlatList,
-  Image,
   ListRenderItem,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -12,12 +12,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon, Text } from '@components';
+import { useRestaurant, useTopTenRatedMenuItems } from '@hooks';
 import { useCartStore } from '@store';
 import { colors, shadows } from '@theme';
-import { CartItem } from '@types';
+import { CartItem, MenuItem } from '@types';
+import { formatCurrency } from '@utils';
 
-const DELIVERY_FEE = 2.99;
-const TAX_RATE = 0.2;
+import { TopRatedMenuItemCard } from './Sections';
+
+const SERVICE_FEE_PERCENTAGE = 0.05; // 5%
 
 type Props = {
   visible: boolean;
@@ -25,20 +28,32 @@ type Props = {
 }
 
 export default function CartModal({ visible, onClose }: Props) {
+  const [riderTip, setRiderTip] = useState(0);
+
   const items = useCartStore((state) => state.items);
-  const updateQuantity = useCartStore((state) => state.updateQuantity);
-  const removeItem = useCartStore((state) => state.removeItem);
   const clearCart = useCartStore((state) => state.clearCart);
   const getCartSummary = useCartStore((state) => state.getCartSummary);
+  const addItem = useCartStore((state) => state.addItem);
 
-  const summary = getCartSummary(DELIVERY_FEE, TAX_RATE);
+  const { data: topTenRatedMenuItems } = useTopTenRatedMenuItems();
 
-  const handleQuantityChange = (itemId: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeItem(itemId);
-    } else {
-      updateQuantity(itemId, newQuantity);
-    }
+  const thingsMorePossibleToAdd = useMemo(() => {
+    return topTenRatedMenuItems?.filter((item) => !items.some((cartItem) => cartItem.menuItem.id === item.id));
+  }, [items, topTenRatedMenuItems]);
+
+  // Get restaurant ID from first cart item
+  const restaurantId = items.length > 0 ? items[0].menuItem.restaurantId : null;
+  const { data: restaurant } = useRestaurant(restaurantId);
+
+  // Use restaurant's deliveryFee and taxRate, fallback to defaults if restaurant not loaded
+  const deliveryFee = restaurant?.deliveryFee ?? 0;
+  const taxRate = restaurant?.taxRate ?? 0.2;
+
+  const summary = getCartSummary(deliveryFee, taxRate, SERVICE_FEE_PERCENTAGE);
+  const orderTotal = summary.total + riderTip;
+
+  const handleTipChange = (amount: number) => {
+    setRiderTip(Math.max(0, riderTip + amount));
   };
 
   const renderItem: ListRenderItem<CartItem> = ({ item }) => {
@@ -46,52 +61,46 @@ export default function CartModal({ visible, onClose }: Props) {
     const itemTotal = itemPrice * item.quantity;
 
     return (
-      <View style={[styles.cartItem, shadows.card]}>
-        {item.menuItem.imageUri ? (
-          <Image source={{ uri: item.menuItem.imageUri }} style={styles.itemImage} />
-        ) : (
-          <View style={[styles.itemImage, styles.imagePlaceholder]} />
-        )}
-
-        <View style={styles.itemContent}>
-          <View style={styles.itemHeader}>
-            <View style={styles.itemInfo}>
-              <Text weight="medium" size="heading2">
-                {item.menuItem.name}
+      <TouchableOpacity style={styles.basketItem}>
+        <View style={styles.basketItemContent}>
+          <Text size="heading1" style={styles.basketItemQuantity}>
+            {item.quantity}x
+          </Text>
+          <View style={styles.basketItemInfo}>
+            <Text size="heading1">
+              {item.menuItem.name}
+            </Text>
+            {item.menuItem.description && (
+              <Text color="secondary" numberOfLines={2}>
+                {item.menuItem.description}
               </Text>
-              <Text color="secondary">£{itemPrice.toFixed(2)}</Text>
-            </View>
-            <TouchableOpacity onPress={() => removeItem(item.menuItem.id)} style={styles.removeButton}>
-              <Icon name="XIcon" size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
+            )}
           </View>
-
-          <View style={styles.quantityControls}>
-            <TouchableOpacity
-              onPress={() => handleQuantityChange(item.menuItem.id, item.quantity - 1)}
-              style={styles.quantityButton}
-            >
-              <Icon name="MinusIcon" size={18} color={colors.textPrimary} weight="bold" />
-            </TouchableOpacity>
-            <Text weight="medium" style={styles.quantityText}>
-              {item.quantity}
+          <View style={styles.basketItemRight}>
+            <Text size="heading1">
+              {formatCurrency(itemTotal)}
             </Text>
-            <TouchableOpacity
-              onPress={() => handleQuantityChange(item.menuItem.id, item.quantity + 1)}
-              style={styles.quantityButton}
-            >
-              <Icon name="PlusIcon" size={18} color={colors.textPrimary} weight="bold" />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.itemTotal}>
-            <Text weight="medium" size="heading2">
-              £{itemTotal.toFixed(2)}
-            </Text>
+            <Icon name="CaretRightIcon" size={20} color={colors.brandPrimary} />
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
+  };
+
+  const renderSeparator = () => {
+    return <View style={styles.separator} />;
+  };
+
+  const renderTopTenRatedItem: ListRenderItem<MenuItem> = ({ item }) => (
+    <View style={styles.topTenRatedItemsGrid}>
+      <TopRatedMenuItemCard item={item} onPress={() => addMenuItemToCart(item)} />
+    </View>
+  );
+
+  const addMenuItemToCart = (item: MenuItem) => {
+    if (item) {
+      addItem(item, 1);
+    }
   };
 
   return (
@@ -101,24 +110,26 @@ export default function CartModal({ visible, onClose }: Props) {
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View style={styles.cartModalContainer}>
-        <View style={styles.cartModalHeader}>
-          <TouchableOpacity
-            onPress={onClose}
-            style={styles.cartModalCloseButton}
-          >
-            <Icon name="ArrowLeftIcon" size={24} color={colors.textPrimary} weight="bold" />
-          </TouchableOpacity>
-        </View>
-
-        <SafeAreaView edges={['top']} style={styles.container}>
-          <View style={styles.header}>
-            <Text size="heading1" weight="bold">
-              Cart
-            </Text>
+      <SafeAreaView edges={['top']} style={styles.safeArea}>
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={[styles.header, shadows.card]}>
+            <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+              <Icon name="XIcon" weight="bold" size={20} color={colors.brandPrimary} />
+            </TouchableOpacity>
+            <View style={styles.headerCenter}>
+              <Text weight="bold">
+                Your order
+              </Text>
+              {restaurant && (
+                <Text size="small" color="secondary">
+                  {restaurant.name}
+                </Text>
+              )}
+            </View>
             {items.length > 0 && (
-              <TouchableOpacity onPress={clearCart} style={styles.clearButton}>
-                <Text color="secondary">Clear</Text>
+              <TouchableOpacity onPress={clearCart} style={styles.headerButton}>
+                <Icon name="TrashIcon" weight="bold" size={20} color={colors.brandPrimary} />
               </TouchableOpacity>
             )}
           </View>
@@ -132,84 +143,192 @@ export default function CartModal({ visible, onClose }: Props) {
               <Text color="secondary">Add items from the menu to get started</Text>
             </View>
           ) : (
-            <>
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+              {/* Basket Section */}
+              <View style={styles.section}>
+                <Text size="heading1" weight="bold" style={styles.sectionTitle}>
+                  Basket
+                </Text>
+                <View style={styles.sectionContent}>
+                  <FlatList
+                    data={items}
+                    keyExtractor={(item) => item.menuItem.id.toString()}
+                    renderItem={renderItem}
+                    scrollEnabled={false}
+                    ItemSeparatorComponent={renderSeparator}
+                    style={styles.selectedItemsList}
+                  />
 
-              <View style={styles.listContentContainer}>
-                <FlatList
-                  data={items}
-                  keyExtractor={(item) => item.menuItem.id.toString()}
-                  renderItem={renderItem}
-                  contentContainerStyle={styles.listContent}
-                />
+                  <Text style={styles.sectionSubTitle}>
+                    People also added
+                  </Text>
+                  <View style={styles.peopleAlsoAddedItems}>
+                    <FlatList
+                      data={thingsMorePossibleToAdd}
+                      keyExtractor={item => item.id.toString()}
+                      renderItem={renderTopTenRatedItem}
+                      horizontal
+                    />
+                  </View>
+                </View>
               </View>
 
-              <View style={styles.summary}>
-                <View style={styles.summaryRow}>
-                  <Text color="secondary">Subtotal</Text>
-                  <Text weight="bold">£{summary.subtotal.toFixed(2)}</Text>
-                </View>
-                <View style={styles.summaryRow}>
-                  <Text color="secondary">Delivery Fee</Text>
-                  <Text weight="bold">£{summary.deliveryFee.toFixed(2)}</Text>
-                </View>
-                <View style={styles.summaryRow}>
-                  <Text color="secondary">Tax</Text>
-                  <Text weight="bold">£{summary.tax.toFixed(2)}</Text>
-                </View>
-                <View style={[styles.summaryRow, styles.totalRow]}>
-                  <Text size="heading2" weight="bold">
-                    Total
+              {/* Savings and Offers Section */}
+              <View style={styles.section}>
+                <Text size="heading1" weight="bold" style={styles.sectionTitle}>
+                  Savings and offers
+                </Text>
+                <TouchableOpacity style={[styles.sectionContent, styles.viewOffersButton]}>
+                  <Text size="heading1">
+                    View offers
                   </Text>
-                  <Text size="heading2" weight="bold">
-                    £{summary.total.toFixed(2)}
-                  </Text>
-                </View>
+                  <Icon name="CaretRightIcon" size={20} color={colors.brandPrimary} />
+                </TouchableOpacity>
 
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.checkoutButton,
-                    pressed && styles.checkoutButtonPressed,
-                  ]}
-                >
-                  <Text size="heading2" weight="bold" style={styles.checkoutButtonText}>
-                    Proceed to Checkout
+                <View style={[styles.basketSubtotalRow, styles.sectionContent]}>
+                  <Text size="heading1" color="secondary">
+                    Basket subtotal
                   </Text>
-                </Pressable>
+                  <Text size="heading1">
+                    {formatCurrency(summary.subtotal)}
+                  </Text>
+                </View>
               </View>
-            </>
+
+              <View style={styles.section}>
+                <View style={styles.feesHeader}>
+                  <Text size="heading1" weight="bold" style={styles.feesTitle}>
+                    Fees
+                  </Text>
+                  <Icon name="QuestionIcon" size={20} color={colors.brandPrimary} />
+                </View>
+                <View style={styles.sectionContent}>
+                  <View style={styles.summaryRow}>
+                    <Text size="heading1" color="secondary">
+                      Service fee
+                    </Text>
+                    <Text size="heading1">
+                      {formatCurrency(summary.serviceFee)}
+                    </Text>
+                  </View>
+                  <View style={styles.summaryRow}>
+                    <Text size="heading1" color="secondary">
+                      Delivery fee
+                    </Text>
+                    <Text size="heading1">
+                      {formatCurrency(summary.deliveryFee)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </ScrollView>
           )}
-        </SafeAreaView>
-      </View>
+
+          {/* Checkout Button Container*/}
+          <View style={[styles.checkoutButtonContainer, shadows.cardWithoutBottomShadow]}>
+            <View style={[styles.summaryRow, styles.riderTipSection]}>
+              <View style={styles.riderTipTitle}>
+                <Text size="heading1">
+                  Rider tip
+                </Text>
+                <Icon name="SmileyIcon" size={18} />
+              </View>
+              <View style={styles.riderTipControls}>
+                <TouchableOpacity
+                  onPress={() => handleTipChange(-0.5)}
+                  style={styles.tipButton}
+                  disabled={riderTip === 0}
+                >
+                  <Icon
+                    name="MinusCircleIcon"
+                    size={18}
+                    weight="bold"
+                    color={riderTip === 0 ? colors.textInactive : colors.brandPrimary}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleTipChange(0.5)}
+                  style={[styles.tipButton, styles.tipButtonActive]}
+                >
+                  <Icon
+                    name="PlusCircleIcon"
+                    size={18}
+                    weight="bold"
+                    color={colors.brandPrimary}
+                  />
+                </TouchableOpacity>
+                <Text size="body" weight="medium" style={styles.tipAmount}>
+                  {formatCurrency(riderTip)}
+                </Text>
+              </View>
+            </View>
+
+            <View style={[styles.summaryRow, styles.orderTotalRow]}>
+              <Text size="heading1">
+                Order total
+              </Text>
+              <Text size="heading1" weight="bold">
+                {formatCurrency(orderTotal)}
+              </Text>
+            </View>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.checkoutButton,
+                pressed && styles.checkoutButtonPressed,
+              ]}
+            >
+              <Text size="heading1" weight="bold" color="primaryInverted" style={styles.checkoutButtonText}>
+                Go to checkout
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </SafeAreaView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  cartItem: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
+  basketItem: {
+    marginTop: 8,
+  },
+  basketItemContent: {
+    alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 16,
-    padding: 12,
   },
-  cartModalCloseButton: {
-    padding: 8,
-  },
-  cartModalContainer: {
-    backgroundColor: colors.background,
+  basketItemInfo: {
     flex: 1,
+    marginLeft: 12,
   },
-  cartModalHeader: {
+  basketItemQuantity: {
+    minWidth: 32,
+  },
+  basketItemRight: {
+    alignItems: 'flex-end',
     flexDirection: 'row',
-    paddingBottom: 8,
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    gap: 8,
+  },
+  basketSubtotalRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: 46,
+    justifyContent: 'space-between',
+    marginVertical: 8,
   },
   checkoutButton: {
-    backgroundColor: colors.brandYellow,
-    borderRadius: 12,
-    marginTop: 16,
-    padding: 16,
+    backgroundColor: colors.brandPrimaryLight,
+    borderRadius: 4,
+    height: 48,
+    marginTop: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  checkoutButtonContainer: {
+    backgroundColor: colors.background,
+    height: 142,
+    paddingHorizontal: 16,
+    paddingTop: 8,
   },
   checkoutButtonPressed: {
     opacity: 0.8,
@@ -217,11 +336,8 @@ const styles = StyleSheet.create({
   checkoutButtonText: {
     textAlign: 'center',
   },
-  clearButton: {
-    padding: 4,
-  },
   container: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.backgroundSecondary,
     flex: 1,
   },
   emptyContainer: {
@@ -234,82 +350,126 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginTop: 16,
   },
+  feesHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  feesTitle: {
+    marginBottom: 0,
+  },
   header: {
     alignItems: 'center',
+    backgroundColor: colors.background,
     flexDirection: 'row',
+    height: 56,
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 16,
   },
-  imagePlaceholder: {
-    backgroundColor: colors.brandYellowLight,
+  headerButton: {
+    padding: 8,
   },
-  itemContent: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  itemImage: {
-    borderRadius: 8,
-    height: 80,
-    width: 80,
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemTotal: {
-    alignItems: 'flex-end',
-    marginTop: 8,
-  },
-  listContent: {
-    padding: 16,
-  },
-  listContentContainer: {
-    backgroundColor: colors.brandYellowLight,
-    flex: 1,
-  },
-  quantityButton: {
+  headerCenter: {
     alignItems: 'center',
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 32,
-    justifyContent: 'center',
-    width: 32,
+    flex: 1,
   },
-  quantityControls: {
+  orderTotalRow: {
+    height: 36,
+  },
+  peopleAlsoAddedItems: {
+    alignItems: 'center',
+    height: 120,
+    paddingVertical: 4,
+  },
+  riderTipControls: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 12,
   },
-  quantityText: {
-    minWidth: 30,
-    textAlign: 'center',
+  riderTipSection: {
+    height: 36,
   },
-  removeButton: {
-    padding: 4,
+  riderTipTitle: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
   },
-  summary: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    marginTop: 8,
-    padding: 16,
-    paddingBottom: 32,
+  safeArea: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 24,
+    paddingTop: 12,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  section: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  sectionContent: {
+    backgroundColor: colors.background,
+    borderColor: colors.border,
+    borderRadius: 4,
+    borderWidth: 1,
+    gap: 4,
+    padding: 8,
+    width: '100%',
+  },
+  sectionSubTitle: {
+    marginBottom: 4,
+  },
+  sectionTitle: {
+    marginBottom: 16,
+  },
+  selectedItemsList: {
+    borderBottomColor: colors.border,
+    borderBottomWidth: 1,
+    marginBottom: 12,
+    paddingBottom: 16,
+  },
+  separator: {
+    borderBottomColor: colors.border,
+    borderBottomWidth: 1,
+    height: 0,
+    marginBottom: 4,
+    marginTop: 12,
   },
   summaryRow: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    paddingVertical: 4,
   },
-  totalRow: {
-    borderTopColor: colors.border,
-    borderTopWidth: 1,
-    marginTop: 8,
-    paddingTop: 12,
+  tipAmount: {
+    minWidth: 60,
+    textAlign: 'right',
+  },
+  tipButton: {
+    alignItems: 'center',
+    height: 32,
+    justifyContent: 'center',
+    width: 32,
+  },
+  tipButtonActive: {
+    borderColor: colors.brandPrimary,
+  },
+  topTenRatedItemsGrid: {
+    marginBottom: 8,
+    marginRight: 12,
+    marginTop: 4,
+  },
+  viewOffersButton: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: 46,
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    marginTop: 12,
+    paddingVertical: 12,
   },
 });
 

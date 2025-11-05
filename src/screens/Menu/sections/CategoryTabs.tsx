@@ -2,9 +2,8 @@ import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Text } from '@components';
+import { colors, SCREEN_WIDTH, shadows } from '@theme';
 import { MenuCategory } from '@types';
-
-import { colors } from '../../../theme/colors';
 
 type Props = {
   categories: MenuCategory[];
@@ -16,7 +15,7 @@ export default function CategoryTabs({ categories, activeCategoryId, onChange }:
   const items = useMemo(() => categories, [categories]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, shadows.cardWithoutTopShadow]}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.content}>
         {items.map(category => {
           const active = category.id === activeCategoryId;
@@ -27,7 +26,12 @@ export default function CategoryTabs({ categories, activeCategoryId, onChange }:
               onPress={() => onChange(category.id)}
               style={[styles.chip, active && styles.chipActive]}
             >
-              <Text color={active ? 'primary' : 'secondary'}>{category.name}</Text>
+              <Text
+                color={active ? 'primaryInverted' : 'brandColor'}
+                weight={active ? 'bold' : 'regular'}
+              >
+                {category.name}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -39,24 +43,25 @@ export default function CategoryTabs({ categories, activeCategoryId, onChange }:
 const styles = StyleSheet.create({
   chip: {
     alignItems: 'center',
-    // backgroundColor: colors.surface,
-    borderColor: colors.border,
     borderRadius: 999,
-    borderWidth: 1,
     flexDirection: 'row',
+    height: 24,
     marginRight: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   chipActive: {
-    backgroundColor: colors.brandYellowLight,
-    borderColor: colors.brandYellow,
+    backgroundColor: colors.brandPrimaryLight,
+    borderColor: colors.brandPrimary,
   },
   container: {
     backgroundColor: colors.background,
-    paddingVertical: 8,
+    height: 74,
+    marginHorizontal: -16,
+    paddingHorizontal: 16,
+    width: SCREEN_WIDTH,
   },
   content: {
-    paddingHorizontal: 12,
+    alignItems: 'center',
+    height: '100%',
   },
 });

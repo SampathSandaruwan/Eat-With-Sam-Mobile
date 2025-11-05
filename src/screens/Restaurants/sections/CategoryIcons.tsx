@@ -48,7 +48,7 @@ export default function CategoryIcons({
             <Icon
               name={category.icon}
               size={32}
-              color={selectedCategoryId === category.id ? colors.brandYellow : colors.textPrimary}
+              color={selectedCategoryId === category.id ? colors.brandPrimary : colors.textPrimary}
             />
           </View>
           <Text size="small" color={selectedCategoryId === category.id ? 'primary' : 'secondary'} style={styles.label}>

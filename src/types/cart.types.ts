@@ -9,6 +9,7 @@ export interface CartItem {
 export interface CartSummary {
   subtotal: number;
   deliveryFee: number;
+  serviceFee: number;
   tax: number;
   total: number;
 }

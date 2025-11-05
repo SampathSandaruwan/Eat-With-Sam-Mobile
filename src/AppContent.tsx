@@ -16,6 +16,7 @@ import Navigation from './navigation';
 import LoginModal from './screens/Auth/LoginModal';
 import SignupModal from './screens/Auth/SignupModal';
 import CartModal from './screens/Cart';
+import { colors } from './theme/colors';
 
 function AppContentInner() {
   const { showCart, openCart, closeCart } = useCartModal();
@@ -122,7 +123,7 @@ function AppContentInner() {
         }}
       />
 
-      {/* Floating Cart Button */}
+      {/* View Basket Button */}
       {cartItems.length > 0 && (
         <View style={styles.cartButtonContainer}>
           <FloatingActionButton onPress={openCart} />
@@ -153,9 +154,13 @@ export default function AppContent() {
 
 const styles = StyleSheet.create({
   cartButtonContainer: {
-    bottom: 24,
-    position: 'absolute',
-    right: 16,
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    height: 80,
+    justifyContent: 'center',
+    padding: 16,
     zIndex: 10,
   },
   container: {

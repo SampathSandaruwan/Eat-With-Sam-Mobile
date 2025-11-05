@@ -49,7 +49,7 @@ export default function FilterButtons({
             <Icon
               name={filter.icon}
               size={16}
-              color={selectedFilterId === filter.id ? colors.brandYellow : colors.textSecondary}
+              color={selectedFilterId === filter.id ? colors.brandPrimary : colors.textSecondary}
             />
           )}
           <Text
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   filterButtonSelected: {
     backgroundColor: colors.surface,
-    borderColor: colors.brandYellow,
+    borderColor: colors.brandPrimary,
     borderWidth: 1,
   },
   scrollView: {

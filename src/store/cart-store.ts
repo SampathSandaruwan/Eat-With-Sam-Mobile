@@ -10,7 +10,7 @@ interface CartState {
   removeItem: (menuItemId: number) => void;
   updateQuantity: (menuItemId: number, quantity: number) => void;
   clearCart: () => void;
-  getCartSummary: (deliveryFee?: number, taxRate?: number) => CartSummary;
+  getCartSummary: (deliveryFee?: number, taxRate?: number, serviceFeePercentage?: number) => CartSummary;
   getItemQuantity: (menuItemId: number) => number;
   getTotalItems: () => number;
 }
@@ -22,7 +22,7 @@ const calculateSubtotal = (items: CartItem[]): number => {
   }, 0);
 };
 
-const calculateTax = (subtotal: number, taxRate = 0.2): number => {
+const calculateTax = (subtotal: number, taxRate: number): number => {
   return subtotal * taxRate;
 };
 
@@ -77,14 +77,16 @@ export const useCartStore = create<CartState>()(
         set({ items: [] });
       },
 
-      getCartSummary: (deliveryFee = 0, taxRate = 0.2) => {
+      getCartSummary: (deliveryFee = 0, taxRate = 0, serviceFeePercentage = 0) => {
         const subtotal = calculateSubtotal(get().items);
+        const serviceFee = subtotal * serviceFeePercentage;
         const tax = calculateTax(subtotal, taxRate);
-        const total = subtotal + deliveryFee + tax;
+        const total = subtotal + deliveryFee + serviceFee + tax;
 
         return {
           subtotal,
           deliveryFee,
+          serviceFee,
           tax,
           total,
         };

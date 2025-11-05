@@ -10,12 +10,19 @@ type IconProps = {
     size?: number;
     color?: string;
     weight?: Phosphor.IconWeight;
+    mirrored?: boolean;
 };
 
-export default function Icon({ name, size = 24, color = colors.textPrimary, weight = 'regular' }: IconProps) {
+export default function Icon({
+  name,
+  size = 24,
+  color = colors.textPrimary,
+  weight = 'regular',
+  mirrored = false,
+}: IconProps) {
   const IconComponent = Phosphor[name];
 
   return (
-    <IconComponent size={size} color={color} weight={weight} />
+    <IconComponent size={size} color={color} weight={weight} mirrored={mirrored} />
   );
 }

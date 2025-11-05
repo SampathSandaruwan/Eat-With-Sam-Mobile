@@ -15,6 +15,7 @@ type FontSize =
   | 'body'
   | 'heading1'
   | 'heading2'
+  | 'large'
   | 'veryLarge';
 
 type FontColor =
@@ -23,7 +24,9 @@ type FontColor =
   | 'brandColor'
   | 'inactive'
   | 'primaryInverted'
-  | 'danger';
+  | 'danger'
+  | 'success'
+  | 'attention';
 
 type Props = {
     size?: FontSize,
@@ -48,7 +51,8 @@ export default function Text({
       case 'body': return 14;
       case 'heading1': return 16;
       case 'heading2': return 18;
-      case 'veryLarge': return 24;
+      case 'large': return 24;
+      case 'veryLarge': return 28;
       default: return 14;
     }
   }, [size]);
@@ -66,10 +70,12 @@ export default function Text({
     switch (colorProp) {
       case 'primary': return colors.textPrimary;
       case 'secondary': return colors.textSecondary;
-      case 'brandColor': return colors.brandYellow;
+      case 'brandColor': return colors.brandPrimary;
       case 'inactive': return colors.textInactive;
       case 'primaryInverted': return colors.background;
       case 'danger': return colors.danger;
+      case 'success': return colors.success;
+      case 'attention': return colors.attention;
       default: return colors.textPrimary;
     }
   }, [colorProp]);

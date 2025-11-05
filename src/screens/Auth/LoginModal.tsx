@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     alignItems: 'center',
-    backgroundColor: colors.brandYellow,
+    backgroundColor: colors.brandPrimary,
     borderRadius: 8,
     justifyContent: 'center',
     marginTop: 8,

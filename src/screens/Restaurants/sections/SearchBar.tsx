@@ -9,7 +9,7 @@ type Props = {
   onPress?: () => void;
 };
 
-export default function SearchBar({ placeholder = 'Search Uber Eats', onPress }: Props) {
+export default function SearchBar({ placeholder = 'Search Deliveroo', onPress }: Props) {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <Icon name="MagnifyingGlass" size={20} color={colors.textSecondary} />

@@ -7,6 +7,8 @@ export interface MenuCategory {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  // This is only present if the menu categories are fetched with items
+  menuItems?: MenuItem[];
 }
 
 export interface MenuItem {

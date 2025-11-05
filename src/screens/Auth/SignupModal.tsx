@@ -477,8 +477,8 @@ const styles = StyleSheet.create({
     width: 20,
   },
   checkboxBoxChecked: {
-    backgroundColor: colors.brandYellow,
-    borderColor: colors.brandYellow,
+    backgroundColor: colors.brandPrimary,
+    borderColor: colors.brandPrimary,
   },
   closeButton: {
     padding: 4,
@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
   },
   signupButton: {
     alignItems: 'center',
-    backgroundColor: colors.brandYellow,
+    backgroundColor: colors.brandPrimary,
     borderRadius: 8,
     justifyContent: 'center',
     marginTop: 8,
