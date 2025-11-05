@@ -100,7 +100,7 @@ function AppContentInner() {
         visible={showRightDrawer}
         onClose={closeDrawer}
         items={drawerItems}
-        title={isAuthenticated ? user?.name || 'Account' : 'Menu'}
+        isAuthenticated={isAuthenticated}
       />
 
       {/* Login Modal */}
