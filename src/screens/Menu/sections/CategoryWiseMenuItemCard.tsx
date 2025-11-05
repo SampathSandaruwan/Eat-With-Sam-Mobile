@@ -9,13 +9,13 @@ import {
   useColors,
   useShadows,
 } from '@theme';
-import { MenuItem } from '@types';
+import { Dish } from '@types';
 import { formatCurrency } from '@utils';
 
 
 type Props = {
-  item: MenuItem;
-  onPress?: (item: MenuItem) => void;
+  item: Dish;
+  onPress?: (item: Dish) => void;
 };
 
 export default function CategoryWiseMenuItemCard({ item, onPress }: Props) {

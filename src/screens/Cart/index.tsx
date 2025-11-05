@@ -12,10 +12,10 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, Text } from '@components';
-import { useRestaurant, useTopTenRatedMenuItems } from '@hooks';
+import { useRestaurant, useTopTenRatedDishes } from '@hooks';
 import { useCartStore } from '@store';
 import { useColors, useShadows } from '@theme';
-import { CartItem, MenuItem } from '@types';
+import { CartItem, Dish } from '@types';
 import { formatCurrency } from '@utils';
 
 import { TopRatedMenuItemCard } from './Sections';
@@ -39,14 +39,14 @@ export default function CartModal({ visible, onClose }: Props) {
   const getCartSummary = useCartStore((state) => state.getCartSummary);
   const addItem = useCartStore((state) => state.addItem);
 
-  const { data: topTenRatedMenuItems } = useTopTenRatedMenuItems();
+  const { data: topTenRatedDishes } = useTopTenRatedDishes();
 
   const thingsMorePossibleToAdd = useMemo(() => {
-    return topTenRatedMenuItems?.filter((item) => !items.some((cartItem) => cartItem.menuItem.id === item.id));
-  }, [items, topTenRatedMenuItems]);
+    return topTenRatedDishes?.filter((item) => !items.some((cartItem) => cartItem.dish.id === item.id));
+  }, [items, topTenRatedDishes]);
 
   // Get restaurant ID from first cart item
-  const restaurantId = items.length > 0 ? items[0].menuItem.restaurantId : null;
+  const restaurantId = items.length > 0 ? items[0].dish.restaurantId : null;
   const { data: restaurant } = useRestaurant(restaurantId);
 
   // Use restaurant's deliveryFee and taxRate, fallback to defaults if restaurant not loaded
@@ -61,7 +61,7 @@ export default function CartModal({ visible, onClose }: Props) {
   };
 
   const renderItem: ListRenderItem<CartItem> = ({ item }) => {
-    const itemPrice = item.menuItem.price * (1 - (item.menuItem.discountPercent ?? 0) / 100);
+    const itemPrice = item.dish.price * (1 - (item.dish.discountPercent ?? 0) / 100);
     const itemTotal = itemPrice * item.quantity;
 
     return (
@@ -72,11 +72,11 @@ export default function CartModal({ visible, onClose }: Props) {
           </Text>
           <View style={styles.basketItemInfo}>
             <Text size="heading1">
-              {item.menuItem.name}
+              {item.dish.name}
             </Text>
-            {item.menuItem.description && (
+            {item.dish.description && (
               <Text color="secondary" numberOfLines={2}>
-                {item.menuItem.description}
+                {item.dish.description}
               </Text>
             )}
           </View>
@@ -95,13 +95,13 @@ export default function CartModal({ visible, onClose }: Props) {
     return <View style={[styles.separator, { borderBottomColor: colors.border }]} />;
   };
 
-  const renderTopTenRatedItem: ListRenderItem<MenuItem> = ({ item }) => (
+  const renderTopTenRatedItem: ListRenderItem<Dish> = ({ item }) => (
     <View style={styles.topTenRatedItemsGrid}>
-      <TopRatedMenuItemCard item={item} onPress={() => addMenuItemToCart(item)} />
+      <TopRatedMenuItemCard item={item} onPress={() => addDishToCart(item)} />
     </View>
   );
 
-  const addMenuItemToCart = (item: MenuItem) => {
+  const addDishToCart = (item: Dish) => {
     if (item) {
       addItem(item, 1);
     }
@@ -164,7 +164,7 @@ export default function CartModal({ visible, onClose }: Props) {
                 >
                   <FlatList
                     data={items}
-                    keyExtractor={(item) => item.menuItem.id.toString()}
+                    keyExtractor={(item) => item.dish.id.toString()}
                     renderItem={renderItem}
                     scrollEnabled={false}
                     ItemSeparatorComponent={renderSeparator}

@@ -17,12 +17,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon, PhosphorIconName, Text } from '@components';
 import { useColors, useShadows } from '@theme';
-import { MenuItem } from '@types';
+import { Dish } from '@types';
 import { formatCurrency } from '@utils';
 
 type Props = {
     isLoadingSelectedItem: boolean;
-    selectedMenuItem?: MenuItem;
+    selectedMenuItem?: Dish;
     onPressClose: () => void;
     onPressAddToCart: (quantity: number) => void;
     visible: boolean;

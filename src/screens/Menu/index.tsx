@@ -20,11 +20,11 @@ import { Text, TopNavBar } from '@components';
 import { PROMOTIONAL_TEXT } from '@constants';
 import {
   useMenuCategories,
-  useMenuCategoriesWithItems,
-  useMenuItem,
+  useMenuCategoriesWithDishes,
+  useDish,
   useRestaurant,
-  useTopTenDiscountedMenuItems,
-  useTopTenRatedMenuItems,
+  useTopTenDiscountedDishes,
+  useTopTenRatedDishes,
 } from '@hooks';
 import { useCartStore } from '@store';
 import {
@@ -34,7 +34,7 @@ import {
   TOP_NAV_HEIGHT,
   useColors,
 } from '@theme';
-import { MenuCategory, MenuItem } from '@types';
+import { MenuCategory, Dish } from '@types';
 
 import {
   CategoryTabs,
@@ -64,7 +64,7 @@ export const CATEGORY_SECTION_MARGIN = CATEGORY_SECTION_MARGIN_VERTICAL * 2;
 type MenuScreenRouteProp = RouteProp<RootStackParams, 'Menu'>;
 
 type ListItemType = {
-  [key: string]: MenuItem[];
+  [key: string]: Dish[];
 }
 
 export default function MenuScreen() {
@@ -74,7 +74,7 @@ export default function MenuScreen() {
 
   const { restaurantId } = route.params;
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
-  const [selectedMenuItemId, setSelectedMenuItemId] = useState<number | null>(null);
+  const [selectedDishId, setSelectedDishId] = useState<number | null>(null);
   const [restaurantInfoHeight, setRestaurantInfoHeight] = useState(0);
   const [listHeaderHeight, setListHeaderHeight] = useState(0);
   const scrollYRef = useRef(new Animated.Value(0));
@@ -87,10 +87,10 @@ export default function MenuScreen() {
 
   const { data: restaurant, isLoading: isLoadingRestaurant } = useRestaurant(restaurantId);
   const { data: menuCategories, isLoading: isLoadingCategories } = useMenuCategories(restaurantId);
-  const { data: categoriesWithItems, isLoading: isLoadingAllItems } = useMenuCategoriesWithItems(restaurantId);
-  const { data: topTenRatedMenuItems } = useTopTenRatedMenuItems();
-  const { data: topTenDiscountedMenuItems } = useTopTenDiscountedMenuItems();
-  const { data: selectedMenuItem, isLoading: isLoadingSelectedItem } = useMenuItem(selectedMenuItemId);
+  const { data: categoriesWithItems, isLoading: isLoadingAllItems } = useMenuCategoriesWithDishes(restaurantId);
+  const { data: topTenRatedDishes } = useTopTenRatedDishes();
+  const { data: topTenDiscountedDishes } = useTopTenDiscountedDishes();
+  const { data: selectedDish, isLoading: isLoadingSelectedDish } = useDish(selectedDishId);
 
   const addItem = useCartStore((state) => state.addItem);
 
@@ -100,20 +100,20 @@ export default function MenuScreen() {
     const data: ListItemType = {};
 
     for (const category of categoriesWithItems ?? []) {
-      data[category.id] = category.menuItems ?? [];
+      data[category.id] = category.dishes ?? [];
     }
 
     return data;
   }, [categoriesWithItems]);
 
-  const handleItemPress = (item: MenuItem) => {
-    setSelectedMenuItemId(item.id);
+  const handleItemPress = (item: Dish) => {
+    setSelectedDishId(item.id);
   };
 
-  const addMenuItemToCart = (quantity: number) => {
-    if (selectedMenuItem) {
-      addItem(selectedMenuItem, quantity);
-      setSelectedMenuItemId(null);
+  const addDishToCart = (quantity: number) => {
+    if (selectedDish) {
+      addItem(selectedDish, quantity);
+      setSelectedDishId(null);
     }
   };
 
@@ -221,8 +221,8 @@ export default function MenuScreen() {
           </Text>
         </View>
 
-        {listData[item.id]?.map((menuItem) => (
-          <CategoryWiseMenuItemCard key={menuItem.id} item={menuItem} onPress={handleItemPress} />
+        {listData[item.id]?.map((dish) => (
+          <CategoryWiseMenuItemCard key={dish.id} item={dish} onPress={handleItemPress} />
         ))}
       </View>
     );
@@ -277,13 +277,13 @@ export default function MenuScreen() {
     [listData, listHeaderHeight],
   );
 
-  const renderDiscountedItem: ListRenderItem<MenuItem> = ({ item }) => (
+  const renderDiscountedItem: ListRenderItem<Dish> = ({ item }) => (
     <View style={styles.discountedItemsGrid}>
       <DiscountedMenuItemCard item={item} onPress={handleItemPress} />
     </View>
   );
 
-  const renderTopTenRatedItem: ListRenderItem<MenuItem> = ({ item }) => (
+  const renderTopTenRatedItem: ListRenderItem<Dish> = ({ item }) => (
     <View style={styles.topTenRatedItemsGrid}>
       <TopRatedMenuItemCard item={item} onPress={handleItemPress} />
     </View>
@@ -380,7 +380,7 @@ export default function MenuScreen() {
                 <Text weight="semiBold" size="heading1" style={styles.discountedItemsText}>{PROMOTIONAL_TEXT.DISCOUNTED_ITEMS_TITLE}</Text>
                 <Text color="secondary" style={styles.discountedItemsText}>{PROMOTIONAL_TEXT.DISCOUNTED_ITEMS_DESCRIPTION}</Text>
                 <FlatList
-                  data={topTenDiscountedMenuItems}
+                  data={topTenDiscountedDishes}
                   keyExtractor={item => item.id.toString()}
                   renderItem={renderDiscountedItem}
                   horizontal
@@ -390,7 +390,7 @@ export default function MenuScreen() {
               <View>
                 <Text weight="semiBold" size="heading1" style={styles.topRatedItemsText}>Popular with other people</Text>
                 <FlatList
-                  data={topTenRatedMenuItems}
+                  data={topTenRatedDishes}
                   keyExtractor={item => item.id.toString()}
                   renderItem={renderTopTenRatedItem}
                   horizontal
@@ -413,13 +413,13 @@ export default function MenuScreen() {
         contentContainerStyle={[styles.listContent, { paddingTop: TOP_NAV_HEIGHT }]}
       />
 
-      {/* Selected Menu Item Detail Modal */}
+      {/* Selected Dish Detail Modal */}
       <SelectedMenuItem
-        isLoadingSelectedItem={isLoadingSelectedItem}
-        selectedMenuItem={selectedMenuItem}
-        visible={selectedMenuItemId !== null}
-        onPressClose={() => setSelectedMenuItemId(null)}
-        onPressAddToCart={addMenuItemToCart}
+        isLoadingSelectedItem={isLoadingSelectedDish}
+        selectedMenuItem={selectedDish}
+        visible={selectedDishId !== null}
+        onPressClose={() => setSelectedDishId(null)}
+        onPressAddToCart={addDishToCart}
       />
     </View>
   );

@@ -1,27 +1,27 @@
 import { API_CLIENT } from '@lib';
-import { MenuCategory, MenuItem } from '@types';
+import { Dish, MenuCategory } from '@types';
 
-export const getMenuCategories = async (restaurantId: string, includeItems = false): Promise<MenuCategory[]> => {
+export const getMenuCategories = async (restaurantId: string, includeDishes = false): Promise<MenuCategory[]> => {
   const response = await API_CLIENT.get(`/restaurants/${restaurantId}/menu-categories`, {
     params: {
-      withMenuCategoryItems: includeItems,
+      withDishes: includeDishes,
     },
   });
   return response.data;
 };
 
-export const getMenuItem = async (id: string): Promise<MenuItem> => {
-  const response = await API_CLIENT.get(`/menu-items/${id}`);
+export const getDish = async (id: string): Promise<Dish> => {
+  const response = await API_CLIENT.get(`/dishes/${id}`);
   return response.data;
 };
 
-export const getMenuCategoryItems = async (categoryId: string): Promise<MenuItem[]> => {
-  const response = await API_CLIENT.get(`/menu-categories/${categoryId}/menu-items`);
+export const getMenuCategoryDishes = async (categoryId: string): Promise<Dish[]> => {
+  const response = await API_CLIENT.get(`/menu-categories/${categoryId}/dishes`);
   return response.data;
 };
 
-export const getTopTenRatedMenuItems = async (): Promise<MenuItem[]> => {
-  const response = await API_CLIENT.get('/menu-items', {
+export const getTopTenRatedDishes = async (): Promise<Dish[]> => {
+  const response = await API_CLIENT.get('/dishes', {
     params: {
       sortBy: 'averageRating',
       sortOrder: 'desc',
@@ -31,8 +31,8 @@ export const getTopTenRatedMenuItems = async (): Promise<MenuItem[]> => {
   return response.data;
 };
 
-export const getTopTenDiscountedMenuItems = async (): Promise<MenuItem[]> => {
-  const response = await API_CLIENT.get('/menu-items', {
+export const getTopTenDiscountedDishes = async (): Promise<Dish[]> => {
+  const response = await API_CLIENT.get('/dishes', {
     params: {
       sortBy: 'discountPercent',
       sortOrder: 'desc',

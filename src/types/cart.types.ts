@@ -1,7 +1,7 @@
-import { MenuItem } from './menu.types';
+import { Dish } from './menu.types';
 
 export interface CartItem {
-  menuItem: MenuItem;
+  dish: Dish;
   quantity: number;
   notes?: string;
 }

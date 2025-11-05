@@ -3,12 +3,12 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, Text } from '@components';
 import { useColors, useShadows } from '@theme';
-import { MenuItem } from '@types';
+import { Dish } from '@types';
 import { formatCurrency } from '@utils';
 
 type Props = {
-  item: MenuItem;
-  onPress?: (item: MenuItem) => void;
+  item: Dish;
+  onPress?: (item: Dish) => void;
 };
 
 export default function TopRatedMenuItemCard({ item, onPress }: Props) {

@@ -4,12 +4,12 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@components';
 import { isValidDietaryTag } from '@constants';
 import { shadows, useColors } from '@theme';
-import { MenuItem } from '@types';
+import { Dish } from '@types';
 import { formatCurrency } from '@utils';
 
 type Props = {
-  item: MenuItem;
-  onPress?: (item: MenuItem) => void;
+  item: Dish;
+  onPress?: (item: Dish) => void;
 };
 
 export default function DiscountedMenuItemCard({ item, onPress }: Props) {
