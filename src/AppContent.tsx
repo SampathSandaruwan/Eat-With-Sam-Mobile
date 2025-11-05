@@ -8,7 +8,7 @@ import {
   RightDrawer,
 } from '@components';
 import { AuthModalProvider, CartModalProvider, DrawerProvider, useAuthModal, useCartModal, useDrawer } from '@contexts';
-import { queryClient } from '@lib';
+import { configureGoogleSignIn, queryClient } from '@lib';
 import { useAuthStore, useCartStore } from '@store';
 import { QueryClientProvider } from '@tanstack/react-query';
 
@@ -139,6 +139,10 @@ function AppContentInner() {
 }
 
 export default function AppContent() {
+  useEffect(() => {
+    configureGoogleSignIn();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthModalProvider>

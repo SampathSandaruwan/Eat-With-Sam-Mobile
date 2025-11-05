@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -18,6 +19,8 @@ import { Icon, Text } from '@components';
 import { useAuthStore } from '@store';
 import { colors } from '@theme';
 
+import { googleLogo } from '../../assets/images';
+
 type Props = {
   visible: boolean;
   onClose: () => void;
@@ -33,7 +36,12 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
   const insets = useSafeAreaInsets();
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login, isLoading, error: authError } = useAuthStore();
+  const {
+    login,
+    authenticateWithGoogle,
+    isLoading,
+    error: authError,
+  } = useAuthStore();
 
   const {
     resetForm: resetLoginForm,
@@ -80,6 +88,20 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
       }
     },
   });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await authenticateWithGoogle();
+
+      resetLoginForm();
+
+      setTimeout(() => {
+        onClose();
+      }, 500);
+    } catch {
+      // Error handled by store
+    }
+  };
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -204,6 +226,33 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
                 )}
               </TouchableOpacity>
 
+              {/* Divider */}
+              <View style={styles.dividerContainer}>
+                <View style={styles.dividerLine} />
+                <Text size="small" color="secondary" style={styles.dividerText}>
+                  OR
+                </Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              {/* Google Sign In Button */}
+              <TouchableOpacity
+                style={[styles.googleButton, isLoading && styles.googleButtonDisabled]}
+                onPress={handleGoogleSignIn}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color={colors.textPrimary} />
+                ) : (
+                  <>
+                    <Image source={googleLogo} style={styles.googleLogo} />
+                    <Text size="body" weight="medium" color="primary">
+                      Continue with Google
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
               {/* Sign up Link */}
               <View style={styles.signupContainer}>
                 <Text size="body" color="secondary">
@@ -243,6 +292,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
+  dividerContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginVertical: 24,
+  },
+  dividerLine: {
+    backgroundColor: colors.border,
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    marginHorizontal: 16,
+  },
   errorText: {
     marginTop: 4,
   },
@@ -251,6 +313,25 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     top: 12,
+  },
+  googleButton: {
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderColor: colors.border,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 16,
+  },
+  googleButtonDisabled: {
+    opacity: 0.6,
+  },
+  googleLogo: {
+    borderRadius: 10,
+    height: 20,
+    marginRight: 8,
+    width: 20,
   },
   header: {
     flexDirection: 'row',

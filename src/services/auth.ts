@@ -17,6 +17,11 @@ export const signup = async (userData: RegisterUserRequestBody): Promise<AuthRes
   return response.data;
 };
 
+export const authenticateWithGoogle = async (userData: RegisterUserRequestBody): Promise<AuthResponse> => {
+  const response = await API_CLIENT.post('/auth/google', userData);
+  return response.data;
+};
+
 export const refreshAccessToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
   const request: RefreshTokenRequest = { refreshToken };
   const response = await API_CLIENT.post('/auth/refresh', request);

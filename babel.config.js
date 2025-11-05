@@ -8,7 +8,7 @@ module.exports = {
       {
         moduleName: 'dotenv',
         path: '.env',
-        allowlist: ['API_URL', 'RETRY_ATTEMPTS'],
+        allowlist: ['API_URL', 'RETRY_ATTEMPTS', 'GOOGLE_WEB_CLIENT_ID', 'GOOGLE_IOS_CLIENT_ID'],
         safe: false,
         allowUndefined: false,
         verbose: false,
