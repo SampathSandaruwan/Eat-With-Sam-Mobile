@@ -7,7 +7,7 @@ export const useMenuCategories = (restaurantId: number | null) => {
     queryKey: ['menu-categories', restaurantId],
     queryFn: () => {
       if (restaurantId === null) {
-        throw new Error('Menu item ID is required');
+        throw new Error('Restaurant ID is required');
       }
       return getMenuCategories(restaurantId.toString());
     },
@@ -15,12 +15,12 @@ export const useMenuCategories = (restaurantId: number | null) => {
   });
 };
 
-export const useMenuCategoriesWithItems = (restaurantId: number | null) => {
+export const useMenuCategoriesWithDishes = (restaurantId: number | null) => {
   return useQuery({
     queryKey: ['menu-categories-with-items', restaurantId],
     queryFn: () => {
       if (restaurantId === null) {
-        throw new Error('Menu item ID is required');
+        throw new Error('Restaurant ID is required');
       }
       return getMenuCategories(restaurantId.toString(), true);
     },

@@ -6,18 +6,18 @@ import { CartItem, CartSummary } from '@types';
 
 interface CartState {
   items: CartItem[];
-  addItem: (menuItem: CartItem['menuItem'], quantity?: number) => void;
-  removeItem: (menuItemId: number) => void;
-  updateQuantity: (menuItemId: number, quantity: number) => void;
+  addItem: (dish: CartItem['dish'], quantity?: number) => void;
+  removeItem: (dishId: number) => void;
+  updateQuantity: (dishId: number, quantity: number) => void;
   clearCart: () => void;
   getCartSummary: (deliveryFee?: number, taxRate?: number, serviceFeePercentage?: number) => CartSummary;
-  getItemQuantity: (menuItemId: number) => number;
+  getItemQuantity: (dishId: number) => number;
   getTotalItems: () => number;
 }
 
 const calculateSubtotal = (items: CartItem[]): number => {
   return items.reduce((sum, item) => {
-    const itemPrice = item.menuItem.price * (1 - (item.menuItem.discountPercent ?? 0) / 100);
+    const itemPrice = item.dish.price * (1 - (item.dish.discountPercent ?? 0) / 100);
     return sum + itemPrice * item.quantity;
   }, 0);
 };
@@ -31,10 +31,10 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
 
-      addItem: (menuItem, quantity = 1) => {
+      addItem: (dish, quantity = 1) => {
         set((state) => {
           const existingItemIndex = state.items.findIndex(
-            (item) => item.menuItem.id === menuItem.id,
+            (item) => item.dish.id === dish.id,
           );
 
           if (existingItemIndex >= 0) {
@@ -49,26 +49,26 @@ export const useCartStore = create<CartState>()(
 
           // New item, add to cart
           return {
-            items: [...state.items, { menuItem, quantity }],
+            items: [...state.items, { dish, quantity }],
           };
         });
       },
 
-      removeItem: (menuItemId) => {
+      removeItem: (dishId) => {
         set((state) => ({
-          items: state.items.filter((item) => item.menuItem.id !== menuItemId),
+          items: state.items.filter((item) => item.dish.id !== dishId),
         }));
       },
 
-      updateQuantity: (menuItemId, quantity) => {
+      updateQuantity: (dishId, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(menuItemId);
+          get().removeItem(dishId);
           return;
         }
 
         set((state) => ({
           items: state.items.map((item) =>
-            item.menuItem.id === menuItemId ? { ...item, quantity } : item,
+            item.dish.id === dishId ? { ...item, quantity } : item,
           ),
         }));
       },
@@ -92,8 +92,8 @@ export const useCartStore = create<CartState>()(
         };
       },
 
-      getItemQuantity: (menuItemId) => {
-        const item = get().items.find((cartItem) => cartItem.menuItem.id === menuItemId);
+      getItemQuantity: (dishId) => {
+        const item = get().items.find((cartItem) => cartItem.dish.id === dishId);
         return item?.quantity ?? 0;
       },
 

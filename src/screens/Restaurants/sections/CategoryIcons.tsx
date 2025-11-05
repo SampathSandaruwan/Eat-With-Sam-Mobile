@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Icon, PhosphorIconName,Text } from '@components';
-import { colors } from '@theme';
+import { useColors } from '@theme';
 
 type Category = {
   id: string;
@@ -30,6 +30,8 @@ export default function CategoryIcons({
   selectedCategoryId,
   onCategoryPress,
 }: Props) {
+  const colors = useColors();
+
   return (
     <ScrollView
       horizontal
@@ -44,7 +46,7 @@ export default function CategoryIcons({
           onPress={() => onCategoryPress?.(category.id)}
           activeOpacity={0.7}
         >
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: selectedCategoryId === category.id ? colors.brandPrimary : colors.inactive }]}>
             <Icon
               name={category.icon}
               size={32}
@@ -72,7 +74,6 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: 'center',
-    backgroundColor: colors.border,
     borderRadius: 35,
     height: 70,
     justifyContent: 'center',

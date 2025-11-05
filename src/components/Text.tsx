@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleProp, Text as RNText, TextStyle } from 'react-native';
 
-import { colors } from '@theme';
+import { useColors } from '@theme';
 
 type FontWeight =
   | 'light'
@@ -45,6 +45,8 @@ export default function Text({
   style,
   numberOfLines,
 }: Props) {
+  const colors = useColors();
+
   const fontSize = useMemo(() => {
     switch (size) {
       case 'small': return 12;
@@ -78,7 +80,7 @@ export default function Text({
       case 'attention': return colors.attention;
       default: return colors.textPrimary;
     }
-  }, [colorProp]);
+  }, [colorProp, colors]);
 
   return (
     <RNText

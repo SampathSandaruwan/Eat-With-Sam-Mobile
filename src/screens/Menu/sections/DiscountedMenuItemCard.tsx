@@ -3,17 +3,19 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Text } from '@components';
 import { isValidDietaryTag } from '@constants';
-import { colors, shadows } from '@theme';
-import { MenuItem } from '@types';
+import { shadows, useColors } from '@theme';
+import { Dish } from '@types';
 import { formatCurrency } from '@utils';
 
 type Props = {
-  item: MenuItem;
-  onPress?: (item: MenuItem) => void;
+  item: Dish;
+  onPress?: (item: Dish) => void;
 };
 
 export default function DiscountedMenuItemCard({ item, onPress }: Props) {
   const formattedPrice = formatCurrency(item.price);
+
+  const colors = useColors();
 
   const dietaryTag = item.tags?.find(tag => isValidDietaryTag(tag));
 
@@ -22,13 +24,14 @@ export default function DiscountedMenuItemCard({ item, onPress }: Props) {
       onPress={() => onPress?.(item)}
       style={({ pressed }) => [
         styles.card,
+        { backgroundColor: colors.background },
         shadows.card,
         pressed && styles.pressed,
       ]}
     >
-      <View style={styles.imageWrapper}>
+      <View style={[styles.imageWrapper, { borderBottomColor: colors.attention }]}>
         {item.discountPercent ? (
-          <View style={styles.badge}>
+          <View style={[styles.badge, { backgroundColor: colors.attention }]}>
             <Text color="primaryInverted" weight="medium">{item.discountPercent}% off</Text>
           </View>
         ) : null}
@@ -36,7 +39,7 @@ export default function DiscountedMenuItemCard({ item, onPress }: Props) {
         {item.imageUri ? (
           <Image source={{ uri: item.imageUri }} style={styles.image} />
         ) : (
-          <View style={[styles.image, styles.imagePlaceholder]} />
+          <View style={[styles.image, { backgroundColor: colors.brandPrimaryLight }]} />
         )}
       </View>
 
@@ -71,7 +74,6 @@ export default function DiscountedMenuItemCard({ item, onPress }: Props) {
 
 const styles = StyleSheet.create({
   badge: {
-    backgroundColor: colors.attention,
     borderRadius: 3,
     height: 24,
     left: 12,
@@ -85,7 +87,6 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
   card: {
-    backgroundColor: colors.background,
     borderRadius: 4,
     flexDirection: 'column',
     height: 292,
@@ -105,11 +106,7 @@ const styles = StyleSheet.create({
     height: 132,
     width: '100%',
   },
-  imagePlaceholder: {
-    backgroundColor: colors.brandPrimaryLight,
-  },
   imageWrapper: {
-    borderBottomColor: colors.attention,
     borderBottomWidth: 3,
   },
   kcalLine: {

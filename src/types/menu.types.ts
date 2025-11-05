@@ -8,10 +8,10 @@ export interface MenuCategory {
   createdAt: Date;
   updatedAt: Date;
   // This is only present if the menu categories are fetched with items
-  menuItems?: MenuItem[];
+  dishes?: Dish[];
 }
 
-export interface MenuItem {
+export interface Dish {
   id: number;
   name: string;
   description?: string | null;

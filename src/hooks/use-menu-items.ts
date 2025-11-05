@@ -1,47 +1,47 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getMenuCategoryItems,getMenuItem, getTopTenDiscountedMenuItems, getTopTenRatedMenuItems } from '../services';
+import { getMenuCategoryDishes, getDish, getTopTenDiscountedDishes, getTopTenRatedDishes } from '../services';
 
-export const useMenuItem = (menuItemId: number | null) => {
+export const useDish = (dishId: number | null) => {
   return useQuery({
-    queryKey: ['menu-item', menuItemId],
+    queryKey: ['dish', dishId],
     queryFn: () => {
-      if (menuItemId === null) {
-        throw new Error('Menu item ID is required');
+      if (dishId === null) {
+        throw new Error('Dish ID is required');
       }
-      return getMenuItem(menuItemId.toString());
+      return getDish(dishId.toString());
     },
-    enabled: menuItemId !== null,
+    enabled: dishId !== null,
   });
 };
 
-export const useMenuCategoryItems = (categoryId: number | null) => {
+export const useMenuCategoryDishes = (categoryId: number | null) => {
   return useQuery({
-    queryKey: ['menu-category-items', categoryId],
+    queryKey: ['menu-category-dishes', categoryId],
     queryFn: () => {
       if (categoryId === null) {
         throw new Error('Category ID is required');
       }
-      return getMenuCategoryItems(categoryId.toString());
+      return getMenuCategoryDishes(categoryId.toString());
     },
     enabled: categoryId !== null,
   });
 };
 
-export const useTopTenRatedMenuItems = () => {
+export const useTopTenRatedDishes = () => {
   return useQuery({
-    queryKey: ['top-ten-rated-menu-items'],
+    queryKey: ['top-ten-rated-dishes'],
     queryFn: () => {
-      return getTopTenRatedMenuItems();
+      return getTopTenRatedDishes();
     },
   });
 };
 
-export const useTopTenDiscountedMenuItems = () => {
+export const useTopTenDiscountedDishes = () => {
   return useQuery({
-    queryKey: ['top-ten-discounted-menu-items'],
+    queryKey: ['top-ten-discounted-dishes'],
     queryFn: () => {
-      return getTopTenDiscountedMenuItems();
+      return getTopTenDiscountedDishes();
     },
   });
 };

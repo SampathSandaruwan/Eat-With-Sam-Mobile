@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Text } from '@components';
-import { colors, SCREEN_WIDTH, shadows, TOP_CATEGORY_HEADER_HEIGHT } from '@theme';
+import { SCREEN_WIDTH, TOP_CATEGORY_HEADER_HEIGHT, useColors, useShadows } from '@theme';
 import { MenuCategory } from '@types';
 
 type Props = {
@@ -23,6 +23,9 @@ type TabLayout = {
 const CategoryTabs = forwardRef<CategoryTabsRef, Props>(({ categories, activeCategoryId, onChange }, ref) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const tabLayouts = useRef<Map<number, TabLayout>>(new Map());
+
+  const colors = useColors();
+  const shadows = useShadows();
 
   const items = useMemo(() => categories, [categories]);
 
@@ -69,8 +72,13 @@ const CategoryTabs = forwardRef<CategoryTabsRef, Props>(({ categories, activeCat
     }
   }, [activeCategoryId, scrollToCategory]);
 
+  const activeChipStyle = useMemo(() => ({
+    backgroundColor: colors.brandPrimaryLight,
+    borderColor: colors.brandPrimary,
+  }), [colors]);
+
   return (
-    <View style={[styles.container, shadows.cardWithoutTopShadow]}>
+    <View style={[styles.container, shadows.cardWithoutTopShadow, { backgroundColor: colors.background }]}>
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -84,7 +92,7 @@ const CategoryTabs = forwardRef<CategoryTabsRef, Props>(({ categories, activeCat
               accessibilityRole="button"
               key={category.id}
               onPress={() => onChange(category.id)}
-              style={[styles.chip, active && styles.chipActive]}
+              style={[styles.chip, active && activeChipStyle]}
               onLayout={(event) => {
                 const { x, width } = event.nativeEvent.layout;
                 tabLayouts.current.set(category.id, { x, width });
@@ -117,12 +125,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     paddingHorizontal: 16,
   },
-  chipActive: {
-    backgroundColor: colors.brandPrimaryLight,
-    borderColor: colors.brandPrimary,
-  },
   container: {
-    backgroundColor: colors.background,
     height: TOP_CATEGORY_HEADER_HEIGHT,
     marginHorizontal: -16,
     paddingHorizontal: 16,

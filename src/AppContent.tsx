@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,7 +16,7 @@ import Navigation from './navigation';
 import LoginModal from './screens/Auth/LoginModal';
 import SignupModal from './screens/Auth/SignupModal';
 import CartModal from './screens/Cart';
-import { colors } from './theme/colors';
+import { useColors } from './theme';
 
 function AppContentInner() {
   const { showCart, openCart, closeCart } = useCartModal();
@@ -25,6 +25,7 @@ function AppContentInner() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const clearCart = useCartStore((state) => state.clearCart);
   const cartItems = useCartStore((state) => state.items);
+  const colors = useColors();
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -89,8 +90,23 @@ function AppContentInner() {
     },
   ];
 
+  const styles = useMemo(() => StyleSheet.create({
+    cartButtonContainer: {
+      alignItems: 'center',
+      borderTopWidth: 1,
+      height: 80,
+      justifyContent: 'center',
+      padding: 16,
+      zIndex: 10,
+    },
+    container: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+  }), [colors]);
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Navigation Stack */}
       <Navigation />
 
@@ -125,7 +141,15 @@ function AppContentInner() {
 
       {/* View Basket Button */}
       {cartItems.length > 0 && (
-        <View style={styles.cartButtonContainer}>
+        <View
+          style={[
+            styles.cartButtonContainer,
+            {
+              backgroundColor: colors.background,
+              borderTopColor: colors.border,
+            },
+          ]}
+        >
           <FloatingActionButton onPress={openCart} />
         </View>
       )}
@@ -155,20 +179,4 @@ export default function AppContent() {
     </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  cartButtonContainer: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderTopColor: colors.border,
-    borderTopWidth: 1,
-    height: 80,
-    justifyContent: 'center',
-    padding: 16,
-    zIndex: 10,
-  },
-  container: {
-    flex: 1,
-  },
-});
 

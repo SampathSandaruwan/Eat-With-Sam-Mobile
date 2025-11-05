@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -16,7 +16,7 @@ import { useFormik } from 'formik';
 
 import { Icon, Text } from '@components';
 import { useAuthStore } from '@store';
-import { colors } from '@theme';
+import { useColors } from '@theme';
 
 type Props = {
   visible: boolean;
@@ -34,6 +34,7 @@ interface SignupFormValues {
 
 export default function SignupModal({ visible, onClose, onNavigateToLogin }: Props) {
   const insets = useSafeAreaInsets();
+  const colors = useColors();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -121,6 +122,147 @@ export default function SignupModal({ visible, onClose, onNavigateToLogin }: Pro
   });
 
   const passwordPolicy = checkPasswordPolicy(signupFormValues.password);
+
+  const styles = useMemo(() => StyleSheet.create({
+    authErrorContainer: {
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      marginBottom: 16,
+      marginTop: 8,
+      padding: 12,
+    },
+    checkbox: {
+      alignItems: 'center',
+      flexDirection: 'row',
+    },
+    checkboxBox: {
+      alignItems: 'center',
+      borderColor: colors.border,
+      borderRadius: 4,
+      borderWidth: 2,
+      height: 20,
+      justifyContent: 'center',
+      marginRight: 12,
+      width: 20,
+    },
+    checkboxBoxChecked: {
+      backgroundColor: colors.brandPrimary,
+      borderColor: colors.brandPrimary,
+    },
+    closeButton: {
+      padding: 4,
+    },
+    container: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: 20,
+      paddingTop: 20,
+    },
+    errorText: {
+      marginTop: 4,
+    },
+    eyeIcon: {
+      padding: 4,
+      position: 'absolute',
+      right: 16,
+      top: 12,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingBottom: 8,
+      paddingHorizontal: 20,
+      paddingTop: 12,
+    },
+    input: {
+      backgroundColor: colors.background,
+      borderColor: colors.border,
+      borderRadius: 8,
+      borderWidth: 1,
+      color: colors.textPrimary,
+      fontSize: 16,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    inputContainer: {
+      marginBottom: 20,
+    },
+    inputError: {
+      borderColor: colors.danger,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    label: {
+      marginBottom: 8,
+    },
+    loginContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 24,
+    },
+    passwordContainer: {
+      position: 'relative',
+    },
+    passwordInput: {
+      paddingRight: 48,
+    },
+    passwordPolicyContainer: {
+      marginTop: 8,
+    },
+    policyIconUnmet: {
+      borderColor: colors.textInactive,
+      borderRadius: 8,
+      borderWidth: 2,
+      height: 16,
+      marginLeft: 2,
+      marginRight: 2,
+      width: 16,
+    },
+    policyItem: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 8,
+    },
+    policyList: {
+      gap: 6,
+    },
+    policyText: {
+      flex: 1,
+    },
+    policyTitle: {
+      marginBottom: 8,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    signupButton: {
+      alignItems: 'center',
+      backgroundColor: colors.brandPrimary,
+      borderRadius: 8,
+      justifyContent: 'center',
+      marginTop: 8,
+      paddingVertical: 16,
+    },
+    signupButtonDisabled: {
+      opacity: 0.6,
+    },
+    subtitle: {
+      marginBottom: 32,
+    },
+    termsContainer: {
+      marginBottom: 20,
+    },
+    termsText: {
+      flex: 1,
+    },
+    title: {
+      marginBottom: 8,
+    },
+  }), [colors]);
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -453,145 +595,4 @@ export default function SignupModal({ visible, onClose, onNavigateToLogin }: Pro
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  authErrorContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 16,
-    marginTop: 8,
-    padding: 12,
-  },
-  checkbox: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  checkboxBox: {
-    alignItems: 'center',
-    borderColor: colors.border,
-    borderRadius: 4,
-    borderWidth: 2,
-    height: 20,
-    justifyContent: 'center',
-    marginRight: 12,
-    width: 20,
-  },
-  checkboxBoxChecked: {
-    backgroundColor: colors.brandPrimary,
-    borderColor: colors.brandPrimary,
-  },
-  closeButton: {
-    padding: 4,
-  },
-  container: {
-    backgroundColor: colors.background,
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  errorText: {
-    marginTop: 4,
-  },
-  eyeIcon: {
-    padding: 4,
-    position: 'absolute',
-    right: 16,
-    top: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingBottom: 8,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-  },
-  input: {
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    color: colors.textPrimary,
-    fontSize: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputError: {
-    borderColor: colors.danger,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  label: {
-    marginBottom: 8,
-  },
-  loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 24,
-  },
-  passwordContainer: {
-    position: 'relative',
-  },
-  passwordInput: {
-    paddingRight: 48,
-  },
-  passwordPolicyContainer: {
-    marginTop: 8,
-  },
-  policyIconUnmet: {
-    borderColor: colors.textInactive,
-    borderRadius: 8,
-    borderWidth: 2,
-    height: 16,
-    marginLeft: 2,
-    marginRight: 2,
-    width: 16,
-  },
-  policyItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  policyList: {
-    gap: 6,
-  },
-  policyText: {
-    flex: 1,
-  },
-  policyTitle: {
-    marginBottom: 8,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  signupButton: {
-    alignItems: 'center',
-    backgroundColor: colors.brandPrimary,
-    borderRadius: 8,
-    justifyContent: 'center',
-    marginTop: 8,
-    paddingVertical: 16,
-  },
-  signupButtonDisabled: {
-    opacity: 0.6,
-  },
-  subtitle: {
-    marginBottom: 32,
-  },
-  termsContainer: {
-    marginBottom: 20,
-  },
-  termsText: {
-    flex: 1,
-  },
-  title: {
-    marginBottom: 8,
-  },
-});
 

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import * as Phosphor from 'phosphor-react-native';
 
-import { colors } from '@theme';
+import { useColors } from '@theme';
 
 export type PhosphorIconName = keyof Omit<typeof Phosphor, 'Icon' | 'IconContext' | 'IconContext' | 'IconWeight'>;
 
@@ -16,10 +16,13 @@ type IconProps = {
 export default function Icon({
   name,
   size = 24,
-  color = colors.textPrimary,
+  color: colorProp,
   weight = 'regular',
   mirrored = false,
 }: IconProps) {
+  const colors = useColors();
+  const color = useMemo(() => colorProp ?? colors.textPrimary, [colorProp, colors.textPrimary]);
+
   const IconComponent = Phosphor[name];
 
   return (

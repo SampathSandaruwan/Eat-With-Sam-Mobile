@@ -10,7 +10,7 @@ import {
 import { useCartModal } from '@contexts';
 import { useRestaurants } from '@hooks';
 import { useCartStore } from '@store';
-import { colors, TOP_NAV_HEIGHT } from '@theme';
+import { TOP_NAV_HEIGHT, useColors } from '@theme';
 import { Restaurant } from '@types';
 
 import {
@@ -29,6 +29,8 @@ export default function RestaurantsScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { openCart } = useCartModal();
   const cartItems = useCartStore((state) => state.items);
+
+  const colors = useColors();
   const { data: restaurants, isLoading: isLoadingRestaurants } = useRestaurants();
 
   const handleRestaurantPress = (restaurantId: number) => {
@@ -55,7 +57,7 @@ export default function RestaurantsScreen() {
   }, [restaurants]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.backgroundSecondary }]}>
       {/* The Top most navigation bar */}
       <TopNavBar />
 
@@ -122,7 +124,6 @@ export default function RestaurantsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.background,
     flex: 1,
   },
   infoTextContainer: {

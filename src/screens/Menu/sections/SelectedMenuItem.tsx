@@ -16,13 +16,13 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon, PhosphorIconName, Text } from '@components';
-import { colors, shadows } from '@theme';
-import { MenuItem } from '@types';
+import { useColors, useShadows } from '@theme';
+import { Dish } from '@types';
 import { formatCurrency } from '@utils';
 
 type Props = {
     isLoadingSelectedItem: boolean;
-    selectedMenuItem?: MenuItem;
+    selectedMenuItem?: Dish;
     onPressClose: () => void;
     onPressAddToCart: (quantity: number) => void;
     visible: boolean;
@@ -39,6 +39,9 @@ export default function SelectedMenuItem({
 }: Props) {
   const [quantity, setQuantity] = useState(1);
   const scrollY = useSharedValue(0);
+
+  const colors = useColors();
+  const shadows = useShadows();
 
   const handleDecrement = () => {
     if (quantity > 1) {
@@ -95,6 +98,8 @@ export default function SelectedMenuItem({
       'clamp',
     );
     return {
+      backgroundColor: colors.background,
+      borderBottomColor: colors.border,
       opacity,
     };
   });
@@ -107,182 +112,192 @@ export default function SelectedMenuItem({
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
-      style={styles.modalContainer}
       onRequestClose={onPressClose}
     >
-      <SafeAreaView edges={['bottom']} style={styles.safeAreaView}>
-        {isLoadingSelectedItem ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.brandPrimary} />
-          </View>
-        ) : selectedMenuItem ? (
-          <View style={styles.modalContent}>
-            <Animated.View style={[styles.stickyHeader, stickyHeaderStyle]}>
-              <Text size="heading2" weight="bold" style={styles.stickyHeaderText}>
-                {selectedMenuItem.name}
-              </Text>
-            </Animated.View>
-
-            <TouchableOpacity
-              onPress={onPressClose}
-              style={[styles.modalCloseButton, shadows.card]}
-            >
-              <Icon name="XIcon" size={20} color={colors.brandPrimary} weight="bold" />
-            </TouchableOpacity>
-
-            <Animated.ScrollView onScroll={scrollHandler} style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-              <View style={styles.modalHeader}>
-                <View style={styles.imageContainer}>
-                  {selectedMenuItem.imageUri ? (
-                    <Image source={{ uri: selectedMenuItem.imageUri }} style={styles.modalImage} />
-                  ) : (
-                    <View style={[styles.modalImage, styles.imagePlaceholder]} />
-                  )}
-                </View>
-              </View>
-
-              <View style={styles.modalDetails}>
-                <Text size="heading2" weight="bold" style={styles.modalTitle}>
+      <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+        <SafeAreaView edges={['top', 'bottom']} style={[styles.safeAreaView, { backgroundColor: colors.background }]}>
+          {isLoadingSelectedItem ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.brandPrimary} />
+            </View>
+          ) : selectedMenuItem ? (
+            <View style={styles.modalContent}>
+              <Animated.View style={[styles.stickyHeader, stickyHeaderStyle]}>
+                <Text size="heading2" weight="bold" style={styles.stickyHeaderText}>
                   {selectedMenuItem.name}
                 </Text>
+              </Animated.View>
 
-                {selectedMenuItem.kcal && (
-                  <Text color="secondary" style={styles.modalCalories}>
-                    {selectedMenuItem.kcal} kcal
-                  </Text>
-                )}
+              <TouchableOpacity
+                onPress={onPressClose}
+                style={[styles.modalCloseButton, { backgroundColor: colors.background }, shadows.card]}
+              >
+                <Icon name="XIcon" size={20} color={colors.brandPrimary} weight="bold" />
+              </TouchableOpacity>
 
-                {selectedMenuItem.tags && selectedMenuItem.tags.length > 0 && (
-                  <View style={styles.modalTags}>
-                    {selectedMenuItem.tags.map((tag: string, index: number) => (
-                      <View key={index} style={styles.tag}>
-                        <Icon
-                          name={mapTagToIcon(tag)}
-                          size={16}
-                          color={colors.success}
-                          weight="regular"
-                        />
-                        <Text size="small" color='success'>{tag}</Text>
-                      </View>
-                    ))}
+              <Animated.ScrollView
+                onScroll={scrollHandler}
+                style={[styles.scrollView, { backgroundColor: colors.background }]}
+                contentContainerStyle={styles.scrollContent}
+              >
+                <View style={styles.modalHeader}>
+                  <View style={[styles.imageContainer, { backgroundColor: colors.background }]}>
+                    {selectedMenuItem.imageUri ? (
+                      <Image source={{ uri: selectedMenuItem.imageUri }} style={styles.modalImage} />
+                    ) : (
+                      <View style={[styles.modalImage, { backgroundColor: colors.brandPrimaryLight }]} />
+                    )}
                   </View>
-                )}
-
-                {selectedMenuItem.description && (
-                  <Text color="secondary" style={styles.modalDescription}>
-                    {selectedMenuItem.description}
-                  </Text>
-                )}
-
-                <View style={styles.allergenSection}>
-                  <Text style={styles.allergenText}>
-                    Contains{' '}
-                    <Text weight="bold">
-                      {allergens.join(', ')}
-                    </Text>
-                  </Text>
-                  <Text style={styles.allergenContact}>
-                    Questions about allergens, ingredients or cooking methods?{' '}
-                    <Text color="brandColor">
-                      Please contact the restaurant.
-                    </Text>
-                  </Text>
                 </View>
-              </View>
-            </Animated.ScrollView>
 
-            <View style={[styles.bottomContainer, shadows.cardWithoutBottomShadow]}>
-              {/* {selectedMenuItem.isAvailable ? ( */}
-              <View style={styles.buttonContainer}>
-                <View style={styles.quantitySelector}>
-                  <TouchableOpacity
-                    onPress={handleDecrement}
-                    style={styles.quantityButton}
-                    activeOpacity={0.7}
-                    disabled={quantity === 1 || !selectedMenuItem.isAvailable}
-                  >
-                    <Icon
-                      name="MinusCircleIcon"
-                      size={20}
-                      color={
-                        (quantity === 1 || selectedMenuItem.isAvailable)
-                          ? colors.textInactive
-                          : colors.brandPrimary
-                      }
-                      weight="bold"
-                    />
-                  </TouchableOpacity>
-                  <Text
-                    size="large"
-                    weight="bold"
-                    style={styles.quantityText}
-                    color={selectedMenuItem.isAvailable ? 'primary' : 'inactive'}
-                  >
-                    {quantity}
+                <View style={styles.modalDetails}>
+                  <Text size="heading2" weight="bold" style={styles.modalTitle}>
+                    {selectedMenuItem.name}
                   </Text>
+
+                  {selectedMenuItem.kcal && (
+                    <Text color="secondary" style={styles.modalCalories}>
+                      {selectedMenuItem.kcal} kcal
+                    </Text>
+                  )}
+
+                  {selectedMenuItem.tags && selectedMenuItem.tags.length > 0 && (
+                    <View style={styles.modalTags}>
+                      {selectedMenuItem.tags.map((tag: string, index: number) => (
+                        <View key={index} style={[styles.tag, { backgroundColor: colors.successLight }]}>
+                          <Icon
+                            name={mapTagToIcon(tag)}
+                            size={16}
+                            color={colors.success}
+                            weight="regular"
+                          />
+                          <Text size="small" color='success'>{tag}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {selectedMenuItem.description && (
+                    <Text color="secondary" style={styles.modalDescription}>
+                      {selectedMenuItem.description}
+                    </Text>
+                  )}
+
+                  <View
+                    style={[
+                      styles.allergenSection,
+                      {
+                        backgroundColor: colors.background,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.allergenText}>
+                      Contains{' '}
+                      <Text weight="bold">
+                        {allergens.join(', ')}
+                      </Text>
+                    </Text>
+                    <Text style={styles.allergenContact}>
+                      Questions about allergens, ingredients or cooking methods?{' '}
+                      <Text color="brandColor">
+                        Please contact the restaurant.
+                      </Text>
+                    </Text>
+                  </View>
+                </View>
+              </Animated.ScrollView>
+
+              <View
+                style={[
+                  styles.bottomContainer,
+                  { backgroundColor: colors.background },
+                  shadows.cardWithoutBottomShadow,
+                ]}
+              >
+                {/* {selectedMenuItem.isAvailable ? ( */}
+                <View style={[styles.buttonContainer, { backgroundColor: colors.background }]}>
+                  <View style={styles.quantitySelector}>
+                    <TouchableOpacity
+                      onPress={handleDecrement}
+                      style={[styles.quantityButton, { backgroundColor: colors.background }]}
+                      activeOpacity={0.7}
+                      disabled={quantity === 1 || !selectedMenuItem.isAvailable}
+                    >
+                      <Icon
+                        name="MinusCircleIcon"
+                        size={20}
+                        color={
+                          (quantity === 1 || !selectedMenuItem.isAvailable)
+                            ? colors.textInactive
+                            : colors.brandPrimary
+                        }
+                        weight="bold"
+                      />
+                    </TouchableOpacity>
+                    <Text
+                      size="large"
+                      weight="bold"
+                      style={styles.quantityText}
+                      color={selectedMenuItem.isAvailable ? 'primary' : 'inactive'}
+                    >
+                      {quantity}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={handleIncrement}
+                      style={styles.quantityButton}
+                      activeOpacity={0.7}
+                      disabled={!selectedMenuItem.isAvailable}
+                    >
+                      <Icon
+                        name="PlusCircleIcon"
+                        size={20}
+                        color={selectedMenuItem.isAvailable ? colors.brandPrimary : colors.textInactive}
+                        weight="bold"
+                      />
+                    </TouchableOpacity>
+                  </View>
+
                   <TouchableOpacity
-                    onPress={handleIncrement}
-                    style={styles.quantityButton}
-                    activeOpacity={0.7}
+                    onPress={handleAddToCart}
+                    style={[
+                      styles.addToCartButton,
+                      shadows.card,
+                      { backgroundColor: selectedMenuItem.isAvailable ? colors.brandPrimaryLight : colors.inactive },
+                    ]}
+                    activeOpacity={0.8}
                     disabled={!selectedMenuItem.isAvailable}
                   >
-                    <Icon
-                      name="PlusCircleIcon"
-                      size={20}
-                      color={selectedMenuItem.isAvailable ? colors.brandPrimary : colors.textInactive}
+                    <Text
                       weight="bold"
-                    />
+                      color={selectedMenuItem.isAvailable ? 'primaryInverted' : 'inactive'}
+                    >
+                      {
+                        selectedMenuItem.isAvailable
+                          ? `Add for ${formatCurrency(totalPrice)}`
+                          : 'Item not available'
+                      }
+                    </Text>
                   </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity
-                  onPress={handleAddToCart}
-                  style={[styles.addToCartButton, !selectedMenuItem.isAvailable && styles.addToCartButtonDisabled]}
-                  activeOpacity={0.8}
-                  disabled={!selectedMenuItem.isAvailable}
-                >
-                  <Text
-                    weight="bold"
-                    color={selectedMenuItem.isAvailable ? 'primaryInverted' : 'inactive'}
-                  >
-                    {
-                      selectedMenuItem.isAvailable
-                        ? `Add for ${formatCurrency(totalPrice)}`
-                        : 'Item not available'
-                    }
-                  </Text>
-                </TouchableOpacity>
               </View>
-              {/* ) : (
-                <View style={styles.buttonContainer}>
-                  <View style={[styles.addToCartButton, styles.addToCartButtonDisabled]}>
-                    <Icon name="PlusIcon" size={20} color={colors.textInactive} weight="bold" />
-                    <Text weight="medium" color="inactive">
-                      Add to Cart
-                    </Text>
-                  </View>
-                </View>
-              )} */}
             </View>
-          </View>
-        ) : null}
-      </SafeAreaView>
+          ) : null}
+        </SafeAreaView>
+      </View>
     </Modal>
   );
 }
 
+
 const styles = StyleSheet.create({
   addToCartButton: {
     alignItems: 'center',
-    backgroundColor: colors.brandPrimaryLight,
     borderRadius: 4,
     flexDirection: 'row',
     height: 48,
     justifyContent: 'center',
     width: '100%',
-  },
-  addToCartButtonDisabled: {
-    backgroundColor: colors.inactive,
   },
   allergenContact: {
     fontSize: 14,
@@ -290,8 +305,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   allergenSection: {
-    backgroundColor: colors.background,
-    borderColor: colors.border,
     borderRadius: 4,
     borderWidth: 1,
     marginBottom: 24,
@@ -302,22 +315,16 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   bottomContainer: {
-    backgroundColor: colors.background,
     height: 100,
     paddingHorizontal: 16,
     paddingTop: 8,
   },
   buttonContainer: {
     alignItems: 'center',
-    backgroundColor: colors.background,
   },
   imageContainer: {
-    backgroundColor: colors.background,
     height: 276,
     position: 'relative',
-  },
-  imagePlaceholder: {
-    backgroundColor: colors.brandPrimaryLight,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -330,7 +337,6 @@ const styles = StyleSheet.create({
   },
   modalCloseButton: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     borderRadius: 999,
     height: 36,
     justifyContent: 'center',
@@ -341,7 +347,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   modalContainer: {
-    backgroundColor: colors.background,
     flex: 1,
   },
   modalContent: {
@@ -374,7 +379,6 @@ const styles = StyleSheet.create({
   },
   quantityButton: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     borderRadius: 999,
     height: 36,
     justifyContent: 'center',
@@ -403,8 +407,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stickyHeader: {
-    backgroundColor: colors.background,
-    borderBottomColor: colors.border,
     borderBottomWidth: 1,
     elevation: 1,
     height: 56,
@@ -422,7 +424,6 @@ const styles = StyleSheet.create({
   },
   tag: {
     alignItems: 'center',
-    backgroundColor: colors.successLight,
     borderRadius: 3,
     flexDirection: 'row',
     gap: 6,

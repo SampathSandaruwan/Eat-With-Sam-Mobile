@@ -10,7 +10,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { Icon, PhosphorIconName, Text } from '@components';
-import { colors, SCREEN_WIDTH, shadows } from '@theme';
+import { useThemeStore } from '@store';
+import { SCREEN_WIDTH, TOP_NAV_HEIGHT, useColors,useShadows } from '@theme';
 
 import { logoImage } from '../assets/images';
 
@@ -32,8 +33,12 @@ type Props = {
 
 export default function RightDrawer({ visible, onClose, items, isAuthenticated = false }: Props) {
   const insets = useSafeAreaInsets();
+  const { isDarkMode, toggleTheme } = useThemeStore();
   const translateX = useSharedValue(SCREEN_WIDTH);
   const opacity = useSharedValue(0);
+
+  const colors = useColors();
+  const shadows = useShadows();
 
   const openCloseDrawer = useCallback((open: boolean) => {
     translateX.value = withTiming(
@@ -73,12 +78,14 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
         event.velocityX > SWIPE_VELOCITY_THRESHOLD;
 
       if (shouldClose) {
-        // Close drawer
-        openCloseDrawer(false);
+        // Close drawer - update shared values directly in worklet
+        translateX.value = withTiming(SCREEN_WIDTH, { duration: 250 });
+        opacity.value = withTiming(0, { duration: 250 });
         scheduleOnRN(onClose);
       } else {
-        // Snap back to open
-        openCloseDrawer(true);
+        // Snap back to open - update shared values directly in worklet
+        translateX.value = withTiming(0, { duration: 250 });
+        opacity.value = withTiming(1, { duration: 250 });
       }
     })
     .enabled(visible);
@@ -106,17 +113,24 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
   // Use pointerEvents to control interaction instead of conditional rendering
   return (
     <View style={styles.container} pointerEvents={visible ? 'auto' : 'none'}>
-      {/* Backdrop */}
+      {/*  Backdrop */}
       <Pressable style={styles.backdrop} onPress={handleBackdropPress}>
-        <Animated.View style={[styles.backdropOverlay, backdropStyle]} />
+        <Animated.View style={[styles.backdropOverlay, { backgroundColor: colors.backgroundOverlay }, backdropStyle]} />
       </Pressable>
 
       {/* Drawer Content */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.drawer, drawerStyle, { paddingTop: insets.top }, shadows.cardWithoutRightShadow]}>
+        <Animated.View
+          style={[
+            styles.drawer,
+            drawerStyle,
+            { paddingTop: insets.top, backgroundColor: colors.backgroundSecondary },
+            shadows.cardWithoutRightShadow,
+          ]}
+        >
           <View style={[styles.drawerContent, { paddingBottom: insets.bottom }]}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { backgroundColor: colors.backgroundSecondary }, shadows.cardWithoutTopShadow]}>
               <Image source={logoImage} style={styles.logo} resizeMode="contain" />
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <Icon name="XIcon" size={24} color={colors.brandPrimary} />
@@ -131,7 +145,7 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
                   return (
                     <TouchableOpacity
                       key={index}
-                      style={styles.signInButton}
+                      style={[styles.signInButton, { backgroundColor: colors.brandPrimary }]}
                       onPress={() => {
                         item.onPress();
                         onClose();
@@ -176,14 +190,31 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
                         />
                       </View>
                     </TouchableOpacity>
-                    {item.showDivider && <View style={styles.divider} />}
+                    {item.showDivider && <View style={[styles.divider, { borderBottomColor: colors.border }]} />}
                   </React.Fragment>
                 );
               })}
             </View>
 
             {/* Bottom Selectors */}
-            <View style={styles.bottomSelectors}>
+            <View style={[styles.bottomSelectors, { borderTopColor: colors.border }]}>
+              <TouchableOpacity
+                style={[styles.selector, { borderColor: colors.border }]}
+                onPress={toggleTheme}
+                accessibilityRole="button"
+              >
+                <View style={styles.selectorContent}>
+                  <Icon
+                    name={isDarkMode ? 'Sun' : 'Moon'}
+                    size={20}
+                    color={colors.textPrimary}
+                  />
+                  <Text size="body" weight="medium" color="primary">
+                    {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                  </Text>
+                </View>
+                <View style={styles.selectorPlaceholder} />
+              </TouchableOpacity>
               <TouchableOpacity style={styles.selector} accessibilityRole="button">
                 <Text size="body" weight="medium" color="primary">
                   English
@@ -217,11 +248,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backdropOverlay: {
-    backgroundColor: colors.backgroundOverlay,
     flex: 1,
   },
   bottomSelectors: {
-    borderTopColor: colors.border,
     borderTopWidth: 1,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -242,12 +271,10 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   divider: {
-    backgroundColor: colors.border,
     height: 1,
     marginHorizontal: 20,
   },
   drawer: {
-    backgroundColor: colors.background,
     bottom: 0,
     elevation: 10,
     position: 'absolute',
@@ -261,6 +288,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     flexDirection: 'row',
+    height: TOP_NAV_HEIGHT,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
@@ -284,7 +312,6 @@ const styles = StyleSheet.create({
   },
   selector: {
     alignItems: 'center',
-    borderColor: colors.border,
     borderRadius: 4,
     borderWidth: 1,
     flexDirection: 'row',
@@ -293,9 +320,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
+  selectorContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  selectorPlaceholder: {
+    width: 20,
+  },
   signInButton: {
     alignItems: 'center',
-    backgroundColor: colors.brandPrimary,
     borderRadius: 4,
     marginHorizontal: 20,
     marginTop: 16,
