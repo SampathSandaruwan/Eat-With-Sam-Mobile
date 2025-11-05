@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useDrawer } from '@contexts';
@@ -26,63 +26,44 @@ export default function TopNavBar() {
     openDrawer();
   };
 
-  const styles = useMemo(() => StyleSheet.create({
-    actionButton: {
-      width: 38,
-    },
-    container: {
-      alignItems: 'center',
-      backgroundColor: colors.background,
-      flexDirection: 'row',
-      flex: 1,
-      height: TOP_NAV_HEIGHT,
-      left: 0,
-      paddingHorizontal: 12,
-      position: 'absolute',
-      right: 0,
-      top: 0,
-      zIndex: 20,
-    },
-    headerButton: {
-      alignItems: 'center',
-      borderColor: colors.border,
-      borderRadius: 4,
-      borderWidth: 1,
-      height: 36,
-      justifyContent: 'center',
-    },
-    headerButtons: {
-      flexDirection: 'row',
-      gap: 8,
-    },
-    logoContainer: {
-      flex: 1,
-      gap: 4,
-    },
-    logoImage: {
-      height: 36,
-      width: 120,
-    },
-    searchButton: {
-      marginRight: 8,
-      width: 46,
-    },
-  }), [colors]);
-
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.logoContainer}>
         <Image source={logoImage} style={styles.logoImage} resizeMode="contain" />
       </View>
 
       <View style={styles.headerButtons}>
-        <TouchableOpacity accessibilityRole="button" onPress={handlePressSearch} style={[styles.headerButton, styles.searchButton]}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={handlePressSearch}
+          style={[
+            styles.headerButton,
+            styles.searchButton,
+            { borderColor: colors.border },
+          ]}
+        >
           <Icon name="MagnifyingGlass" size={18} color={colors.brandPrimary} />
         </TouchableOpacity>
-        <TouchableOpacity accessibilityRole="button" onPress={handlePressHome} style={[styles.headerButton, styles.actionButton]}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={handlePressHome}
+          style={[
+            styles.headerButton,
+            styles.actionButton,
+            { borderColor: colors.border },
+          ]}
+        >
           <Icon name="HouseIcon" size={18} color={colors.brandPrimary} />
         </TouchableOpacity>
-        <TouchableOpacity accessibilityRole="button" onPress={handlePressAccount} style={[styles.headerButton, styles.actionButton]}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={handlePressAccount}
+          style={[
+            styles.headerButton,
+            styles.actionButton,
+            { borderColor: colors.border },
+          ]}
+        >
           <Icon name="UserIcon" size={18} color={colors.brandPrimary} />
         </TouchableOpacity>
       </View>
@@ -90,3 +71,44 @@ export default function TopNavBar() {
   );
 }
 
+
+const styles = StyleSheet.create({
+  actionButton: {
+    width: 38,
+  },
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1,
+    height: TOP_NAV_HEIGHT,
+    left: 0,
+    paddingHorizontal: 12,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 20,
+  },
+  headerButton: {
+    alignItems: 'center',
+    borderRadius: 4,
+    borderWidth: 1,
+    height: 36,
+    justifyContent: 'center',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  logoContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  logoImage: {
+    height: 36,
+    width: 120,
+  },
+  searchButton: {
+    marginRight: 8,
+    width: 46,
+  },
+});

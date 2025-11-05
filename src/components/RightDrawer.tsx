@@ -11,7 +11,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 
 import { Icon, PhosphorIconName, Text } from '@components';
 import { useThemeStore } from '@store';
-import { SCREEN_WIDTH, useColors,useShadows } from '@theme';
+import { SCREEN_WIDTH, TOP_NAV_HEIGHT, useColors,useShadows } from '@theme';
 
 import { logoImage } from '../assets/images';
 
@@ -78,12 +78,14 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
         event.velocityX > SWIPE_VELOCITY_THRESHOLD;
 
       if (shouldClose) {
-        // Close drawer
-        openCloseDrawer(false);
+        // Close drawer - update shared values directly in worklet
+        translateX.value = withTiming(SCREEN_WIDTH, { duration: 250 });
+        opacity.value = withTiming(0, { duration: 250 });
         scheduleOnRN(onClose);
       } else {
-        // Snap back to open
-        openCloseDrawer(true);
+        // Snap back to open - update shared values directly in worklet
+        translateX.value = withTiming(0, { duration: 250 });
+        opacity.value = withTiming(1, { duration: 250 });
       }
     })
     .enabled(visible);
@@ -111,7 +113,7 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
   // Use pointerEvents to control interaction instead of conditional rendering
   return (
     <View style={styles.container} pointerEvents={visible ? 'auto' : 'none'}>
-      {/* Backdrop */}
+      {/*  Backdrop */}
       <Pressable style={styles.backdrop} onPress={handleBackdropPress}>
         <Animated.View style={[styles.backdropOverlay, { backgroundColor: colors.backgroundOverlay }, backdropStyle]} />
       </Pressable>
@@ -122,13 +124,13 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
           style={[
             styles.drawer,
             drawerStyle,
-            { paddingTop: insets.top, backgroundColor: colors.background },
+            { paddingTop: insets.top, backgroundColor: colors.backgroundSecondary },
             shadows.cardWithoutRightShadow,
           ]}
         >
           <View style={[styles.drawerContent, { paddingBottom: insets.bottom }]}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { backgroundColor: colors.backgroundSecondary }, shadows.cardWithoutTopShadow]}>
               <Image source={logoImage} style={styles.logo} resizeMode="contain" />
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <Icon name="XIcon" size={24} color={colors.brandPrimary} />
@@ -241,7 +243,6 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
   );
 }
 
-
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
@@ -287,6 +288,7 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     flexDirection: 'row',
+    height: TOP_NAV_HEIGHT,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
