@@ -9,12 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, Text } from '@components';
 import { useRestaurant, useTopTenRatedMenuItems } from '@hooks';
 import { useCartStore } from '@store';
-import { colors, shadows } from '@theme';
+import { useColors, useShadows } from '@theme';
 import { CartItem, MenuItem } from '@types';
 import { formatCurrency } from '@utils';
 
@@ -29,6 +29,10 @@ type Props = {
 
 export default function CartModal({ visible, onClose }: Props) {
   const [riderTip, setRiderTip] = useState(0);
+  const insets = useSafeAreaInsets();
+
+  const colors = useColors();
+  const shadows = useShadows();
 
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -88,7 +92,7 @@ export default function CartModal({ visible, onClose }: Props) {
   };
 
   const renderSeparator = () => {
-    return <View style={styles.separator} />;
+    return <View style={[styles.separator, { borderBottomColor: colors.border }]} />;
   };
 
   const renderTopTenRatedItem: ListRenderItem<MenuItem> = ({ item }) => (
@@ -110,10 +114,10 @@ export default function CartModal({ visible, onClose }: Props) {
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView edges={['top']} style={styles.safeArea}>
-        <View style={styles.container}>
+      <SafeAreaView edges={['top', 'bottom']} style={[styles.safeArea, { backgroundColor: colors.backgroundSecondary }]}>
+        <View style={[styles.container, { backgroundColor: colors.backgroundSecondary }]}>
           {/* Header */}
-          <View style={[styles.header, shadows.card]}>
+          <View style={[styles.header, { backgroundColor: colors.background }, shadows.card]}>
             <TouchableOpacity onPress={onClose} style={styles.headerButton}>
               <Icon name="XIcon" weight="bold" size={20} color={colors.brandPrimary} />
             </TouchableOpacity>
@@ -149,14 +153,22 @@ export default function CartModal({ visible, onClose }: Props) {
                 <Text size="heading1" weight="bold" style={styles.sectionTitle}>
                   Basket
                 </Text>
-                <View style={styles.sectionContent}>
+                <View
+                  style={[
+                    styles.sectionContent,
+                    {
+                      backgroundColor: colors.background,
+                      borderColor: colors.border,
+                    },
+                  ]}
+                >
                   <FlatList
                     data={items}
                     keyExtractor={(item) => item.menuItem.id.toString()}
                     renderItem={renderItem}
                     scrollEnabled={false}
                     ItemSeparatorComponent={renderSeparator}
-                    style={styles.selectedItemsList}
+                    style={[styles.selectedItemsList, { borderBottomColor: colors.border }]}
                   />
 
                   <Text style={styles.sectionSubTitle}>
@@ -225,7 +237,14 @@ export default function CartModal({ visible, onClose }: Props) {
           )}
 
           {/* Checkout Button Container*/}
-          <View style={[styles.checkoutButtonContainer, shadows.cardWithoutBottomShadow]}>
+          <View
+            style={[
+              styles.checkoutButtonContainer,
+              { backgroundColor: colors.background },
+              shadows.cardWithoutBottomShadow,
+              { paddingBottom: Math.max(insets.bottom, 16) },
+            ]}
+          >
             <View style={[styles.summaryRow, styles.riderTipSection]}>
               <View style={styles.riderTipTitle}>
                 <Text size="heading1">
@@ -248,7 +267,7 @@ export default function CartModal({ visible, onClose }: Props) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => handleTipChange(0.5)}
-                  style={[styles.tipButton, styles.tipButtonActive]}
+                  style={styles.tipButton}
                 >
                   <Icon
                     name="PlusCircleIcon"
@@ -275,6 +294,7 @@ export default function CartModal({ visible, onClose }: Props) {
             <Pressable
               style={({ pressed }) => [
                 styles.checkoutButton,
+                { backgroundColor: colors.brandPrimaryLight },
                 pressed && styles.checkoutButtonPressed,
               ]}
             >
@@ -317,7 +337,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   checkoutButton: {
-    backgroundColor: colors.brandPrimaryLight,
     borderRadius: 4,
     height: 48,
     marginTop: 4,
@@ -325,7 +344,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   checkoutButtonContainer: {
-    backgroundColor: colors.background,
     height: 142,
     paddingHorizontal: 16,
     paddingTop: 8,
@@ -337,7 +355,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   container: {
-    backgroundColor: colors.backgroundSecondary,
     flex: 1,
   },
   emptyContainer: {
@@ -362,7 +379,6 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     flexDirection: 'row',
     height: 56,
     justifyContent: 'space-between',
@@ -411,8 +427,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   sectionContent: {
-    backgroundColor: colors.background,
-    borderColor: colors.border,
     borderRadius: 4,
     borderWidth: 1,
     gap: 4,
@@ -426,13 +440,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   selectedItemsList: {
-    borderBottomColor: colors.border,
     borderBottomWidth: 1,
     marginBottom: 12,
     paddingBottom: 16,
   },
   separator: {
-    borderBottomColor: colors.border,
     borderBottomWidth: 1,
     height: 0,
     marginBottom: 4,
@@ -453,9 +465,6 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: 'center',
     width: 32,
-  },
-  tipButtonActive: {
-    borderColor: colors.brandPrimary,
   },
   topTenRatedItemsGrid: {
     marginBottom: 8,

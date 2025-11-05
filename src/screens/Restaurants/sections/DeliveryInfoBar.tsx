@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Icon, Text } from '@components';
-import { colors } from '@theme';
+import { useColors } from '@theme';
 
 type Props = {
   deliveryAddress?: string;
@@ -19,6 +19,8 @@ export default function DeliveryInfoBar({
   onDeliveryOptionPress,
   onCartPress,
 }: Props) {
+  const colors = useColors();
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.addressSection} onPress={onAddressPress} activeOpacity={0.7}>
@@ -34,8 +36,8 @@ export default function DeliveryInfoBar({
       </TouchableOpacity>
 
       <View style={styles.rightSection}>
-        <TouchableOpacity style={styles.deliveryButton} onPress={onDeliveryOptionPress} activeOpacity={0.7}>
-          <Text size="body" weight="medium" color="primary">
+        <TouchableOpacity style={[styles.deliveryButton, { backgroundColor: colors.inactive }]} onPress={onDeliveryOptionPress} activeOpacity={0.7}>
+          <Text size="body" weight="medium" color="secondary">
             Delivery
           </Text>
           <Icon name="CaretDownIcon" size={16} color={colors.textPrimary} />
@@ -43,7 +45,7 @@ export default function DeliveryInfoBar({
 
         {cartItemCount > 0 && (
           <TouchableOpacity style={styles.cartButton} onPress={onCartPress} activeOpacity={0.7}>
-            <View style={styles.cartBadge}>
+            <View style={[styles.cartBadge, { backgroundColor: colors.success }]}>
               <Text size="small" weight="bold" color="primaryInverted">
                 {cartItemCount}
               </Text>
@@ -68,7 +70,6 @@ const styles = StyleSheet.create({
   },
   cartBadge: {
     alignItems: 'center',
-    backgroundColor: colors.success,
     borderRadius: 10,
     height: 20,
     justifyContent: 'center',
@@ -91,7 +92,6 @@ const styles = StyleSheet.create({
   },
   deliveryButton: {
     alignItems: 'center',
-    backgroundColor: colors.border,
     borderRadius: 20,
     flexDirection: 'row',
     gap: 6,

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useDrawer } from '@contexts';
-import { colors, TOP_NAV_HEIGHT } from '@theme';
+import { TOP_NAV_HEIGHT, useColors } from '@theme';
 
 import Icon from './Icon';
 
@@ -10,6 +10,7 @@ import { logoImage } from '../assets/images';
 
 export default function TopNavBar() {
   const { openDrawer } = useDrawer();
+  const colors = useColors();
 
   const handlePressSearch = () => {
     // eslint-disable-next-line no-console
@@ -24,6 +25,49 @@ export default function TopNavBar() {
   const handlePressAccount = () => {
     openDrawer();
   };
+
+  const styles = useMemo(() => StyleSheet.create({
+    actionButton: {
+      width: 38,
+    },
+    container: {
+      alignItems: 'center',
+      backgroundColor: colors.background,
+      flexDirection: 'row',
+      flex: 1,
+      height: TOP_NAV_HEIGHT,
+      left: 0,
+      paddingHorizontal: 12,
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      zIndex: 20,
+    },
+    headerButton: {
+      alignItems: 'center',
+      borderColor: colors.border,
+      borderRadius: 4,
+      borderWidth: 1,
+      height: 36,
+      justifyContent: 'center',
+    },
+    headerButtons: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    logoContainer: {
+      flex: 1,
+      gap: 4,
+    },
+    logoImage: {
+      height: 36,
+      width: 120,
+    },
+    searchButton: {
+      marginRight: 8,
+      width: 46,
+    },
+  }), [colors]);
 
   return (
     <View style={styles.container}>
@@ -45,47 +89,4 @@ export default function TopNavBar() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  actionButton: {
-    width: 38,
-  },
-  container: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    flexDirection: 'row',
-    flex: 1,
-    height: TOP_NAV_HEIGHT,
-    left: 0,
-    paddingHorizontal: 12,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 20,
-  },
-  headerButton: {
-    alignItems: 'center',
-    borderColor: colors.border,
-    borderRadius: 4,
-    borderWidth: 1,
-    height: 36,
-    justifyContent: 'center',
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  logoContainer: {
-    flex: 1,
-    gap: 4,
-  },
-  logoImage: {
-    height: 36,
-    width: 120,
-  },
-  searchButton: {
-    marginRight: 8,
-    width: 46,
-  },
-});
 

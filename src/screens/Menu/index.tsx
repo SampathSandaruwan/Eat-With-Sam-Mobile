@@ -27,7 +27,13 @@ import {
   useTopTenRatedMenuItems,
 } from '@hooks';
 import { useCartStore } from '@store';
-import { CATEGORY_WISE_MENU_ITEM_CART_HEIGHT as CATEGORY_WISE_MENU_ITEM_CARD_HEIGHT, CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL as CATEGORY_WISE_MENU_ITEM_CARD_MARGIN_VERTICAL, colors, TOP_CATEGORY_HEADER_HEIGHT, TOP_NAV_HEIGHT } from '@theme';
+import {
+  CATEGORY_WISE_MENU_ITEM_CARD_HEIGHT,
+  CATEGORY_WISE_MENU_ITEM_CARD_MARGIN_VERTICAL,
+  TOP_CATEGORY_HEADER_HEIGHT,
+  TOP_NAV_HEIGHT,
+  useColors,
+} from '@theme';
 import { MenuCategory, MenuItem } from '@types';
 
 import {
@@ -64,6 +70,7 @@ type ListItemType = {
 export default function MenuScreen() {
   const route = useRoute<MenuScreenRouteProp>();
   const navigation = useNavigation<NavigationProp<RootStackParams>>();
+  const colors = useColors();
 
   const { restaurantId } = route.params;
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
@@ -283,7 +290,7 @@ export default function MenuScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.backgroundSecondary }]}>
       {/* The Top most navigation bar */}
       <TopNavBar />
 
@@ -292,6 +299,7 @@ export default function MenuScreen() {
         pointerEvents="box-none"
         style={[
           styles.stickyTabsContainer,
+          { borderColor: colors.border },
           {
             opacity: scrollY.interpolate({
               inputRange: [
@@ -304,7 +312,7 @@ export default function MenuScreen() {
           },
         ]}
       >
-        <View style={styles.tabsWrapper}>
+        <View style={[styles.tabsWrapper, { borderColor: colors.border }]}>
           <CategoryTabs
             ref={categoryTabsRef}
             categories={menuCategories ?? []}
@@ -428,7 +436,6 @@ const styles = StyleSheet.create({
     marginVertical: CATEGORY_SECTION_MARGIN_VERTICAL,
   },
   container: {
-    backgroundColor: colors.backgroundSecondary,
     flex: 1,
   },
   discountedItemsContainer: {
@@ -462,7 +469,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   stickyTabsContainer: {
-    borderColor: colors.border,
     borderTopWidth: 1,
     left: 0,
     paddingHorizontal: 16,
@@ -472,7 +478,6 @@ const styles = StyleSheet.create({
     zIndex: 9,
   },
   tabsWrapper: {
-    borderColor: colors.border,
     borderTopWidth: 1,
     marginHorizontal: -16,
     paddingHorizontal: 16,

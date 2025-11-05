@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, Text } from '@components';
-import { colors, SCREEN_WIDTH } from '@theme';
+import { SCREEN_WIDTH, useColors } from '@theme';
 import { Restaurant } from '@types';
 import { calculateDeliveryTime, formatCurrency } from '@utils';
 
@@ -27,6 +27,8 @@ export default function RestaurantInfo({
 }: Props) {
   const deliveryTime = restaurant.deliveryTime || 20;
   const deliveryTimeRange = calculateDeliveryTime(deliveryTime);
+
+  const colors = useColors();
 
   // Concatenate details at JS level for natural line breaking
   const firstDetailsRow = [
@@ -56,7 +58,7 @@ export default function RestaurantInfo({
 
         <View style={styles.roundBackWrapper}>
           <Pressable onPress={onPressBack}>
-            <View style={styles.roundBack}>
+            <View style={[styles.roundBack, { backgroundColor: colors.background }]}>
               <Icon name="ArrowLeftIcon" size={20} color={colors.brandPrimary} weight="bold" />
             </View>
           </Pressable>
@@ -64,7 +66,7 @@ export default function RestaurantInfo({
 
         <View style={styles.startGroupOrderWrapper}>
           <Pressable onPress={onPressStartGroupOrder}>
-            <View style={styles.startGroupOrder}>
+            <View style={[styles.startGroupOrder, { backgroundColor: colors.background }]}>
               <Icon name="UsersIcon" size={16} color={colors.brandPrimary} weight="bold" />
               <Text weight='regular'>Start group order</Text>
             </View>
@@ -72,7 +74,7 @@ export default function RestaurantInfo({
         </View>
       </View>
 
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.background }]}>
         <Text size="veryLarge" weight="bold" style={styles.restaurantName}>
           {restaurant?.name}
         </Text>
@@ -107,7 +109,7 @@ export default function RestaurantInfo({
                 ({restaurant.ratingCount}+)
               </Text>
             </View>
-            <View style={[styles.infoSubtext,styles.ratingCommentContainer]}>
+            <View style={[styles.infoSubtext,styles.ratingCommentContainer, { backgroundColor: colors.successLight }]}>
               <Icon name="SmileyIcon" size={16} color={colors.success} weight="regular" />
               <Text color="success">
                 &apos;Tasty food&apos;
@@ -146,8 +148,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   header: {
-    backgroundColor: colors.background,
+    marginHorizontal: -16,
     paddingBottom: 8,
+    paddingHorizontal: 16,
     paddingTop: 16,
   },
   infoContent: {
@@ -165,7 +168,6 @@ const styles = StyleSheet.create({
   ratingCommentContainer: {
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: colors.successLight,
     borderRadius: 3,
     flexDirection: 'row',
     gap: 2,
@@ -179,7 +181,6 @@ const styles = StyleSheet.create({
   },
   roundBack: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     borderRadius: 20,
     height: 40,
     justifyContent: 'center',
@@ -193,7 +194,6 @@ const styles = StyleSheet.create({
   },
   startGroupOrder: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     borderRadius: 4,
     flexDirection: 'row',
     gap: 8,

@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { Icon, Text } from '@components';
-import { colors } from '@theme';
+import { useColors } from '@theme';
 import { Restaurant } from '@types';
 
 import RestaurantCard from './RestaurantCard';
@@ -20,6 +20,8 @@ export default function RestaurantSection({
   onRestaurantPress,
   onSeeAllPress,
 }: Props) {
+  const colors = useColors();
+
   if (restaurants.length === 0) {
     return null;
   }

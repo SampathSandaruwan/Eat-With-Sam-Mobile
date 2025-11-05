@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -17,7 +17,7 @@ import { useFormik } from 'formik';
 
 import { Icon, Text } from '@components';
 import { useAuthStore } from '@store';
-import { colors } from '@theme';
+import { useColors } from '@theme';
 
 import { googleLogo } from '../../assets/images';
 
@@ -34,6 +34,7 @@ interface LoginFormValues {
 
 export default function LoginModal({ visible, onClose, onNavigateToSignup }: Props) {
   const insets = useSafeAreaInsets();
+  const colors = useColors();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -102,6 +103,129 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
       // Error handled by store
     }
   };
+
+  const styles = useMemo(() => StyleSheet.create({
+    authErrorContainer: {
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      marginBottom: 16,
+      marginTop: 8,
+      padding: 12,
+    },
+    closeButton: {
+      padding: 4,
+    },
+    container: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: 20,
+      paddingTop: 20,
+    },
+    dividerContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      marginVertical: 24,
+    },
+    dividerLine: {
+      backgroundColor: colors.border,
+      flex: 1,
+      height: 1,
+    },
+    dividerText: {
+      marginHorizontal: 16,
+    },
+    errorText: {
+      marginTop: 4,
+    },
+    eyeIcon: {
+      padding: 4,
+      position: 'absolute',
+      right: 16,
+      top: 12,
+    },
+    googleButton: {
+      alignItems: 'center',
+      backgroundColor: colors.background,
+      borderColor: colors.border,
+      borderRadius: 8,
+      borderWidth: 1,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      paddingVertical: 16,
+    },
+    googleButtonDisabled: {
+      opacity: 0.6,
+    },
+    googleLogo: {
+      borderRadius: 10,
+      height: 20,
+      marginRight: 8,
+      width: 20,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingBottom: 8,
+      paddingHorizontal: 20,
+      paddingTop: 12,
+    },
+    input: {
+      backgroundColor: colors.background,
+      borderColor: colors.border,
+      borderRadius: 8,
+      borderWidth: 1,
+      color: colors.textPrimary,
+      fontSize: 16,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    inputContainer: {
+      marginBottom: 20,
+    },
+    inputError: {
+      borderColor: colors.danger,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    label: {
+      marginBottom: 8,
+    },
+    loginButton: {
+      alignItems: 'center',
+      backgroundColor: colors.brandPrimary,
+      borderRadius: 8,
+      justifyContent: 'center',
+      marginTop: 8,
+      paddingVertical: 16,
+    },
+    loginButtonDisabled: {
+      opacity: 0.6,
+    },
+    passwordContainer: {
+      position: 'relative',
+    },
+    passwordInput: {
+      paddingRight: 48,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    signupContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 24,
+    },
+    subtitle: {
+      marginBottom: 32,
+    },
+    title: {
+      marginBottom: 8,
+    },
+  }), [colors]);
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -271,127 +395,4 @@ export default function LoginModal({ visible, onClose, onNavigateToSignup }: Pro
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  authErrorContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 16,
-    marginTop: 8,
-    padding: 12,
-  },
-  closeButton: {
-    padding: 4,
-  },
-  container: {
-    backgroundColor: colors.background,
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  dividerContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginVertical: 24,
-  },
-  dividerLine: {
-    backgroundColor: colors.border,
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    marginHorizontal: 16,
-  },
-  errorText: {
-    marginTop: 4,
-  },
-  eyeIcon: {
-    padding: 4,
-    position: 'absolute',
-    right: 16,
-    top: 12,
-  },
-  googleButton: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: 16,
-  },
-  googleButtonDisabled: {
-    opacity: 0.6,
-  },
-  googleLogo: {
-    borderRadius: 10,
-    height: 20,
-    marginRight: 8,
-    width: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingBottom: 8,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-  },
-  input: {
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: 8,
-    borderWidth: 1,
-    color: colors.textPrimary,
-    fontSize: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputError: {
-    borderColor: colors.danger,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  label: {
-    marginBottom: 8,
-  },
-  loginButton: {
-    alignItems: 'center',
-    backgroundColor: colors.brandPrimary,
-    borderRadius: 8,
-    justifyContent: 'center',
-    marginTop: 8,
-    paddingVertical: 16,
-  },
-  loginButtonDisabled: {
-    opacity: 0.6,
-  },
-  passwordContainer: {
-    position: 'relative',
-  },
-  passwordInput: {
-    paddingRight: 48,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 24,
-  },
-  subtitle: {
-    marginBottom: 32,
-  },
-  title: {
-    marginBottom: 8,
-  },
-});
 

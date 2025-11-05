@@ -3,11 +3,11 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, Text } from '@components';
 import {
-  CATEGORY_WISE_MENU_ITEM_CART_HEIGHT,
-  CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL,
-  colors,
+  CATEGORY_WISE_MENU_ITEM_CARD_HEIGHT,
+  CATEGORY_WISE_MENU_ITEM_CARD_MARGIN_VERTICAL,
   SCREEN_WIDTH,
-  shadows,
+  useColors,
+  useShadows,
 } from '@theme';
 import { MenuItem } from '@types';
 import { formatCurrency } from '@utils';
@@ -21,11 +21,15 @@ type Props = {
 export default function CategoryWiseMenuItemCard({ item, onPress }: Props) {
   const formattedPrice = formatCurrency(item.price);
 
+  const colors = useColors();
+  const shadows = useShadows();
+
   return (
     <Pressable
       onPress={() => onPress?.(item)}
       style={({ pressed }) => [
         styles.card,
+        { backgroundColor: colors.background },
         shadows.card,
         pressed && styles.pressed,
       ]}
@@ -59,7 +63,7 @@ export default function CategoryWiseMenuItemCard({ item, onPress }: Props) {
       <View style={styles.imageContainer}>
         <View style={styles.imageWrapper}>
           {item.discountPercent ? (
-            <View style={styles.badge}>
+            <View style={[styles.badge, { backgroundColor: colors.attention }]}>
               <Icon name="TagIcon" size={16} color={colors.background} weight="bold" mirrored />
             </View>
           ) : null}
@@ -67,10 +71,10 @@ export default function CategoryWiseMenuItemCard({ item, onPress }: Props) {
           {item.imageUri ? (
             <Image source={{ uri: item.imageUri }} style={styles.image} />
           ) : (
-            <View style={[styles.image, styles.imagePlaceholder]} />
+            <View style={[styles.image, { backgroundColor: colors.brandPrimaryLight }, styles.imagePlaceholder]} />
           )}
 
-          <View style={[styles.plusButtonWrapper, shadows.card]}>
+          <View style={[styles.plusButtonWrapper, { backgroundColor: colors.background }, shadows.card]}>
             <Icon name="PlusIcon" size={20} color={colors.brandPrimary} weight="bold" />
           </View>
         </View>
@@ -81,7 +85,6 @@ export default function CategoryWiseMenuItemCard({ item, onPress }: Props) {
 
 const styles = StyleSheet.create({
   badge: {
-    backgroundColor: colors.attention,
     borderRadius: 3,
     height: 24,
     paddingHorizontal: 4,
@@ -95,12 +98,11 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
   card: {
-    backgroundColor: colors.background,
     borderRadius: 4,
     flexDirection: 'row',
-    height: CATEGORY_WISE_MENU_ITEM_CART_HEIGHT,
+    height: CATEGORY_WISE_MENU_ITEM_CARD_HEIGHT,
     marginHorizontal: -16,
-    marginVertical: CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL,
+    marginVertical: CATEGORY_WISE_MENU_ITEM_CARD_MARGIN_VERTICAL,
     paddingHorizontal: 16,
     width: SCREEN_WIDTH,
   },
@@ -130,7 +132,6 @@ const styles = StyleSheet.create({
     width: 98,
   },
   imagePlaceholder: {
-    backgroundColor: colors.brandPrimaryLight,
     borderRadius: 4,
   },
   imageWrapper: {
@@ -146,7 +147,6 @@ const styles = StyleSheet.create({
   },
   plusButtonWrapper: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     borderRadius: 100,
     bottom: 0,
     height: 42,

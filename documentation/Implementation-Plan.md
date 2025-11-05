@@ -67,7 +67,7 @@ The following components and features are already implemented:
   - RightDrawer component (`src/components/RightDrawer.tsx`) - slide-out drawer for authenticated user menu
 - ✅ **Theme System**: 
   - Basic color palette (`src/theme/colors.ts`)
-  - Layout constants (`src/theme/layout.ts`) - including TOP_NAV_HEIGHT, TOP_CATEGORY_HEADER_HEIGHT, CATEGORY_WISE_MENU_ITEM_CART_HEIGHT, CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL
+  - Layout constants (`src/theme/layout.ts`) - including TOP_NAV_HEIGHT, TOP_CATEGORY_HEADER_HEIGHT, CATEGORY_WISE_MENU_ITEM_CARD_HEIGHT, CATEGORY_WISE_MENU_ITEM_CARD_MARGIN_VERTICAL
   - Shadow utilities for card components
 
 ### Types & Data

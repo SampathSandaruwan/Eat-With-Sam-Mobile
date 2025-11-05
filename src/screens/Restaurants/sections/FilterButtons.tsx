@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { Icon, PhosphorIconName, Text } from '@components';
-import { colors } from '@theme';
+import { useColors } from '@theme';
 
 type FilterOption = {
   id: string;
@@ -28,6 +28,8 @@ export default function FilterButtons({
   selectedFilterId,
   onFilterPress,
 }: Props) {
+  const colors = useColors();
+
   return (
     <ScrollView
       horizontal
@@ -40,7 +42,11 @@ export default function FilterButtons({
           key={filter.id}
           style={[
             styles.filterButton,
-            selectedFilterId === filter.id && styles.filterButtonSelected,
+            {
+              backgroundColor: selectedFilterId === filter.id ? colors.surface : colors.inactive,
+              borderColor: selectedFilterId === filter.id ? colors.brandPrimary : colors.border,
+            }
+            && styles.filterButtonSelected,
           ]}
           onPress={() => onFilterPress?.(filter.id)}
           activeOpacity={0.7}
@@ -73,7 +79,6 @@ const styles = StyleSheet.create({
   },
   filterButton: {
     alignItems: 'center',
-    backgroundColor: colors.border,
     borderRadius: 20,
     flexDirection: 'row',
     gap: 6,
@@ -81,8 +86,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   filterButtonSelected: {
-    backgroundColor: colors.surface,
-    borderColor: colors.brandPrimary,
     borderWidth: 1,
   },
   scrollView: {

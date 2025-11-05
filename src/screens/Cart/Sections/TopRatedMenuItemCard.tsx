@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, Text } from '@components';
-import { colors, shadows } from '@theme';
+import { useColors, useShadows } from '@theme';
 import { MenuItem } from '@types';
 import { formatCurrency } from '@utils';
 
@@ -15,11 +15,15 @@ export default function TopRatedMenuItemCard({ item, onPress }: Props) {
   const formattedPrice = formatCurrency(item.price);
   const formattedKcal = item.kcal ? `${item.kcal} kcal` : null;
 
+  const colors = useColors();
+  const shadows = useShadows();
+
   return (
     <Pressable
       onPress={() => onPress?.(item)}
       style={({ pressed }) => [
         styles.card,
+        { backgroundColor: colors.background },
         shadows.card,
         pressed && styles.pressed,
       ]}
@@ -39,13 +43,12 @@ export default function TopRatedMenuItemCard({ item, onPress }: Props) {
       </View>
 
       {item.discountPercent ? (
-        <View style={styles.badge}>
+        <View style={[styles.badge, { backgroundColor: colors.attention }]}>
           <Text color="primaryInverted" weight="medium">{item.discountPercent}% off</Text>
         </View>
       ) : null}
 
-
-      <View style={[styles.plusButtonWrapper, shadows.roundedCard]}>
+      <View style={[styles.plusButtonWrapper, { backgroundColor: colors.background }, shadows.roundedCard]}>
         <Icon name="PlusIcon" size={20} color={colors.brandPrimaryLight} weight="bold" />
       </View>
     </Pressable>
@@ -54,7 +57,6 @@ export default function TopRatedMenuItemCard({ item, onPress }: Props) {
 
 const styles = StyleSheet.create({
   badge: {
-    backgroundColor: colors.attention,
     borderRadius: 3,
     height: 24,
     left: 12,
@@ -66,7 +68,6 @@ const styles = StyleSheet.create({
   },
   card: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     borderRadius: 4,
     flexDirection: 'row',
     height: 100,
@@ -88,7 +89,6 @@ const styles = StyleSheet.create({
   },
   plusButtonWrapper: {
     alignItems: 'center',
-    backgroundColor: colors.background,
     borderRadius: 100,
     bottom: 8,
     height: 42,
