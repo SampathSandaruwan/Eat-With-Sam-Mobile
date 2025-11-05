@@ -27,11 +27,12 @@ import {
   useTopTenRatedMenuItems,
 } from '@hooks';
 import { useCartStore } from '@store';
-import { colors, TOP_NAV_HEIGHT } from '@theme';
+import { CATEGORY_WISE_MENU_ITEM_CART_HEIGHT as CATEGORY_WISE_MENU_ITEM_CARD_HEIGHT, CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL as CATEGORY_WISE_MENU_ITEM_CARD_MARGIN_VERTICAL, colors, TOP_CATEGORY_HEADER_HEIGHT, TOP_NAV_HEIGHT } from '@theme';
 import { MenuCategory, MenuItem } from '@types';
 
 import {
   CategoryTabs,
+  CategoryTabsRef,
   CategoryWiseMenuItemCard,
   DiscountedMenuItemCard,
   RestaurantInfo,
@@ -40,6 +41,18 @@ import {
 } from './sections';
 
 import type { RootStackParams } from '../../navigation/types';
+
+export const CATEGORY_WISE_MENU_ITEM_CARD_MARGIN = CATEGORY_WISE_MENU_ITEM_CARD_MARGIN_VERTICAL * 2;
+export const CATEGORY_WISE_MENU_ITEM_CARD_TOTAL_HEIGHT = CATEGORY_WISE_MENU_ITEM_CARD_HEIGHT + CATEGORY_WISE_MENU_ITEM_CARD_MARGIN;
+
+export const CATEGORY_HEADER_PADDING_BOTTOM = 16;
+export const CATEGORY_HEADER_TEXT_MARGIN_BOTTOM = 4;
+export const CATEGORY_HEADER_TEXT_FONT_SIZE = 16;
+export const CATEGORY_HEADER_TEXT_LINE_HEIGHT = CATEGORY_HEADER_TEXT_FONT_SIZE * 1.5;
+export const CATEGORY_HEADER_HEIGHT = CATEGORY_HEADER_TEXT_LINE_HEIGHT + CATEGORY_HEADER_PADDING_BOTTOM + CATEGORY_HEADER_TEXT_MARGIN_BOTTOM;
+
+export const CATEGORY_SECTION_MARGIN_VERTICAL = 8;
+export const CATEGORY_SECTION_MARGIN = CATEGORY_SECTION_MARGIN_VERTICAL * 2;
 
 
 type MenuScreenRouteProp = RouteProp<RootStackParams, 'Menu'>;
@@ -56,10 +69,13 @@ export default function MenuScreen() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
   const [selectedMenuItemId, setSelectedMenuItemId] = useState<number | null>(null);
   const [restaurantInfoHeight, setRestaurantInfoHeight] = useState(0);
+  const [listHeaderHeight, setListHeaderHeight] = useState(0);
   const scrollYRef = useRef(new Animated.Value(0));
   const scrollY = scrollYRef.current;
   const flatListRef = useRef<FlatList>(null);
+  const categoryTabsRef = useRef<CategoryTabsRef>(null);
   const categorySectionOffsets = useRef<Map<number, number>>(new Map());
+  const categorySectionHeights = useRef<Map<number, number>>(new Map());
   const isScrollingToCategory = useRef(false);
 
   const { data: restaurant, isLoading: isLoadingRestaurant } = useRestaurant(restaurantId);
@@ -100,6 +116,53 @@ export default function MenuScreen() {
     }
   };
 
+  const calculateCategoryOffset = useCallback((categoryId: number): number | undefined => {
+    if (!menuCategories) return undefined;
+
+    const categoryIndex = menuCategories.findIndex((cat) => cat.id === categoryId);
+    if (categoryIndex === -1) return undefined;
+
+    let offset = listHeaderHeight;
+
+    for (let i = 0; i < categoryIndex; i++) {
+      const prevCategory = menuCategories[i];
+      if (prevCategory) {
+        const measuredHeight = categorySectionHeights.current.get(prevCategory.id);
+
+        if (measuredHeight !== undefined) {
+          offset += measuredHeight + CATEGORY_SECTION_MARGIN;
+        } else {
+          // Use estimated height based on layout constants in incremental rendering
+          const itemCount = listData[prevCategory.id]?.length ?? 0;
+          const estimatedHeight =
+            CATEGORY_HEADER_HEIGHT +
+            (itemCount * CATEGORY_WISE_MENU_ITEM_CARD_TOTAL_HEIGHT) +
+            CATEGORY_SECTION_MARGIN;
+          offset += estimatedHeight;
+        }
+      }
+    }
+
+    return offset;
+  }, [menuCategories, listData, listHeaderHeight]);
+
+  const recalculateCategoryOffsets = useCallback(() => {
+    if (!menuCategories) return;
+
+    menuCategories.forEach((category) => {
+      const offset = calculateCategoryOffset(category.id);
+      if (offset !== undefined) {
+        categorySectionOffsets.current.set(category.id, offset);
+      }
+    });
+  }, [menuCategories, calculateCategoryOffset]);
+
+  useEffect(() => {
+    if (listHeaderHeight > 0) {
+      recalculateCategoryOffsets();
+    }
+  }, [listHeaderHeight, recalculateCategoryOffsets]);
+
   const handleCategoryTabPress = useCallback((categoryId: number) => {
     const offset = categorySectionOffsets.current.get(categoryId);
     if (offset !== undefined && flatListRef.current) {
@@ -135,21 +198,23 @@ export default function MenuScreen() {
 
     if (activeCategory !== null && activeCategory !== activeCategoryId) {
       setActiveCategoryId(activeCategory);
+      if (!isScrollingToCategory.current) {
+        categoryTabsRef.current?.scrollToCategory(activeCategory);
+      }
     }
   }, [activeCategoryId]);
 
   const renderCategoryWiseItem: ListRenderItem<MenuCategory> = ({ item }) => {
     return (
-      <View style={styles.categorySectionContainer}>
-        <View
-          style={styles.categoryHeaderContainer}
-          onLayout={(event) => {
-            const { y } = event.nativeEvent.layout;
-            // y is the position relative to the FlatList content container
-            // This is the offset we need for scrollToOffset
-            categorySectionOffsets.current.set(item.id, y);
-          }}
-        >
+      <View
+        style={styles.categorySectionContainer}
+        onLayout={(event) => {
+          const { height } = event.nativeEvent.layout;
+          categorySectionHeights.current.set(item.id, height);
+          recalculateCategoryOffsets();
+        }}
+      >
+        <View style={styles.categoryHeaderContainer}>
           <Text weight="semiBold" size="heading1" style={styles.categoryHeaderText}>
             {item.name}
           </Text>
@@ -162,37 +227,54 @@ export default function MenuScreen() {
     );
   };
 
-  // const getItemLayout = useCallback(
-  //   (data: ArrayLike<ListItemType> | null | undefined, index: number) => {
-  //     if (!data || !data[index]) {
-  //       return { length: 200, offset: 0, index };
-  //     }
+  const getItemLayout = useCallback(
+    (data: ArrayLike<MenuCategory> | null | undefined, index: number) => {
+      if (!data || !data[index]) {
+        return { length: 200, offset: 0, index };
+      }
 
-  //     // Calculate cumulative height up to this index
-  //     let offset = 0;
-  //     if (data) {
-  //       for (let i = 0; i < index; i++) {
-  //         const prevItem = data[i];
-  //         if (prevItem) {
-  //           if (prevItem.type === 'category-header') {
-  //             offset += 60; // Header height
-  //           } else {
-  //             offset += 200; // Row height
-  //           }
-  //         }
-  //       }
-  //     }
+      let offset = listHeaderHeight;
 
-  //     const item = data?.[index];
-  //     if (item.type === 'category-header') {
-  //       return { length: 60, offset, index };
-  //     }
+      if (data) {
+        for (let i = 0; i < index; i++) {
+          const prevItem = data[i];
+          if (prevItem) {
+            // Try to use measured height if available, otherwise calculate estimated height
+            const measuredHeight = categorySectionHeights.current.get(prevItem.id);
 
-  //     // For category rows, estimate height
-  //     return { length: 200, offset, index };
-  //   },
-  //   [],
-  // );
+            if (measuredHeight !== undefined) {
+              offset += measuredHeight + CATEGORY_SECTION_MARGIN;
+            } else {
+              // Calculate estimated height based on number of menu items
+              const itemCount = listData[prevItem.id]?.length ?? 0;
+              const estimatedHeight =
+                CATEGORY_HEADER_HEIGHT +
+                (itemCount * CATEGORY_WISE_MENU_ITEM_CARD_TOTAL_HEIGHT) +
+                CATEGORY_SECTION_MARGIN;
+              offset += estimatedHeight + CATEGORY_SECTION_MARGIN;
+            }
+          }
+        }
+      }
+
+      const currentItem = data[index];
+      const measuredHeight = categorySectionHeights.current.get(currentItem.id);
+      let length: number;
+
+      if (measuredHeight !== undefined) {
+        length = measuredHeight;
+      } else {
+        const itemCount = listData[currentItem.id]?.length ?? 0;
+        length =
+          CATEGORY_HEADER_HEIGHT +
+          (itemCount * CATEGORY_WISE_MENU_ITEM_CARD_TOTAL_HEIGHT) +
+          CATEGORY_SECTION_MARGIN;
+      }
+
+      return { length, offset, index };
+    },
+    [listData, listHeaderHeight],
+  );
 
   const renderDiscountedItem: ListRenderItem<MenuItem> = ({ item }) => (
     <View style={styles.discountedItemsGrid}>
@@ -230,6 +312,7 @@ export default function MenuScreen() {
       >
         <View style={styles.tabsWrapper}>
           <CategoryTabs
+            ref={categoryTabsRef}
             categories={menuCategories ?? []}
             activeCategoryId={activeCategoryId}
             onChange={handleCategoryTabPress}
@@ -243,7 +326,7 @@ export default function MenuScreen() {
         data={menuCategories}
         keyExtractor={(item: MenuCategory) => `category-header-${item.id}`}
         renderItem={renderCategoryWiseItem}
-        // getItemLayout={getItemLayout}
+        getItemLayout={getItemLayout}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           {
@@ -257,7 +340,12 @@ export default function MenuScreen() {
               <ActivityIndicator size="large" color={colors.brandPrimary} />
             </View>
           ) : (
-            <>
+            <View
+              onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
+                setListHeaderHeight(height - TOP_CATEGORY_HEADER_HEIGHT - CATEGORY_HEADER_PADDING_BOTTOM + CATEGORY_HEADER_TEXT_MARGIN_BOTTOM);
+              }}
+            >
               <View
                 onLayout={(event) => {
                   const { height } = event.nativeEvent.layout;
@@ -275,6 +363,7 @@ export default function MenuScreen() {
 
               <View style={styles.tabsWrapper}>
                 <CategoryTabs
+                  ref={categoryTabsRef}
                   categories={menuCategories ?? []}
                   activeCategoryId={activeCategoryId}
                   onChange={handleCategoryTabPress}
@@ -305,7 +394,7 @@ export default function MenuScreen() {
                   horizontal
                 />
               </View>
-            </>
+            </View>
           )
         }
         ListEmptyComponent={
@@ -336,13 +425,13 @@ export default function MenuScreen() {
 
 const styles = StyleSheet.create({
   categoryHeaderContainer: {
-    paddingBottom: 16,
+    paddingBottom: CATEGORY_HEADER_PADDING_BOTTOM,
   },
   categoryHeaderText: {
-    marginBottom: 4,
+    marginBottom: CATEGORY_HEADER_TEXT_MARGIN_BOTTOM,
   },
   categorySectionContainer: {
-    marginVertical: 8,
+    marginVertical: CATEGORY_SECTION_MARGIN_VERTICAL,
   },
   container: {
     backgroundColor: colors.backgroundSecondary,

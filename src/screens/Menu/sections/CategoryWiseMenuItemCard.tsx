@@ -2,9 +2,16 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, Text } from '@components';
-import { colors, SCREEN_WIDTH, shadows } from '@theme';
+import {
+  CATEGORY_WISE_MENU_ITEM_CART_HEIGHT,
+  CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL,
+  colors,
+  SCREEN_WIDTH,
+  shadows,
+} from '@theme';
 import { MenuItem } from '@types';
 import { formatCurrency } from '@utils';
+
 
 type Props = {
   item: MenuItem;
@@ -91,9 +98,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderRadius: 4,
     flexDirection: 'row',
-    height: 136,
+    height: CATEGORY_WISE_MENU_ITEM_CART_HEIGHT,
     marginHorizontal: -16,
-    marginVertical: 1,
+    marginVertical: CATEGORY_WISE_MENU_ITEM_CART_MARGIN_VERTICAL,
     paddingHorizontal: 16,
     width: SCREEN_WIDTH,
   },
