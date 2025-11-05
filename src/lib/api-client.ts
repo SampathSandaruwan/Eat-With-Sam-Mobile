@@ -46,7 +46,7 @@ const requestInterceptor = async (config: InternalAxiosRequestConfig) => {
 const successResponseHandler = (response: AxiosResponse) => {
   return Promise.resolve({
     ...response,
-    data: response.data.data ?? response.data,
+    data: response.data,
   });
 };
 

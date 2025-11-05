@@ -5,16 +5,16 @@ import { Icon, Text } from '@components';
 import { useColors } from '@theme';
 
 type Props = {
-  deliveryAddress?: string;
-  cartItemCount?: number;
+  deliveryAddress: string;
+  cartItemCount: number;
   onAddressPress?: () => void;
   onDeliveryOptionPress?: () => void;
   onCartPress?: () => void;
 };
 
 export default function DeliveryInfoBar({
-  deliveryAddress = 'Pokunuwatta Road',
-  cartItemCount = 0,
+  deliveryAddress,
+  cartItemCount,
   onAddressPress,
   onDeliveryOptionPress,
   onCartPress,

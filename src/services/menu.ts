@@ -1,7 +1,7 @@
 import { API_CLIENT } from '@lib';
-import { Dish, MenuCategory } from '@types';
+import { ApiResponse, Dish, MenuCategory, PaginatedApiResponse } from '@types';
 
-export const getMenuCategories = async (restaurantId: string, includeDishes = false): Promise<MenuCategory[]> => {
+export const getMenuCategories = async (restaurantId: string, includeDishes = false): Promise<PaginatedApiResponse<MenuCategory>> => {
   const response = await API_CLIENT.get(`/restaurants/${restaurantId}/menu-categories`, {
     params: {
       withDishes: includeDishes,
@@ -10,17 +10,17 @@ export const getMenuCategories = async (restaurantId: string, includeDishes = fa
   return response.data;
 };
 
-export const getDish = async (id: string): Promise<Dish> => {
+export const getDish = async (id: string): Promise<ApiResponse<Dish>> => {
   const response = await API_CLIENT.get(`/dishes/${id}`);
   return response.data;
 };
 
-export const getMenuCategoryDishes = async (categoryId: string): Promise<Dish[]> => {
+export const getMenuCategoryDishes = async (categoryId: string): Promise<PaginatedApiResponse<Dish>> => {
   const response = await API_CLIENT.get(`/menu-categories/${categoryId}/dishes`);
   return response.data;
 };
 
-export const getTopTenRatedDishes = async (): Promise<Dish[]> => {
+export const getTopTenRatedDishes = async (): Promise<PaginatedApiResponse<Dish>> => {
   const response = await API_CLIENT.get('/dishes', {
     params: {
       sortBy: 'averageRating',
@@ -31,7 +31,7 @@ export const getTopTenRatedDishes = async (): Promise<Dish[]> => {
   return response.data;
 };
 
-export const getTopTenDiscountedDishes = async (): Promise<Dish[]> => {
+export const getTopTenDiscountedDishes = async (): Promise<PaginatedApiResponse<Dish>> => {
   const response = await API_CLIENT.get('/dishes', {
     params: {
       sortBy: 'discountPercent',

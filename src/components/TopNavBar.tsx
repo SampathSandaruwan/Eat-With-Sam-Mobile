@@ -1,5 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useDrawer } from '@contexts';
 import { TOP_NAV_HEIGHT, useColors } from '@theme';
@@ -7,10 +9,15 @@ import { TOP_NAV_HEIGHT, useColors } from '@theme';
 import Icon from './Icon';
 
 import { logoImage } from '../assets/images';
+import { RootStackParams } from '../navigation/types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParams>;
 
 export default function TopNavBar() {
   const { openDrawer } = useDrawer();
   const colors = useColors();
+
+  const navigation = useNavigation<NavigationProp>();
 
   const handlePressSearch = () => {
     // eslint-disable-next-line no-console
@@ -18,8 +25,7 @@ export default function TopNavBar() {
   };
 
   const handlePressHome = () => {
-    // eslint-disable-next-line no-console
-    console.log('TODO: Handle press home');
+    navigation.navigate('Restaurants');
   };
 
   const handlePressAccount = () => {

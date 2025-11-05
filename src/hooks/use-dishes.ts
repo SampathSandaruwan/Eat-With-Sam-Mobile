@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getMenuCategoryDishes, getDish, getTopTenDiscountedDishes, getTopTenRatedDishes } from '../services';
+import { getDish, getMenuCategoryDishes, getTopTenDiscountedDishes, getTopTenRatedDishes } from '../services';
 
 export const useDish = (dishId: number | null) => {
   return useQuery({
@@ -11,6 +11,7 @@ export const useDish = (dishId: number | null) => {
       }
       return getDish(dishId.toString());
     },
+    select: (response) => response.data ?? null,
     enabled: dishId !== null,
   });
 };
@@ -24,6 +25,7 @@ export const useMenuCategoryDishes = (categoryId: number | null) => {
       }
       return getMenuCategoryDishes(categoryId.toString());
     },
+    select: (response) => response.data ?? [],
     enabled: categoryId !== null,
   });
 };
@@ -34,6 +36,7 @@ export const useTopTenRatedDishes = () => {
     queryFn: () => {
       return getTopTenRatedDishes();
     },
+    select: (response) => response.data ?? [],
   });
 };
 

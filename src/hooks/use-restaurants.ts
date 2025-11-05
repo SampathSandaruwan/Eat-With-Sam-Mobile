@@ -11,6 +11,7 @@ export const useRestaurant = (restaurantId: number | null) => {
       }
       return getRestaurant(restaurantId.toString());
     },
+    select: (response) => response.data ?? null,
     enabled: restaurantId !== null,
   });
 };
@@ -21,6 +22,7 @@ export const useRestaurants = () => {
     queryFn: () => {
       return getRestaurants();
     },
+    select: (response) => response.data ?? [],
   });
 };
 

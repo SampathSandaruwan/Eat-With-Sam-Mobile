@@ -7,8 +7,6 @@ export interface MenuCategory {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  // This is only present if the menu categories are fetched with items
-  dishes?: Dish[];
 }
 
 export interface Dish {
@@ -19,6 +17,7 @@ export interface Dish {
   imageUri?: string | null;
   kcal?: number | null;
   tags?: string[] | null;
+  allergens?: string[] | null;
   discountPercent?: number | null;
   isAvailable: boolean;
   categoryId: number;
