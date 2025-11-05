@@ -1,17 +1,15 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
+import { Icon, Text } from '@components';
 import { colors } from '@theme';
-
-import Icon from './Icon';
-import Text from './Text';
 
 type Props = {
   placeholder?: string;
   onPress?: () => void;
 };
 
-export default function SearchBar({ placeholder = 'Search Uber Eats', onPress }: Props) {
+export default function SearchBar({ placeholder = 'Search Deliveroo', onPress }: Props) {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <Icon name="MagnifyingGlass" size={20} color={colors.textSecondary} />

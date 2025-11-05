@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect } from 'react';
-import { Dimensions, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { Icon, PhosphorIconName, Text } from '@components';
-import { colors } from '@theme';
+import { colors, SCREEN_WIDTH, shadows } from '@theme';
 
-const DRAWER_WIDTH = Dimensions.get('window').width * 0.85;
+import { logoImage } from '../assets/images';
+
 const SWIPE_VELOCITY_THRESHOLD = 500; // Minimum velocity to auto-close
 
 export type DrawerItem = {
@@ -27,25 +27,22 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   items: DrawerItem[];
-  title?: string;
+  isAuthenticated?: boolean;
 };
 
-export default function RightDrawer({ visible, onClose, items, title = 'Menu' }: Props) {
+export default function RightDrawer({ visible, onClose, items, isAuthenticated = false }: Props) {
   const insets = useSafeAreaInsets();
-  const translateX = useSharedValue(DRAWER_WIDTH);
+  const translateX = useSharedValue(SCREEN_WIDTH);
   const opacity = useSharedValue(0);
 
   const openCloseDrawer = useCallback((open: boolean) => {
-    translateX.value = withSpring(
-      open ? 0 : DRAWER_WIDTH,
-      {
-        damping: 40,
-        stiffness: 200,
-      },
+    translateX.value = withTiming(
+      open ? 0 : SCREEN_WIDTH,
+      { duration: 250 },
     );
     opacity.value = withTiming(
       open ? 1 : 0,
-      { duration: 220 },
+      { duration: 250 },
     );
   }, [opacity, translateX]);
 
@@ -64,15 +61,15 @@ export default function RightDrawer({ visible, onClose, items, title = 'Menu' }:
     .onUpdate((event) => {
       // Only allow closing gesture (swiping left/right)
       if (event.translationX > 0) {
-        translateX.value = Math.min(event.translationX, DRAWER_WIDTH);
+        translateX.value = Math.min(event.translationX, SCREEN_WIDTH);
         // Adjust opacity based on drawer position
-        const progress = Math.min(event.translationX / DRAWER_WIDTH, 1);
+        const progress = Math.min(event.translationX / SCREEN_WIDTH, 1);
         opacity.value = Math.max(0, 1 - progress);
       }
     })
     .onEnd((event) => {
       const shouldClose =
-        event.translationX > DRAWER_WIDTH * 0.3 ||
+        event.translationX > SCREEN_WIDTH * 0.3 ||
         event.velocityX > SWIPE_VELOCITY_THRESHOLD;
 
       if (shouldClose) {
@@ -116,53 +113,97 @@ export default function RightDrawer({ visible, onClose, items, title = 'Menu' }:
 
       {/* Drawer Content */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.drawer, drawerStyle, { paddingTop: insets.top }]}>
-          <View style={styles.drawerContent}>
+        <Animated.View style={[styles.drawer, drawerStyle, { paddingTop: insets.top }, shadows.cardWithoutRightShadow]}>
+          <View style={[styles.drawerContent, { paddingBottom: insets.bottom }]}>
             {/* Header */}
             <View style={styles.header}>
-              <Text size="heading1" weight="bolder" color="primary">
-                {title}
-              </Text>
+              <Image source={logoImage} style={styles.logo} resizeMode="contain" />
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Icon name="XIcon" size={24} color={colors.textPrimary} />
+                <Icon name="XIcon" size={24} color={colors.brandPrimary} />
               </TouchableOpacity>
             </View>
 
-            {/* Menu Items */}
+            {/* Content */}
             <View style={styles.itemsContainer}>
-              {items.map((item, index) => (
-                <React.Fragment key={index}>
-                  <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => {
-                      item.onPress();
-                      onClose();
-                    }}
-                    accessibilityRole="button"
-                  >
-                    {item.icon && (
-                      <View style={styles.menuItemIcon}>
+              {items.map((item, index) => {
+                // Render "Sign up or log in" as a button for non-authenticated users
+                if (!isAuthenticated && item.label === 'Sign up or log in') {
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.signInButton}
+                      onPress={() => {
+                        item.onPress();
+                        onClose();
+                      }}
+                      accessibilityRole="button"
+                    >
+                      <Text size="body" weight="medium" color="primaryInverted">
+                        {item.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }
+
+                // Render other items as menu items
+                return (
+                  <React.Fragment key={index}>
+                    <TouchableOpacity
+                      style={styles.menuItem}
+                      onPress={() => {
+                        item.onPress();
+                        onClose();
+                      }}
+                      accessibilityRole="button"
+                    >
+                      {item.icon && (
+                        <View style={styles.menuItemIcon}>
+                          <Icon
+                            name={item.icon}
+                            size={22}
+                            color={colors.textSecondary}
+                          />
+                        </View>
+                      )}
+                      <Text size="body" weight="medium" color="primary">
+                        {item.label}
+                      </Text>
+                      <View style={styles.chevron}>
                         <Icon
-                          name={item.icon}
-                          size={22}
-                          color={colors.textPrimary}
+                          name="CaretRightIcon"
+                          size={20}
+                          color={colors.brandPrimary}
                         />
                       </View>
-                    )}
-                    <Text size="body" weight="medium" color="primary">
-                      {item.label}
-                    </Text>
-                    <View style={styles.chevron}>
-                      <Icon
-                        name="CaretRightIcon"
-                        size={20}
-                        color={colors.textSecondary}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                  {item.showDivider && <View style={styles.divider} />}
-                </React.Fragment>
-              ))}
+                    </TouchableOpacity>
+                    {item.showDivider && <View style={styles.divider} />}
+                  </React.Fragment>
+                );
+              })}
+            </View>
+
+            {/* Bottom Selectors */}
+            <View style={styles.bottomSelectors}>
+              <TouchableOpacity style={styles.selector} accessibilityRole="button">
+                <Text size="body" weight="medium" color="primary">
+                  English
+                </Text>
+                <Icon
+                  name="CaretUpDownIcon"
+                  size={20}
+                  color={colors.textSecondary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.selector} accessibilityRole="button">
+                <Text size="body" weight="medium" color="primary">
+                  United Kingdom
+                </Text>
+                <Icon
+                  name="CaretUpDownIcon"
+                  size={20}
+                  color={colors.textSecondary}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         </Animated.View>
@@ -178,6 +219,13 @@ const styles = StyleSheet.create({
   backdropOverlay: {
     backgroundColor: colors.backgroundOverlay,
     flex: 1,
+  },
+  bottomSelectors: {
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingTop: 16,
   },
   chevron: {
     marginLeft: 'auto',
@@ -204,20 +252,14 @@ const styles = StyleSheet.create({
     elevation: 10,
     position: 'absolute',
     right: 0,
-    shadowColor: colors.backgroundOverlay,
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
     top: 0,
-    width: DRAWER_WIDTH,
+    width: SCREEN_WIDTH,
   },
   drawerContent: {
     flex: 1,
   },
   header: {
     alignItems: 'center',
-    borderBottomColor: colors.border,
-    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
@@ -227,6 +269,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 8,
   },
+  logo: {
+    height: 36,
+    width: 120,
+  },
   menuItem: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -235,5 +281,24 @@ const styles = StyleSheet.create({
   },
   menuItemIcon: {
     marginRight: 16,
+  },
+  selector: {
+    alignItems: 'center',
+    borderColor: colors.border,
+    borderRadius: 4,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  signInButton: {
+    alignItems: 'center',
+    backgroundColor: colors.brandPrimary,
+    borderRadius: 4,
+    marginHorizontal: 20,
+    marginTop: 16,
+    paddingVertical: 14,
   },
 });

@@ -15,3 +15,15 @@ export const useMenuCategories = (restaurantId: number | null) => {
   });
 };
 
+export const useMenuCategoriesWithItems = (restaurantId: number | null) => {
+  return useQuery({
+    queryKey: ['menu-categories-with-items', restaurantId],
+    queryFn: () => {
+      if (restaurantId === null) {
+        throw new Error('Menu item ID is required');
+      }
+      return getMenuCategories(restaurantId.toString(), true);
+    },
+    enabled: restaurantId !== null,
+  });
+};

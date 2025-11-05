@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   scrollContent: {
+    marginBottom: 8,
     paddingLeft: 16,
   },
   scrollView: {

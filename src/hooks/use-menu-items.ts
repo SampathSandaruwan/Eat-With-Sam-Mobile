@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getMenuItem, getMenuItems } from '../services';
+import { getMenuCategoryItems,getMenuItem, getTopTenDiscountedMenuItems, getTopTenRatedMenuItems } from '../services';
 
 export const useMenuItem = (menuItemId: number | null) => {
   return useQuery({
@@ -15,16 +15,33 @@ export const useMenuItem = (menuItemId: number | null) => {
   });
 };
 
-export const useMenuItems = (categoryId: number | null) => {
+export const useMenuCategoryItems = (categoryId: number | null) => {
   return useQuery({
-    queryKey: ['menu-items', categoryId],
+    queryKey: ['menu-category-items', categoryId],
     queryFn: () => {
       if (categoryId === null) {
         throw new Error('Category ID is required');
       }
-      return getMenuItems(categoryId.toString());
+      return getMenuCategoryItems(categoryId.toString());
     },
     enabled: categoryId !== null,
   });
 };
 
+export const useTopTenRatedMenuItems = () => {
+  return useQuery({
+    queryKey: ['top-ten-rated-menu-items'],
+    queryFn: () => {
+      return getTopTenRatedMenuItems();
+    },
+  });
+};
+
+export const useTopTenDiscountedMenuItems = () => {
+  return useQuery({
+    queryKey: ['top-ten-discounted-menu-items'],
+    queryFn: () => {
+      return getTopTenDiscountedMenuItems();
+    },
+  });
+};

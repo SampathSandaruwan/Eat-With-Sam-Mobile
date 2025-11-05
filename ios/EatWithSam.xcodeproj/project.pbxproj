@@ -7,23 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		091309D819964D9095386ACD /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75B2122519A84A5388D1CC32 /* IBMPlexSans-Regular.ttf */; };
+		0C4ACCF2E47A41FF93953A13 /* IBMPlexSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 08B704793F6541B5BFDF9F81 /* IBMPlexSans-Medium.ttf */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		2B63499A1EC8470EA199E9E2 /* IBMPlexSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 246DA3C686F94126B5D32E1B /* IBMPlexSans-Bold.ttf */; };
 		4D77AAB2CA995E1787A43FCC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8B6504458A5C4842A7E6F356 /* IBMPlexSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D46B9956E72B4F2B9D04EB8D /* IBMPlexSans-Light.ttf */; };
+		9A10887CB8B04B0AB5803022 /* IBMPlexSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7AF504A5C26B4B3D9D1CD784 /* IBMPlexSans-SemiBold.ttf */; };
 		A28A8F7FD8F9368CFF2FB5E6 /* libPods-EatWithSam.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71C2848D204B13879846AB7F /* libPods-EatWithSam.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		08B704793F6541B5BFDF9F81 /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "IBMPlexSans-Medium.ttf"; path = "../src/assets/fonts/IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* EatWithSam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EatWithSam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = EatWithSam/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = EatWithSam/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = EatWithSam/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1C3BFD4CC6B755EE1C82F2A4 /* Pods-EatWithSam.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EatWithSam.debug.xcconfig"; path = "Target Support Files/Pods-EatWithSam/Pods-EatWithSam.debug.xcconfig"; sourceTree = "<group>"; };
+		246DA3C686F94126B5D32E1B /* IBMPlexSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "IBMPlexSans-Bold.ttf"; path = "../src/assets/fonts/IBMPlexSans-Bold.ttf"; sourceTree = "<group>"; };
 		71C2848D204B13879846AB7F /* libPods-EatWithSam.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EatWithSam.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		75B2122519A84A5388D1CC32 /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "IBMPlexSans-Regular.ttf"; path = "../src/assets/fonts/IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = EatWithSam/AppDelegate.swift; sourceTree = "<group>"; };
+		7AF504A5C26B4B3D9D1CD784 /* IBMPlexSans-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "IBMPlexSans-SemiBold.ttf"; path = "../src/assets/fonts/IBMPlexSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = EatWithSam/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A87EC8D2B7C5FD605BB8C816 /* Pods-EatWithSam.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EatWithSam.release.xcconfig"; path = "Target Support Files/Pods-EatWithSam/Pods-EatWithSam.release.xcconfig"; sourceTree = "<group>"; };
+		D46B9956E72B4F2B9D04EB8D /* IBMPlexSans-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "IBMPlexSans-Light.ttf"; path = "../src/assets/fonts/IBMPlexSans-Light.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -51,6 +61,19 @@
 			name = EatWithSam;
 			sourceTree = "<group>";
 		};
+		1D4BFBB1A8B24480B3385C93 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				246DA3C686F94126B5D32E1B /* IBMPlexSans-Bold.ttf */,
+				D46B9956E72B4F2B9D04EB8D /* IBMPlexSans-Light.ttf */,
+				08B704793F6541B5BFDF9F81 /* IBMPlexSans-Medium.ttf */,
+				75B2122519A84A5388D1CC32 /* IBMPlexSans-Regular.ttf */,
+				7AF504A5C26B4B3D9D1CD784 /* IBMPlexSans-SemiBold.ttf */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +98,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				1D4BFBB1A8B24480B3385C93 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -161,6 +185,11 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				4D77AAB2CA995E1787A43FCC /* PrivacyInfo.xcprivacy in Resources */,
+				2B63499A1EC8470EA199E9E2 /* IBMPlexSans-Bold.ttf in Resources */,
+				8B6504458A5C4842A7E6F356 /* IBMPlexSans-Light.ttf in Resources */,
+				0C4ACCF2E47A41FF93953A13 /* IBMPlexSans-Medium.ttf in Resources */,
+				091309D819964D9095386ACD /* IBMPlexSans-Regular.ttf in Resources */,
+				9A10887CB8B04B0AB5803022 /* IBMPlexSans-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

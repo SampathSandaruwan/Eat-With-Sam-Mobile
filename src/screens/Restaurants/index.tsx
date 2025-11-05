@@ -13,7 +13,6 @@ import { useCartStore } from '@store';
 import { colors, TOP_NAV_HEIGHT } from '@theme';
 import { Restaurant } from '@types';
 
-import type { RootStackParams } from '../../navigation/types';
 import {
   CategoryIcons,
   DeliveryInfoBar,
@@ -21,6 +20,8 @@ import {
   RestaurantSection,
   SearchBar,
 } from './sections';
+
+import type { RootStackParams } from '../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParams>;
 
@@ -60,7 +61,7 @@ export default function RestaurantsScreen() {
 
       {isLoadingRestaurants ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.brandYellow} />
+          <ActivityIndicator size="large" color={colors.brandPrimary} />
         </View>
       ) : (
         <ScrollView
@@ -70,7 +71,7 @@ export default function RestaurantsScreen() {
         >
           {/* Search Bar */}
           <View style={styles.searchContainer}>
-            <SearchBar placeholder="Search Uber Eats" />
+            <SearchBar placeholder="Search Deliveroo" />
           </View>
 
           {/* Delivery Information Bar */}
@@ -99,7 +100,7 @@ export default function RestaurantsScreen() {
           {/* Featured Restaurants Section */}
           {featuredRestaurants.length > 0 && (
             <RestaurantSection
-              title="Featured on Uber Eats"
+              title="Featured on Deliveroo"
               restaurants={featuredRestaurants}
               onRestaurantPress={(restaurant) => handleRestaurantPress(restaurant.id)}
             />

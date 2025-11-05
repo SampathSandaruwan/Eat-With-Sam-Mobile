@@ -8,7 +8,7 @@ module.exports = {
       {
         moduleName: 'dotenv',
         path: '.env',
-        allowlist: ['API_URL', 'RETRY_ATTEMPTS'],
+        allowlist: ['API_URL', 'RETRY_ATTEMPTS', 'GOOGLE_WEB_CLIENT_ID', 'GOOGLE_IOS_CLIENT_ID'],
         safe: false,
         allowUndefined: false,
         verbose: false,
@@ -19,8 +19,8 @@ module.exports = {
       {
         root: [path.resolve(__dirname)],
         alias: {
-          '@assets': path.resolve(__dirname, 'src/assets'),
           '@components': path.resolve(__dirname, 'src/components'),
+          '@constants': path.resolve(__dirname, 'src/constants'),
           '@contexts': path.resolve(__dirname, 'src/contexts'),
           '@hooks': path.resolve(__dirname, 'src/hooks'),
           '@lib': path.resolve(__dirname, 'src/lib'),

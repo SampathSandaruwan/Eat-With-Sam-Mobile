@@ -8,7 +8,7 @@ import {
   RightDrawer,
 } from '@components';
 import { AuthModalProvider, CartModalProvider, DrawerProvider, useAuthModal, useCartModal, useDrawer } from '@contexts';
-import { queryClient } from '@lib';
+import { configureGoogleSignIn, queryClient } from '@lib';
 import { useAuthStore, useCartStore } from '@store';
 import { QueryClientProvider } from '@tanstack/react-query';
 
@@ -16,6 +16,7 @@ import Navigation from './navigation';
 import LoginModal from './screens/Auth/LoginModal';
 import SignupModal from './screens/Auth/SignupModal';
 import CartModal from './screens/Cart';
+import { colors } from './theme/colors';
 
 function AppContentInner() {
   const { showCart, openCart, closeCart } = useCartModal();
@@ -99,7 +100,7 @@ function AppContentInner() {
         visible={showRightDrawer}
         onClose={closeDrawer}
         items={drawerItems}
-        title={isAuthenticated ? user?.name || 'Account' : 'Menu'}
+        isAuthenticated={isAuthenticated}
       />
 
       {/* Login Modal */}
@@ -122,7 +123,7 @@ function AppContentInner() {
         }}
       />
 
-      {/* Floating Cart Button */}
+      {/* View Basket Button */}
       {cartItems.length > 0 && (
         <View style={styles.cartButtonContainer}>
           <FloatingActionButton onPress={openCart} />
@@ -138,6 +139,10 @@ function AppContentInner() {
 }
 
 export default function AppContent() {
+  useEffect(() => {
+    configureGoogleSignIn();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthModalProvider>
@@ -153,9 +158,13 @@ export default function AppContent() {
 
 const styles = StyleSheet.create({
   cartButtonContainer: {
-    bottom: 24,
-    position: 'absolute',
-    right: 16,
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
+    height: 80,
+    justifyContent: 'center',
+    padding: 16,
     zIndex: 10,
   },
   container: {

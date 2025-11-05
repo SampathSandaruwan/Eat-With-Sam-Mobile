@@ -2,8 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { clearTokens, getAccessToken, getRefreshToken, saveTokens } from '@lib';
-import { login, logout as logoutAPI, refreshAccessToken as refreshTokenAPI, signup } from '@services';
+import { clearTokens, getAccessToken, getRefreshToken, saveTokens, signInWithGoogle, signOutFromGoogle } from '@lib';
+import { authenticateWithGoogle, login, logout as logoutAPI, refreshAccessToken as refreshTokenAPI, signup } from '@services';
 import {
   AuthResponse,
   LoginRequest,
@@ -19,6 +19,7 @@ interface AuthState {
 
   // Actions
   login: (credentials: LoginRequest) => Promise<void>;
+  authenticateWithGoogle: () => Promise<void>;
   signup: (userData: RegisterUserRequestBody) => Promise<void>;
   logout: () => Promise<void>;
   refreshTokens: () => Promise<void>;
@@ -91,21 +92,68 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      authenticateWithGoogle: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          // Sign in with Google and get ID token
+          const { userInfo } = await signInWithGoogle();
+
+          if (!userInfo) {
+            throw new Error('Failed to get ID token or user info from Google Sign-In');
+          }
+
+          // Send ID token to backend for verification and authentication
+          const response: AuthResponse = await authenticateWithGoogle({
+            email: userInfo.email,
+            googleId: userInfo.id,
+            name: userInfo.name || '',
+          });
+          const { user, tokens } = response;
+
+          // Save tokens securely
+          await saveTokens(tokens.accessToken, tokens.refreshToken);
+
+          set({
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : 'Google Sign-In failed. Please try again.';
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: errorMessage,
+          });
+          throw error;
+        }
+      },
+
       logout: async () => {
         const refreshTokenValue = await getRefreshToken();
 
-        if (!refreshTokenValue) {
-          throw new Error('No refresh token available');
-        }
-
         set({ isLoading: true });
         try {
-          // Call logout API
-          await logoutAPI(refreshTokenValue);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('Logout API call failed:', error);
-          // Continue with logout even if API call fails
+          // Sign out from Google if signed in
+          try {
+            await signOutFromGoogle();
+          } catch {
+            // Ignore Google sign out errors - user might not be signed in with Google
+          }
+
+          // Call logout API if we have a refresh token
+          if (refreshTokenValue) {
+            try {
+              await logoutAPI(refreshTokenValue);
+            } catch (error) {
+              // eslint-disable-next-line no-console
+              console.error('Logout API call failed:', error);
+              // Continue with logout even if API call fails
+            }
+          }
         } finally {
           // Clear tokens from secure storage
           await clearTokens();

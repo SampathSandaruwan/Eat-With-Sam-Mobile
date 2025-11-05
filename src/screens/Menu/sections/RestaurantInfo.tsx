@@ -2,9 +2,9 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon, Text } from '@components';
-import { colors } from '@theme';
+import { colors, SCREEN_WIDTH } from '@theme';
 import { Restaurant } from '@types';
-import { calculateDeliveryTime } from '@utils';
+import { calculateDeliveryTime, formatCurrency } from '@utils';
 
 import { FoodItemsPlaceholder } from '../../../assets/images';
 
@@ -28,26 +28,23 @@ export default function RestaurantInfo({
   const deliveryTime = restaurant.deliveryTime || 20;
   const deliveryTimeRange = calculateDeliveryTime(deliveryTime);
 
-  const formatCurrency = (amount: number) => {
-    return `£${amount.toFixed(2)}`;
-  };
-
   // Concatenate details at JS level for natural line breaking
   const firstDetailsRow = [
     `${deliveryTimeRange.minTime} - ${deliveryTimeRange.maxTime} min`,
     restaurant.cuisineType,
-    restaurant.description,
   ]
     .filter(Boolean)
     .join(' · ');
 
   const secondDetailsRow = [
+    // TODO: These fields might need to be added to the Restaurant type:
+    // - distance: number (miles, calculated from user location)
+    '0.2 miles away',
+    'Closes at 22:00',
     `${formatCurrency(restaurant.minimumOrder)} minimum`,
     `${formatCurrency(restaurant.deliveryFee)} delivery`,
   ].join(' · ');
 
-  // TODO: These fields might need to be added to the Restaurant type:
-  // - distance: number (miles, calculated from user location)
 
   return (
     <>
@@ -55,28 +52,28 @@ export default function RestaurantInfo({
         <View style={styles.svgBackground}>
           <FoodItemsPlaceholder width="100%" height={400} />
         </View>
-        <Image source={{ uri: restaurant?.imageUri || '' }} style={styles.banner} />
+        <Image source={{ uri: restaurant?.imageUri || '' }} style={styles.bannerImage} />
 
         <View style={styles.roundBackWrapper}>
           <Pressable onPress={onPressBack}>
             <View style={styles.roundBack}>
-              <Icon name="ArrowLeftIcon" size={22} color={colors.brandYellow} weight="bold" />
+              <Icon name="ArrowLeftIcon" size={20} color={colors.brandPrimary} weight="bold" />
             </View>
           </Pressable>
         </View>
 
-        <View style={styles.addToCartWrapper}>
+        <View style={styles.startGroupOrderWrapper}>
           <Pressable onPress={onPressStartGroupOrder}>
-            <View style={styles.addToCart}>
-              <Icon name="UsersThreeIcon" size={18} color={colors.brandYellow} weight="bold" />
-              <Text numberOfLines={1} style={styles.buttonText}>Start group order</Text>
+            <View style={styles.startGroupOrder}>
+              <Icon name="UsersIcon" size={16} color={colors.brandPrimary} weight="bold" />
+              <Text weight='regular'>Start group order</Text>
             </View>
           </Pressable>
         </View>
       </View>
 
       <View style={styles.header}>
-        <Text size="heading2" weight="bolder" style={styles.restaurantName}>
+        <Text size="veryLarge" weight="bold" style={styles.restaurantName}>
           {restaurant?.name}
         </Text>
 
@@ -89,34 +86,45 @@ export default function RestaurantInfo({
         </Text>
 
         <Pressable onPress={onPressInfo} style={styles.infoRow}>
-          <Icon name="InfoIcon" size={24} color={colors.textSecondary} weight="regular" />
+          <Icon name="InfoIcon" size={22} color={colors.textSecondary} weight="regular" />
           <View style={styles.infoContent}>
-            <Text weight="medium">Info</Text>
+            <Text weight="regular">Info</Text>
             <Text color="secondary" size="small" style={styles.infoSubtext}>
               Map, allergens and hygiene rating
             </Text>
           </View>
-          <Icon name="CaretRightIcon" size={20} color={colors.brandYellow} weight="regular" />
+          <Icon name="CaretRightIcon" size={20} color={colors.brandPrimary} weight="regular" />
         </Pressable>
 
         <Pressable onPress={onPressRating} style={styles.infoRow}>
-          <Icon name="StarIcon" size={24} color={colors.success} weight="fill" />
+          <Icon name="StarIcon" size={22} color={colors.success} weight="fill" />
           <View style={styles.infoContent}>
-            <Text weight="medium">
-              {restaurant.averageRating.toFixed(1)} Excellent ({restaurant.ratingCount}+)
-            </Text>
+            <View style={styles.ratingTextContainer}>
+              <Text weight="regular" color="success">
+                {restaurant.averageRating.toFixed(1)} Excellent
+              </Text>
+              <Text weight="regular">
+                ({restaurant.ratingCount}+)
+              </Text>
+            </View>
+            <View style={[styles.infoSubtext,styles.ratingCommentContainer]}>
+              <Icon name="SmileyIcon" size={16} color={colors.success} weight="regular" />
+              <Text color="success">
+                &apos;Tasty food&apos;
+              </Text>
+            </View>
           </View>
-          <Icon name="CaretRightIcon" size={20} color={colors.brandYellow} weight="regular" />
+          <Icon name="CaretRightIcon" size={20} color={colors.brandPrimary} weight="regular" />
         </Pressable>
 
         <Pressable onPress={onPressDeliveryTime} style={styles.infoRow}>
-          <Icon name="BicycleIcon" size={24} color={colors.brandYellow} weight="regular" />
+          <Icon name="BicycleIcon" size={22} color={colors.brandPrimary} weight="regular" />
           <View style={styles.infoContent}>
-            <Text weight="medium">
+            <Text weight="regular">
               Deliver in {deliveryTimeRange.minTime} - {deliveryTimeRange.maxTime} min
             </Text>
           </View>
-          <Text weight='medium' color='brandColor'>Change</Text>
+          <Text weight='regular' color='brandColor'>Change</Text>
         </Pressable>
       </View>
     </>
@@ -124,43 +132,23 @@ export default function RestaurantInfo({
 }
 
 const styles = StyleSheet.create({
-  addToCart: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderRadius: 8,
-    flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  addToCartWrapper: {
-    bottom: 12,
-    position: 'absolute',
-    right: 12,
-    zIndex: 1,
-  },
-  banner: {
-    height: 250,
-    position: 'relative',
-    width: '100%',
-    zIndex: 1,
-  },
   bannerContainer: {
     position: 'relative',
   },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '500',
+  bannerImage: {
+    height: 240,
+    marginHorizontal: -16,
+    position: 'relative',
+    width: SCREEN_WIDTH,
+    zIndex: 1,
   },
   detailText: {
-    fontSize: 14,
-    marginTop: 6,
+    marginTop: 4,
   },
   header: {
     backgroundColor: colors.background,
     paddingBottom: 8,
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingTop: 16,
   },
   infoContent: {
     flex: 1,
@@ -174,8 +162,19 @@ const styles = StyleSheet.create({
   infoSubtext: {
     marginTop: 2,
   },
+  ratingCommentContainer: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: colors.successLight,
+    borderRadius: 3,
+    flexDirection: 'row',
+    gap: 2,
+  },
+  ratingTextContainer: {
+    flexDirection: 'row',
+    gap: 4,
+  },
   restaurantName: {
-    fontSize: 20,
     lineHeight: 28,
   },
   roundBack: {
@@ -187,9 +186,25 @@ const styles = StyleSheet.create({
     width: 40,
   },
   roundBackWrapper: {
-    left: 12,
+    left: -8,
     position: 'absolute',
     top: 12,
+    zIndex: 1,
+  },
+  startGroupOrder: {
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderRadius: 4,
+    flexDirection: 'row',
+    gap: 8,
+    height: 40,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  startGroupOrderWrapper: {
+    bottom: 12,
+    position: 'absolute',
+    right: 0,
     zIndex: 1,
   },
   svgBackground: {

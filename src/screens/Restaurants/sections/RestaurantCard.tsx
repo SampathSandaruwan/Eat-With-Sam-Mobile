@@ -72,7 +72,7 @@ export default function RestaurantCard({ restaurant, onPress }: Props) {
 
         <View style={styles.ratingRow}>
           <View style={styles.ratingContainer}>
-            <Icon name="StarIcon" size={14} color={colors.brandYellow} weight="fill" />
+            <Icon name="StarIcon" size={14} color={colors.brandPrimary} weight="fill" />
             <Text size="small" weight="medium" color="primary">
               {formatRating(restaurant.averageRating)}
             </Text>
