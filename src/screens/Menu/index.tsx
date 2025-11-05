@@ -87,12 +87,6 @@ export default function MenuScreen() {
 
   const addItem = useCartStore((state) => state.addItem);
 
-  useEffect(() => {
-    if (menuCategories && menuCategories.length > 0 && activeCategoryId === null) {
-      setActiveCategoryId(menuCategories[0]?.id ?? null);
-    }
-  }, [menuCategories, activeCategoryId]);
-
   // Build flat list data with category sections
   // Group items into rows of 2 for grid layout
   const listData: ListItemType = React.useMemo(() => {

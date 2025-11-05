@@ -192,53 +192,68 @@ export default function SelectedMenuItem({
             </Animated.ScrollView>
 
             <View style={[styles.bottomContainer, shadows.cardWithoutBottomShadow]}>
-              {selectedMenuItem.isAvailable ? (
-                <View style={styles.buttonContainer}>
-                  <View style={styles.quantitySelector}>
-                    <TouchableOpacity
-                      onPress={handleDecrement}
-                      style={styles.quantityButton}
-                      activeOpacity={0.7}
-                      disabled={quantity === 1}
-                    >
-                      <Icon
-                        name="MinusCircleIcon"
-                        size={20}
-                        color={quantity === 1 ? colors.textInactive : colors.brandPrimary}
-                        weight="bold"
-                      />
-                    </TouchableOpacity>
-                    <Text size="large" weight="bold" style={styles.quantityText}>
-                      {quantity}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={handleIncrement}
-                      style={styles.quantityButton}
-                      activeOpacity={0.7}
-                    >
-                      <Icon
-                        name="PlusCircleIcon"
-                        size={20}
-                        color={colors.brandPrimary}
-                        weight="bold"
-                      />
-                    </TouchableOpacity>
-                  </View>
-
+              {/* {selectedMenuItem.isAvailable ? ( */}
+              <View style={styles.buttonContainer}>
+                <View style={styles.quantitySelector}>
                   <TouchableOpacity
-                    onPress={handleAddToCart}
-                    style={styles.addToCartButton}
-                    activeOpacity={0.8}
+                    onPress={handleDecrement}
+                    style={styles.quantityButton}
+                    activeOpacity={0.7}
+                    disabled={quantity === 1 || !selectedMenuItem.isAvailable}
                   >
-                    <Text
+                    <Icon
+                      name="MinusCircleIcon"
+                      size={20}
+                      color={
+                        (quantity === 1 || selectedMenuItem.isAvailable)
+                          ? colors.textInactive
+                          : colors.brandPrimary
+                      }
                       weight="bold"
-                      color="primaryInverted"
-                    >
-                      {`Add for ${formatCurrency(totalPrice)}`}
-                    </Text>
+                    />
+                  </TouchableOpacity>
+                  <Text
+                    size="large"
+                    weight="bold"
+                    style={styles.quantityText}
+                    color={selectedMenuItem.isAvailable ? 'primary' : 'inactive'}
+                  >
+                    {quantity}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleIncrement}
+                    style={styles.quantityButton}
+                    activeOpacity={0.7}
+                    disabled={!selectedMenuItem.isAvailable}
+                  >
+                    <Icon
+                      name="PlusCircleIcon"
+                      size={20}
+                      color={selectedMenuItem.isAvailable ? colors.brandPrimary : colors.textInactive}
+                      weight="bold"
+                    />
                   </TouchableOpacity>
                 </View>
-              ) : (
+
+                <TouchableOpacity
+                  onPress={handleAddToCart}
+                  style={[styles.addToCartButton, !selectedMenuItem.isAvailable && styles.addToCartButtonDisabled]}
+                  activeOpacity={0.8}
+                  disabled={!selectedMenuItem.isAvailable}
+                >
+                  <Text
+                    weight="bold"
+                    color={selectedMenuItem.isAvailable ? 'primaryInverted' : 'inactive'}
+                  >
+                    {
+                      selectedMenuItem.isAvailable
+                        ? `Add for ${formatCurrency(totalPrice)}`
+                        : 'Item not available'
+                    }
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {/* ) : (
                 <View style={styles.buttonContainer}>
                   <View style={[styles.addToCartButton, styles.addToCartButtonDisabled]}>
                     <Icon name="PlusIcon" size={20} color={colors.textInactive} weight="bold" />
@@ -247,7 +262,7 @@ export default function SelectedMenuItem({
                     </Text>
                   </View>
                 </View>
-              )}
+              )} */}
             </View>
           </View>
         ) : null}
