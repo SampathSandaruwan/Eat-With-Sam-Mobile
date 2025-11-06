@@ -13,7 +13,7 @@ export const lightColors = {
   textPrimary: '#2e3333',
   textSecondary: '#585c5c',
   textInactive: '#808080',
-  border: '#F1F1F1',
+  border: '#E6E6E6',
 
   // Accents
   success: '#4d7c1b',

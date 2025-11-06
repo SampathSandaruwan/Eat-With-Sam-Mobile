@@ -46,5 +46,6 @@ export const useTopTenDiscountedDishes = () => {
     queryFn: () => {
       return getTopTenDiscountedDishes();
     },
+    select: (response) => response.data ?? [],
   });
 };

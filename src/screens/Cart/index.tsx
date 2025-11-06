@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon, Text } from '@components';
 import { DELIVERY_ADDRESS } from '@constants';
@@ -30,7 +30,6 @@ type Props = {
 export default function CartModal({ visible, onClose }: Props) {
   const [riderTip, setRiderTip] = useState(0);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const insets = useSafeAreaInsets();
 
   const colors = useColors();
   const shadows = useShadows();
@@ -233,14 +232,26 @@ export default function CartModal({ visible, onClose }: Props) {
                 <Text size="heading1" weight="bold" style={styles.sectionTitle}>
                   Savings and offers
                 </Text>
-                <TouchableOpacity style={[styles.sectionContent, styles.viewOffersButton]}>
+                <TouchableOpacity
+                  style={[
+                    styles.sectionContent,
+                    styles.viewOffersButton,
+                    { borderColor: colors.border },
+                  ]}
+                >
                   <Text size="heading1">
                     View offers
                   </Text>
                   <Icon name="CaretRightIcon" size={20} color={colors.brandPrimary} />
                 </TouchableOpacity>
 
-                <View style={[styles.basketSubtotalRow, styles.sectionContent]}>
+                <View
+                  style={[
+                    styles.basketSubtotalRow,
+                    styles.sectionContent,
+                    { borderColor: colors.border },
+                  ]}
+                >
                   <Text size="heading1" color="secondary">
                     Basket subtotal
                   </Text>
@@ -257,7 +268,7 @@ export default function CartModal({ visible, onClose }: Props) {
                   </Text>
                   <Icon name="QuestionIcon" size={20} color={colors.brandPrimary} />
                 </View>
-                <View style={styles.sectionContent}>
+                <View style={[styles.sectionContent, { borderColor: colors.border }]}>
                   <View style={styles.summaryRow}>
                     <Text size="heading1" color="secondary">
                       Service fee
@@ -285,7 +296,6 @@ export default function CartModal({ visible, onClose }: Props) {
               styles.checkoutButtonContainer,
               { backgroundColor: colors.background },
               shadows.cardWithoutBottomShadow,
-              { paddingBottom: Math.max(insets.bottom, 16) },
             ]}
           >
             <View style={[styles.summaryRow, styles.riderTipSection]}>
@@ -394,7 +404,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   checkoutButtonContainer: {
-    height: 142,
+    height: 140,
     paddingHorizontal: 16,
     paddingTop: 8,
   },

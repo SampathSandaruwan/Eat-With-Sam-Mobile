@@ -215,7 +215,8 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
                 </View>
                 <View style={styles.selectorPlaceholder} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.selector} accessibilityRole="button">
+
+              <TouchableOpacity style={[styles.selector, { borderColor: colors.border }]} accessibilityRole="button">
                 <Text size="body" weight="medium" color="primary">
                   English
                 </Text>
@@ -225,7 +226,7 @@ export default function RightDrawer({ visible, onClose, items, isAuthenticated =
                   color={colors.textSecondary}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.selector} accessibilityRole="button">
+              <TouchableOpacity style={[styles.selector, { borderColor: colors.border }]} accessibilityRole="button">
                 <Text size="body" weight="medium" color="primary">
                   United Kingdom
                 </Text>

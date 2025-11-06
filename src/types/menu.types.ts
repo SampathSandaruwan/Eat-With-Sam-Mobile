@@ -7,6 +7,7 @@ export interface MenuCategory {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  dishes?: Dish[];
 }
 
 export interface Dish {

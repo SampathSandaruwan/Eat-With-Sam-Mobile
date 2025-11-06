@@ -190,9 +190,9 @@ const styles = StyleSheet.create({
   cartButtonContainer: {
     alignItems: 'center',
     borderTopWidth: 1,
-    height: 80,
     justifyContent: 'center',
     padding: 16,
+    paddingBottom: 8,
     zIndex: 10,
   },
   container: {
