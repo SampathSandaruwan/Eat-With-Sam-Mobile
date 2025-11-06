@@ -1,14 +1,138 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# EatWithSam Mobile
 
-# Getting Started
+A React Native mobile application for food ordering and delivery, built with TypeScript and modern React Native tooling.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Table of Contents
 
-## Step 1: Start Metro
+- [Prerequisites](#prerequisites)
+- [Project Setup](#project-setup)
+- [Environment Configuration](#environment-configuration)
+- [Running the Application](#running-the-application)
+- [Development Workflow](#development-workflow)
+- [Additional Resources](#additional-resources)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Prerequisites
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Before setting up the project, ensure you have the following installed:
+
+### Required Software
+
+- **Node.js**: Version 20 or higher (see `package.json` engines field)
+- **npm** or **yarn**: Package manager
+- **Ruby**: Version 2.6.10 or higher (for CocoaPods on iOS)
+- **React Native CLI**: Follow the [official React Native environment setup guide](https://reactnative.dev/docs/set-up-your-environment)
+
+### Platform-Specific Requirements
+
+#### iOS Development (macOS only)
+
+- **Xcode**: Latest stable version
+- **CocoaPods**: Managed via Gemfile (installed automatically)
+- **iOS Simulator**: Included with Xcode
+
+#### Android Development
+
+- **Java Development Kit (JDK)**: Version 17 or higher
+- **Android Studio**: Latest stable version
+- **Android SDK**: Installed via Android Studio
+- **Android Emulator**: Configured in Android Studio
+
+> **Note**: For detailed environment setup instructions, refer to the [React Native Environment Setup Guide](https://reactnative.dev/docs/set-up-your-environment).
+
+## Project Setup
+
+### 1. Clone the Repository
+
+```sh
+git clone <repository-url>
+cd Eat-With-Sam-Mobile
+```
+
+### 2. Install Dependencies
+
+Install JavaScript/TypeScript dependencies:
+
+```sh
+# Using npm
+npm install
+
+# OR using Yarn
+yarn install
+```
+
+### 3. Install iOS Dependencies (iOS only)
+
+If you plan to develop for iOS, install CocoaPods dependencies:
+
+```sh
+# Install Ruby gems (first time only)
+bundle install
+
+# Install CocoaPods dependencies
+cd ios && bundle exec pod install && cd ..
+```
+
+> **Note**: Run `bundle exec pod install` whenever you update native dependencies or add new pods.
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```sh
+cp .env.example .env  # If an example file exists
+# OR create .env manually
+```
+
+Required environment variables:
+
+```env
+API_URL=your_backend_api_url
+RETRY_ATTEMPTS=3
+GOOGLE_WEB_CLIENT_ID=your_google_web_client_id
+GOOGLE_IOS_CLIENT_ID=your_google_ios_client_id
+```
+
+**Environment Variables Reference:**
+
+- `API_URL`: Backend API base URL (e.g., `https://api.example.com`)
+- `RETRY_ATTEMPTS`: Number of retry attempts for failed API requests (default: 3)
+- `GOOGLE_WEB_CLIENT_ID`: Google OAuth 2.0 Web Client ID (for Google Sign-In)
+- `GOOGLE_IOS_CLIENT_ID`: Google OAuth 2.0 iOS Client ID (for Google Sign-In)
+
+> **Note**: For detailed Google Sign-In setup instructions, see [Google Sign-In Setup Guide](./documentation/Google-SignIn-Setup.md).
+
+## Environment Configuration
+
+### Path Aliases
+
+The project uses TypeScript path aliases configured in `tsconfig.json`. Import paths are resolved automatically:
+
+- `@components` → `src/components`
+- `@constants` → `src/constants`
+- `@contexts` → `src/contexts`
+- `@hooks` → `src/hooks`
+- `@lib` → `src/lib`
+- `@navigation` → `src/navigation`
+- `@screens` → `src/screens`
+- `@services` → `src/services`
+- `@store` → `src/store`
+- `@theme` → `src/theme`
+- `@types` → `src/types`
+- `@utils` → `src/utils`
+
+Example usage:
+
+```typescript
+import { Button } from '@components';
+import { useRestaurants } from '@hooks';
+import { authStore } from '@store';
+```
+
+## Running the Application
+
+### Start Metro Bundler
+
+Start the Metro JavaScript bundler in one terminal:
 
 ```sh
 # Using npm
@@ -18,37 +142,7 @@ npm start
 yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### Run on iOS
 
 ```sh
 # Using npm
@@ -58,40 +152,92 @@ npm run ios
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+This command:
+- Starts Metro bundler (if not already running)
+- Builds the iOS app
+- Launches the app in the iOS Simulator (iPhone 16 Pro by default)
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+**Alternative**: Open `ios/EatWithSam.xcworkspace` in Xcode and run from there.
 
-## Step 3: Modify your app
+### Run on Android
 
-Now that you have successfully run the app, let's make changes!
+```sh
+# Using npm
+npm run android
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+# OR using Yarn
+yarn android
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+This command:
+- Starts Metro bundler (if not already running)
+- Builds the Android app
+- Launches the app on an Android emulator or connected device
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+**Prerequisites**: Ensure an Android emulator is running or a device is connected via USB with USB debugging enabled.
 
-## Congratulations! :tada:
+**Alternative**: Open the `android` folder in Android Studio and run from there.
 
-You've successfully run and modified your React Native App. :partying_face:
+## Development Workflow
 
-### Now what?
+### Available Scripts
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+```sh
+# Start Metro bundler
+npm start
 
-# Troubleshooting
+# Run on iOS
+npm run ios
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+# Run on Android
+npm run android
 
-# Learn More
+# Run linter
+npm run lint
 
-To learn more about React Native, take a look at the following resources:
+# Fix linting issues automatically
+npm run lint:fix
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+**Note**: Testing is not currently configured in this project. The `npm test` command exists in package.json but test suites are not yet implemented.
+
+### Hot Reloading
+
+The app supports Fast Refresh for instant updates during development:
+
+- **Save changes**: React components automatically update
+- **Full reload**:
+  - **Android**: Press <kbd>R</kbd> twice or <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) / <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS) → Select "Reload"
+  - **iOS**: Press <kbd>R</kbd> in iOS Simulator
+
+### TypeScript Path Aliases
+
+The project uses `babel-plugin-module-resolver` and TypeScript path aliases for cleaner imports. All aliases are configured in:
+- `tsconfig.json` (TypeScript)
+- `babel.config.js` (Babel/JavaScript)
+
+### Testing
+
+Testing is not currently configured in this project. Test suites will be added in future updates.
+
+## Additional Resources
+
+### Project Documentation
+
+- **[Documentation Folder](./documentation/README.md)**: Comprehensive project documentation, implementation plans, and guidelines
+- **[Google Sign-In Setup](./documentation/Google-SignIn-Setup.md)**: Detailed guide for configuring Google authentication
+
+### Tech Stack
+
+- **Framework**: React Native 0.82.1 (CLI)
+- **Language**: TypeScript 5.8.3
+- **State Management**: Zustand 5.0.8
+- **Data Fetching**: TanStack Query 5.90.6 + Axios 1.13.1
+- **Navigation**: React Navigation 7.x
+
+### External Resources
+
+- [React Native Documentation](https://reactnative.dev/docs/getting-started)
+- [React Native Environment Setup](https://reactnative.dev/docs/set-up-your-environment)
+- [React Native Troubleshooting](https://reactnative.dev/docs/troubleshooting)
+- [React Native Integration Guide](https://reactnative.dev/docs/integration-with-existing-apps)

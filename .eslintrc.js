@@ -117,7 +117,10 @@ module.exports = {
           // Internal custom path aliases (starting with @ but not external libraries)
           ['^@'],
           // Relative imports
-          ['^\\.'],
+          ['^./'],
+          ['^../'],
+          ['^../../'],
+          ['^../../../'],
         ],
       },
     ],
