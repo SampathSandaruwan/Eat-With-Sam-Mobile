@@ -197,10 +197,9 @@ npm run lint
 
 # Fix linting issues automatically
 npm run lint:fix
-
-# Run tests
-npm test
 ```
+
+**Note**: Testing is not currently configured in this project. The `npm test` command exists in package.json but test suites are not yet implemented.
 
 ### Hot Reloading
 
@@ -219,11 +218,7 @@ The project uses `babel-plugin-module-resolver` and TypeScript path aliases for 
 
 ### Testing
 
-Run the test suite:
-
-```sh
-npm test
-```
+Testing is not currently configured in this project. Test suites will be added in future updates.
 
 ## Additional Resources
 
@@ -239,7 +234,6 @@ npm test
 - **State Management**: Zustand 5.0.8
 - **Data Fetching**: TanStack Query 5.90.6 + Axios 1.13.1
 - **Navigation**: React Navigation 7.x
-- **Testing**: Jest 29.6.3
 
 ### External Resources
 

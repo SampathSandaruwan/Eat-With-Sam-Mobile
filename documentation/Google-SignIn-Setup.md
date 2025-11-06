@@ -100,28 +100,37 @@ npm run ios
 
 ### Backend Integration
 
-The app expects a backend endpoint at `/auth/google` that accepts:
+The app sends a request to the backend endpoint at `/auth/google` with the following payload:
 ```json
 {
-  "idToken": "google_id_token_here"
+  "email": "user@example.com",
+  "googleId": "google_user_id_here",
+  "name": "User Name"
 }
 ```
 
-And returns:
+The backend endpoint should return:
 ```json
 {
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "name": "User Name",
-    ...
-  },
-  "tokens": {
-    "accessToken": "access_token_here",
-    "refreshToken": "refresh_token_here"
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "name": "User Name",
+      "googleId": "google_user_id_here",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    },
+    "tokens": {
+      "accessToken": "access_token_here",
+      "refreshToken": "refresh_token_here"
+    }
   }
 }
 ```
+
+**Note**: The current implementation sends user information (email, googleId, name) to the backend. For enhanced security, consider updating the backend to accept and verify the Google ID token (`idToken`) instead, which would allow the backend to verify the authentication with Google directly.
 
 ## Common Issues & Solutions
 
