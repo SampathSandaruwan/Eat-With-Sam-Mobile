@@ -7,6 +7,9 @@ Welcome to the EatWithSam Mobile project documentation. This folder contains all
 ### 📋 Planning & Implementation
 - **[Implementation Plan](./Implementation-Plan.md)** - Comprehensive step-by-step implementation plan organized by modules (Menu/Order, Authentication, Reporting)
 
+### 🔧 Setup & Configuration
+- **[Google Sign-In Setup](./Google-SignIn-Setup.md)** - Step-by-step guide for configuring Google Sign-In authentication
+
 ### ✅ Quality Assurance
 - **[Quality Assurance Checklist](./Quality-Assurance-Checklist.md)** - Checklist for evaluating product readiness for release
 
@@ -16,6 +19,7 @@ Welcome to the EatWithSam Mobile project documentation. This folder contains all
 
 ### For Developers
 - Start with the [Implementation Plan](./Implementation-Plan.md) to understand the development roadmap
+- Configure authentication using the [Google Sign-In Setup](./Google-SignIn-Setup.md) guide
 - Refer to the [Quality Assurance Checklist](./Quality-Assurance-Checklist.md) before submitting code
 
 ### For Project Management
