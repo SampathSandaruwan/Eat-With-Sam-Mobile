@@ -21,6 +21,7 @@ import {
   SearchBar,
 } from './sections';
 
+import { DELIVERY_ADDRESS } from '../../constants';
 import type { RootStackParams } from '../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParams>;
@@ -78,7 +79,7 @@ export default function RestaurantsScreen() {
 
           {/* Delivery Information Bar */}
           <DeliveryInfoBar
-            deliveryAddress="Pokunuwatta Road"
+            deliveryAddress={DELIVERY_ADDRESS}
             cartItemCount={cartItems.length}
             onCartPress={openCart}
           />

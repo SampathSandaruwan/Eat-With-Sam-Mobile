@@ -5,7 +5,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { clearTokens, getAccessToken, getRefreshToken, saveTokens, signInWithGoogle, signOutFromGoogle } from '@lib';
 import { authenticateWithGoogle, login, logout as logoutAPI, refreshAccessToken as refreshTokenAPI, signup } from '@services';
 import {
-  AuthResponse,
   LoginRequest,
   RegisterUserRequestBody,
   UserResponse,
@@ -39,8 +38,8 @@ export const useAuthStore = create<AuthState>()(
       login: async (credentials) => {
         set({ isLoading: true, error: null });
         try {
-          const response: AuthResponse = await login(credentials);
-          const { user, tokens } = response;
+          const response = await login(credentials);
+          const { user, tokens } = response.data;
 
           // Save tokens securely
           await saveTokens(tokens.accessToken, tokens.refreshToken);
@@ -67,8 +66,8 @@ export const useAuthStore = create<AuthState>()(
       signup: async (userData) => {
         set({ isLoading: true, error: null });
         try {
-          const response: AuthResponse = await signup(userData);
-          const { user, tokens } = response;
+          const response = await signup(userData);
+          const { user, tokens } = response.data;
 
           // Save tokens securely
           await saveTokens(tokens.accessToken, tokens.refreshToken);
@@ -103,12 +102,12 @@ export const useAuthStore = create<AuthState>()(
           }
 
           // Send ID token to backend for verification and authentication
-          const response: AuthResponse = await authenticateWithGoogle({
+          const response = await authenticateWithGoogle({
             email: userInfo.email,
             googleId: userInfo.id,
             name: userInfo.name || '',
           });
-          const { user, tokens } = response;
+          const { user, tokens } = response.data;
 
           // Save tokens securely
           await saveTokens(tokens.accessToken, tokens.refreshToken);
@@ -176,7 +175,7 @@ export const useAuthStore = create<AuthState>()(
           }
 
           const response = await refreshTokenAPI(refreshTokenValue);
-          const { tokens } = response;
+          const { tokens } = response.data;
 
           // Save new tokens securely
           await saveTokens(tokens.accessToken, tokens.refreshToken);

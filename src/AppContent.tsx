@@ -1,6 +1,8 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   DrawerItem,
@@ -13,10 +15,13 @@ import { useAuthStore, useCartStore } from '@store';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import Navigation from './navigation';
+import { RootStackParams } from './navigation/types';
 import LoginModal from './screens/Auth/LoginModal';
 import SignupModal from './screens/Auth/SignupModal';
 import CartModal from './screens/Cart';
 import { useColors } from './theme';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParams>;
 
 function AppContentInner() {
   const { showCart, openCart, closeCart } = useCartModal();
@@ -26,6 +31,8 @@ function AppContentInner() {
   const clearCart = useCartStore((state) => state.clearCart);
   const cartItems = useCartStore((state) => state.items);
   const colors = useColors();
+
+  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -51,10 +58,24 @@ function AppContentInner() {
       },
     },
     {
+      label: 'Restaurants',
+      icon: 'StorefrontIcon',
+      onPress: () => {
+        closeDrawer();
+        navigation.navigate('Restaurants');
+      },
+      showDivider: true,
+    },
+    {
       label: 'Orders',
       icon: 'PackageIcon',
       onPress: () => {
-        // Navigate to orders (future implementation)
+        closeDrawer();
+        if (isAuthenticated) {
+          navigation.navigate('Orders');
+        } else {
+          openLogin();
+        }
       },
       showDivider: true,
     },
@@ -90,23 +111,8 @@ function AppContentInner() {
     },
   ];
 
-  const styles = useMemo(() => StyleSheet.create({
-    cartButtonContainer: {
-      alignItems: 'center',
-      borderTopWidth: 1,
-      height: 80,
-      justifyContent: 'center',
-      padding: 16,
-      zIndex: 10,
-    },
-    container: {
-      backgroundColor: colors.background,
-      flex: 1,
-    },
-  }), [colors]);
-
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       {/* Navigation Stack */}
       <Navigation />
 
@@ -180,3 +186,16 @@ export default function AppContent() {
   );
 }
 
+const styles = StyleSheet.create({
+  cartButtonContainer: {
+    alignItems: 'center',
+    borderTopWidth: 1,
+    justifyContent: 'center',
+    padding: 16,
+    paddingBottom: 8,
+    zIndex: 10,
+  },
+  container: {
+    flex: 1,
+  },
+});

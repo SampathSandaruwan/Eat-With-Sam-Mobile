@@ -11,6 +11,7 @@ export const useMenuCategories = (restaurantId: number | null) => {
       }
       return getMenuCategories(restaurantId.toString());
     },
+    select: (response) => response.data ?? [],
     enabled: restaurantId !== null,
   });
 };
@@ -24,6 +25,7 @@ export const useMenuCategoriesWithDishes = (restaurantId: number | null) => {
       }
       return getMenuCategories(restaurantId.toString(), true);
     },
+    select: (response) => response.data ?? [],
     enabled: restaurantId !== null,
   });
 };

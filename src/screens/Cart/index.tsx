@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   ListRenderItem,
   Modal,
@@ -9,18 +10,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon, Text } from '@components';
-import { useRestaurant, useTopTenRatedDishes } from '@hooks';
-import { useCartStore } from '@store';
+import { DELIVERY_ADDRESS } from '@constants';
+import { usePlaceOrder, useRestaurant, useTopTenRatedDishes } from '@hooks';
+import { useAuthStore, useCartStore } from '@store';
 import { useColors, useShadows } from '@theme';
-import { CartItem, Dish } from '@types';
+import { CartItem, Dish, PlaceOrderRequestBody } from '@types';
 import { formatCurrency } from '@utils';
 
 import { TopRatedMenuItemCard } from './Sections';
-
-const SERVICE_FEE_PERCENTAGE = 0.05; // 5%
 
 type Props = {
   visible: boolean;
@@ -29,7 +29,7 @@ type Props = {
 
 export default function CartModal({ visible, onClose }: Props) {
   const [riderTip, setRiderTip] = useState(0);
-  const insets = useSafeAreaInsets();
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const colors = useColors();
   const shadows = useShadows();
@@ -38,6 +38,9 @@ export default function CartModal({ visible, onClose }: Props) {
   const clearCart = useCartStore((state) => state.clearCart);
   const getCartSummary = useCartStore((state) => state.getCartSummary);
   const addItem = useCartStore((state) => state.addItem);
+
+  const { isAuthenticated } = useAuthStore();
+  const placeOrderMutation = usePlaceOrder();
 
   const { data: topTenRatedDishes } = useTopTenRatedDishes();
 
@@ -49,11 +52,12 @@ export default function CartModal({ visible, onClose }: Props) {
   const restaurantId = items.length > 0 ? items[0].dish.restaurantId : null;
   const { data: restaurant } = useRestaurant(restaurantId);
 
-  // Use restaurant's deliveryFee and taxRate, fallback to defaults if restaurant not loaded
+  // Use restaurant's deliveryFee, taxRate, and serviceChargeRate, fallback to defaults if restaurant not loaded
   const deliveryFee = restaurant?.deliveryFee ?? 0;
   const taxRate = restaurant?.taxRate ?? 0.2;
+  const serviceChargeRate = restaurant?.serviceChargeRate ?? 0;
 
-  const summary = getCartSummary(deliveryFee, taxRate, SERVICE_FEE_PERCENTAGE);
+  const summary = getCartSummary(deliveryFee, taxRate, serviceChargeRate);
   const orderTotal = summary.total + riderTip;
 
   const handleTipChange = (amount: number) => {
@@ -104,6 +108,44 @@ export default function CartModal({ visible, onClose }: Props) {
   const addDishToCart = (item: Dish) => {
     if (item) {
       addItem(item, 1);
+    }
+  };
+
+  const handleCheckout = async () => {
+    if (!isAuthenticated) {
+      // Show login modal or navigate to login
+      // For now, just return
+      return;
+    }
+
+    if (items.length === 0 || !restaurant) {
+      return;
+    }
+
+    setIsPlacingOrder(true);
+    try {
+      const orderData: PlaceOrderRequestBody = {
+        restaurantId: restaurant.id,
+        items: items.map((item) => ({
+          dishId: item.dish.id,
+          quantity: item.quantity,
+          specialInstructions: item.notes || null,
+        })),
+        deliveryAddress: DELIVERY_ADDRESS, // TODO: Get from user profile or address selection
+        deliveryInstructions: null,
+      };
+
+      await placeOrderMutation.mutateAsync(orderData);
+
+      // Clear cart and close modal on success
+      clearCart();
+      setRiderTip(0);
+      onClose();
+    } catch (error) {
+      // Error handling - could show toast/alert here
+      console.error('Failed to place order:', error);
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
@@ -190,14 +232,26 @@ export default function CartModal({ visible, onClose }: Props) {
                 <Text size="heading1" weight="bold" style={styles.sectionTitle}>
                   Savings and offers
                 </Text>
-                <TouchableOpacity style={[styles.sectionContent, styles.viewOffersButton]}>
+                <TouchableOpacity
+                  style={[
+                    styles.sectionContent,
+                    styles.viewOffersButton,
+                    { borderColor: colors.border },
+                  ]}
+                >
                   <Text size="heading1">
                     View offers
                   </Text>
                   <Icon name="CaretRightIcon" size={20} color={colors.brandPrimary} />
                 </TouchableOpacity>
 
-                <View style={[styles.basketSubtotalRow, styles.sectionContent]}>
+                <View
+                  style={[
+                    styles.basketSubtotalRow,
+                    styles.sectionContent,
+                    { borderColor: colors.border },
+                  ]}
+                >
                   <Text size="heading1" color="secondary">
                     Basket subtotal
                   </Text>
@@ -214,7 +268,7 @@ export default function CartModal({ visible, onClose }: Props) {
                   </Text>
                   <Icon name="QuestionIcon" size={20} color={colors.brandPrimary} />
                 </View>
-                <View style={styles.sectionContent}>
+                <View style={[styles.sectionContent, { borderColor: colors.border }]}>
                   <View style={styles.summaryRow}>
                     <Text size="heading1" color="secondary">
                       Service fee
@@ -242,7 +296,6 @@ export default function CartModal({ visible, onClose }: Props) {
               styles.checkoutButtonContainer,
               { backgroundColor: colors.background },
               shadows.cardWithoutBottomShadow,
-              { paddingBottom: Math.max(insets.bottom, 16) },
             ]}
           >
             <View style={[styles.summaryRow, styles.riderTipSection]}>
@@ -296,11 +349,18 @@ export default function CartModal({ visible, onClose }: Props) {
                 styles.checkoutButton,
                 { backgroundColor: colors.brandPrimaryLight },
                 pressed && styles.checkoutButtonPressed,
+                (isPlacingOrder || !isAuthenticated) && styles.checkoutButtonDisabled,
               ]}
+              onPress={handleCheckout}
+              disabled={isPlacingOrder || !isAuthenticated || items.length === 0}
             >
-              <Text size="heading1" weight="bold" color="primaryInverted" style={styles.checkoutButtonText}>
-                Go to checkout
-              </Text>
+              {isPlacingOrder ? (
+                <ActivityIndicator size="small" color={colors.background} />
+              ) : (
+                <Text size="heading1" weight="bold" color="primaryInverted" style={styles.checkoutButtonText}>
+                  {!isAuthenticated ? 'Sign in to checkout' : 'Go to checkout'}
+                </Text>
+              )}
             </Pressable>
           </View>
         </View>
@@ -344,9 +404,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   checkoutButtonContainer: {
-    height: 142,
+    height: 140,
     paddingHorizontal: 16,
     paddingTop: 8,
+  },
+  checkoutButtonDisabled: {
+    opacity: 0.6,
   },
   checkoutButtonPressed: {
     opacity: 0.8,

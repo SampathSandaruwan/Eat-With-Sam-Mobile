@@ -1,2 +1,2 @@
 export * from './dietary';
-export * from './promotions';
+export * from './dummy-content';

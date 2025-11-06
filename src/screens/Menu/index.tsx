@@ -19,9 +19,9 @@ import {
 import { Text, TopNavBar } from '@components';
 import { PROMOTIONAL_TEXT } from '@constants';
 import {
+  useDish,
   useMenuCategories,
   useMenuCategoriesWithDishes,
-  useDish,
   useRestaurant,
   useTopTenDiscountedDishes,
   useTopTenRatedDishes,
@@ -34,7 +34,7 @@ import {
   TOP_NAV_HEIGHT,
   useColors,
 } from '@theme';
-import { MenuCategory, Dish } from '@types';
+import { Dish,MenuCategory } from '@types';
 
 import {
   CategoryTabs,
@@ -299,7 +299,7 @@ export default function MenuScreen() {
         pointerEvents="box-none"
         style={[
           styles.stickyTabsContainer,
-          { borderColor: colors.border },
+          { borderTopColor: colors.border },
           {
             opacity: scrollY.interpolate({
               inputRange: [
@@ -312,14 +312,12 @@ export default function MenuScreen() {
           },
         ]}
       >
-        <View style={[styles.tabsWrapper, { borderColor: colors.border }]}>
-          <CategoryTabs
-            ref={categoryTabsRef}
-            categories={menuCategories ?? []}
-            activeCategoryId={activeCategoryId}
-            onChange={handleCategoryTabPress}
-          />
-        </View>
+        <CategoryTabs
+          ref={categoryTabsRef}
+          categories={menuCategories ?? []}
+          activeCategoryId={activeCategoryId}
+          onChange={handleCategoryTabPress}
+        />
       </Animated.View>
 
       {/* The list of menu items */}
@@ -363,7 +361,7 @@ export default function MenuScreen() {
                 />
               </View>
 
-              <View style={styles.tabsWrapper}>
+              <View style={[styles.tabsWrapper, { borderTopColor: colors.border }]}>
                 <CategoryTabs
                   ref={categoryTabsRef}
                   categories={menuCategories ?? []}
@@ -380,7 +378,7 @@ export default function MenuScreen() {
                 <Text weight="semiBold" size="heading1" style={styles.discountedItemsText}>{PROMOTIONAL_TEXT.DISCOUNTED_ITEMS_TITLE}</Text>
                 <Text color="secondary" style={styles.discountedItemsText}>{PROMOTIONAL_TEXT.DISCOUNTED_ITEMS_DESCRIPTION}</Text>
                 <FlatList
-                  data={topTenDiscountedDishes}
+                  data={topTenDiscountedDishes ?? []}
                   keyExtractor={item => item.id.toString()}
                   renderItem={renderDiscountedItem}
                   horizontal
@@ -420,6 +418,7 @@ export default function MenuScreen() {
         visible={selectedDishId !== null}
         onPressClose={() => setSelectedDishId(null)}
         onPressAddToCart={addDishToCart}
+        allergens={selectedDish?.allergens ?? []}
       />
     </View>
   );
