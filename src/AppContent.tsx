@@ -71,7 +71,11 @@ function AppContentInner() {
       icon: 'PackageIcon',
       onPress: () => {
         closeDrawer();
-        navigation.navigate('Orders');
+        if (isAuthenticated) {
+          navigation.navigate('Orders');
+        } else {
+          openLogin();
+        }
       },
       showDivider: true,
     },
